@@ -1,0 +1,38 @@
+# Arquivos regenerados pelo Unity e pelo ambiente de desenvolvimento.
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+/.vs/
+/.idea/
+/.vscode/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.opendb
+*.VC.db
+
+# Saídas de compilação e cópias compactadas; não incluem recursos de Assets.
+/[Bb]uild/
+/[Bb]uilds/
+/*.zip
+/*.unitypackage
+/*.unitypackage.gz
+/UnityCrashHandler*
+/sysinfo.txt
+.DS_Store
+Thumbs.db
+
+# Credenciais locais.
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks

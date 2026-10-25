@@ -1,0 +1,404 @@
+{
+  "origem": "Nox_Project.zip",
+  "arquivo_drive": "1u84qKDkrgnTCAnOyziI71y3lLCWkUfOw",
+  "bytes_zip": 1773937352,
+  "unity": "2021.1.28f1",
+  "escopo": "Scripts, metadados, Packages e ProjectSettings; importação parcial. Recursos, cenas e build não incluídos.",
+  "arquivos": [
+    {
+      "caminho": "Assets/Scripts.meta",
+      "bytes": 172,
+      "sha256": "c69ededd44bf23c9000c8235d9319fc8d9a8cecd98200796df4599b94cde2873"
+    },
+    {
+      "caminho": "Assets/Scripts/AimEnemy.cs",
+      "bytes": 1094,
+      "sha256": "49a63edbd947f0d48aef663ba9595b1db86c5b54de05f92fe34826d7050608ad"
+    },
+    {
+      "caminho": "Assets/Scripts/AimEnemy.cs.meta",
+      "bytes": 243,
+      "sha256": "7428ba487649339cc948cf277a8b3d136580c91f018f3ec7cf2b93a34b4bcce1"
+    },
+    {
+      "caminho": "Assets/Scripts/Billboard.cs",
+      "bytes": 251,
+      "sha256": "b1225c55870a4e97a9df29dc5c3262e185278a0d0a4d889f0260feafd791e721"
+    },
+    {
+      "caminho": "Assets/Scripts/Billboard.cs.meta",
+      "bytes": 243,
+      "sha256": "122b09a5e65813307de41eee8167ffec2c9b5439039914e2a30e4d508c69a8a9"
+    },
+    {
+      "caminho": "Assets/Scripts/Boss.cs",
+      "bytes": 3011,
+      "sha256": "654cc061ead36e900ef208c83465a2f9a76cdd70c3ca4c05eefe31fce51da148"
+    },
+    {
+      "caminho": "Assets/Scripts/Boss.cs.meta",
+      "bytes": 243,
+      "sha256": "a64d4d555b43dbea58a2f60c1c897e769bc3e354077fd660a3e6b0089f037b6a"
+    },
+    {
+      "caminho": "Assets/Scripts/BossScript.cs",
+      "bytes": 2962,
+      "sha256": "87c2132fb75c85dc27b197275a28f83db6851f2652677545206a8a9c62198c02"
+    },
+    {
+      "caminho": "Assets/Scripts/BossScript.cs.meta",
+      "bytes": 243,
+      "sha256": "f584a9028ad097f85685d6629bdc7621a472de8c51ac9a4bc325603957e55b4a"
+    },
+    {
+      "caminho": "Assets/Scripts/Bullet.cs",
+      "bytes": 1148,
+      "sha256": "2999c86bcf4dd2d3d7a3a7001ea5cd1dcc11af1f0c4eb1f603894d9bbd8609f7"
+    },
+    {
+      "caminho": "Assets/Scripts/Bullet.cs.meta",
+      "bytes": 243,
+      "sha256": "24af66a929f6be172e952ab9ede726b368940c104d2d542c094b77c18224b9aa"
+    },
+    {
+      "caminho": "Assets/Scripts/BulletEnemy.cs",
+      "bytes": 1369,
+      "sha256": "0c2b8e1ba8e3e1c772241fb84dabfc95a802e325ed1044394249633b7e3d87b5"
+    },
+    {
+      "caminho": "Assets/Scripts/BulletEnemy.cs.meta",
+      "bytes": 243,
+      "sha256": "ce1d319971ec284c47a02392a688b9356e2d4cf483cdd1a261abc9fded7b1632"
+    },
+    {
+      "caminho": "Assets/Scripts/CameraFollow.cs",
+      "bytes": 773,
+      "sha256": "fbdd244061252cf13f9217a8affda11823e60e2541b5aed147cfad5e8bffa851"
+    },
+    {
+      "caminho": "Assets/Scripts/CameraFollow.cs.meta",
+      "bytes": 243,
+      "sha256": "12a0b5c9ed39f55d2a332a503a68208f14f1d5fd23eb46ffd33f1b0aaee5db30"
+    },
+    {
+      "caminho": "Assets/Scripts/ChangeTextColor.cs",
+      "bytes": 3319,
+      "sha256": "4196bf13a05d2bb6e6265c879b7062c26037e9847e8f3ec8bf7bdb2ee613016e"
+    },
+    {
+      "caminho": "Assets/Scripts/ChangeTextColor.cs.meta",
+      "bytes": 243,
+      "sha256": "9f92fbaa35436e8d3d069c05458cdd93eddd51cb20abbf011ca7236bbf763385"
+    },
+    {
+      "caminho": "Assets/Scripts/Cristais.cs",
+      "bytes": 522,
+      "sha256": "a20f032a2f7b81422943ecf5581e173237f0389f59e66db738f89dfec6cdf852"
+    },
+    {
+      "caminho": "Assets/Scripts/Cristais.cs.meta",
+      "bytes": 243,
+      "sha256": "46912505711cc2161b75f0f9b5d206c9270f3f83353d2ef8c770ad500ee7ef50"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemiesWaypoint.cs",
+      "bytes": 1113,
+      "sha256": "3711ee44d905954a8c35eac74a122faadde35ccad63306c2adea6abd0e7fcbd3"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemiesWaypoint.cs.meta",
+      "bytes": 243,
+      "sha256": "1f3fbfd0288c889ca3744e57feba8abb35f304ff7463844ad611e3cd08c834b0"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemyAir.cs",
+      "bytes": 1011,
+      "sha256": "61a18416e35e39f552acbacf96d59e5fd57a0db0e757d98d7d5ef02780eb4ccf"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemyAir.cs.meta",
+      "bytes": 243,
+      "sha256": "4c5451480987881e562e98c063d8f3632749dbc5e34d5308ebea4cfac6c1f100"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemyPatrol.cs",
+      "bytes": 1527,
+      "sha256": "ac4ec49004f4101c0bf03bad71e66d69a5e0932b52f693e0b7b42c9b1d508ba1"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemyPatrol.cs.meta",
+      "bytes": 243,
+      "sha256": "3faba7ae5120bb06db66bbe78456fa206f57927289e0eb87eb1581360d7b2582"
+    },
+    {
+      "caminho": "Assets/Scripts/HUDAndSounds.cs",
+      "bytes": 9426,
+      "sha256": "7241d483cfc1684a7bdfbe95be81ce8ce8ff655dde51f9df2dbfc20d7c661915"
+    },
+    {
+      "caminho": "Assets/Scripts/HUDAndSounds.cs.meta",
+      "bytes": 243,
+      "sha256": "f4c952829d7524d6324dd3d00ad8972a11dfbacaed350d47ed3303d78430d5be"
+    },
+    {
+      "caminho": "Assets/Scripts/Lever.cs",
+      "bytes": 2434,
+      "sha256": "8baaa2a389728777675230e179c45edebe0911a259549e50ae95729b3ccdd1fc"
+    },
+    {
+      "caminho": "Assets/Scripts/Lever.cs.meta",
+      "bytes": 243,
+      "sha256": "a22808b707f60f60d06188c644cd5a8975114efde7abb9603c1c4156864f84e9"
+    },
+    {
+      "caminho": "Assets/Scripts/LoadLevels.cs",
+      "bytes": 2046,
+      "sha256": "68f9a73427e9f4fdd4f323c919fb0a0b612e49dc6427392863679eb123bbbd48"
+    },
+    {
+      "caminho": "Assets/Scripts/LoadLevels.cs.meta",
+      "bytes": 243,
+      "sha256": "c8fc6c013d2fae251ceae7175e99bfe58d1d61d56db64ef1dbd0b8ae4b1199cc"
+    },
+    {
+      "caminho": "Assets/Scripts/MovableObjectsScript.cs",
+      "bytes": 4672,
+      "sha256": "1e442546c65b179a07fcb060721ffffa66aa37d4ef26b0ff8d09711efbc86cdf"
+    },
+    {
+      "caminho": "Assets/Scripts/MovableObjectsScript.cs.meta",
+      "bytes": 243,
+      "sha256": "d22f79f34102dba864a48e46c15b5f2fd11b11a3e937d76ba22f821b9b403b59"
+    },
+    {
+      "caminho": "Assets/Scripts/PlaceHolderPanel.cs",
+      "bytes": 2251,
+      "sha256": "02807e8773498a4df8896d934671b38fe8dc8bdf45534bc8c54db80adddb0410"
+    },
+    {
+      "caminho": "Assets/Scripts/PlaceHolderPanel.cs.meta",
+      "bytes": 243,
+      "sha256": "41e221ea6e588aece1e81901338e91820a81ff0db2e10fe3dd02f9b9fa23b22a"
+    },
+    {
+      "caminho": "Assets/Scripts/PlayerScript.cs",
+      "bytes": 10681,
+      "sha256": "92b9d4a7c0d72c88f1c6a3d277c43dfdab23a4d39f800855cc9c552897f1cc39"
+    },
+    {
+      "caminho": "Assets/Scripts/PlayerScript.cs.meta",
+      "bytes": 243,
+      "sha256": "be2c2994068fd49d7912c35b7dd05a4038d0515c459b877db2f088b1cc72c6cf"
+    },
+    {
+      "caminho": "Assets/Scripts/PlayerTwo.cs",
+      "bytes": 9787,
+      "sha256": "9450e426610be88eb3ce76ea4803f1a30631bd8964f187f031a4c919837c748f"
+    },
+    {
+      "caminho": "Assets/Scripts/PlayerTwo.cs.meta",
+      "bytes": 243,
+      "sha256": "ac6e6fd528e44af35db6ad57a957a380fbc27da58f7f3596a080f117cca7043e"
+    },
+    {
+      "caminho": "Assets/Scripts/RotateSky.cs",
+      "bytes": 285,
+      "sha256": "77860342fc957f732b32959774bd384c8d0c20510811bb923bda54ed3850e585"
+    },
+    {
+      "caminho": "Assets/Scripts/RotateSky.cs.meta",
+      "bytes": 243,
+      "sha256": "f063a0b10c26ec7ae18f9468504f0fa6299b7e7d1917e23fc3d15c8a74035eac"
+    },
+    {
+      "caminho": "Assets/Scripts/SlashScript.cs",
+      "bytes": 346,
+      "sha256": "8222216ffa5e0a373da7eef684021f66bb6375715e8cd27a8115215ef971d4a7"
+    },
+    {
+      "caminho": "Assets/Scripts/SlashScript.cs.meta",
+      "bytes": 243,
+      "sha256": "7ab9c4a87cf54aa4dc38325ed90731bea12d5f123840073e1a0333346e295f0e"
+    },
+    {
+      "caminho": "Assets/Scripts/ThirdSlash.cs",
+      "bytes": 513,
+      "sha256": "96bd012b02b71d6eb068dee94b0f67f34570952aaffc7a26805de286cc3714f4"
+    },
+    {
+      "caminho": "Assets/Scripts/ThirdSlash.cs.meta",
+      "bytes": 243,
+      "sha256": "8fef96b26a613c43be8dadac5970daafafdccc7907499778eab30f6ab54ad5d9"
+    },
+    {
+      "caminho": "Assets/Scripts/TutorialList.cs",
+      "bytes": 235,
+      "sha256": "305e7918558cd5f73eba9c514eb601fd5ebe2df34f28025eb84c39bb62f58349"
+    },
+    {
+      "caminho": "Assets/Scripts/TutorialList.cs.meta",
+      "bytes": 243,
+      "sha256": "d68c2b98de048b1a228b750cb5324001e01b3fb4476cc318511ad047b1e785ac"
+    },
+    {
+      "caminho": "Assets/Scripts/TutorialMethod.cs",
+      "bytes": 1788,
+      "sha256": "6da33f7ad9e237ae6d196cb4f207dbf37cc16a2011ba7558b329dd7138356aa2"
+    },
+    {
+      "caminho": "Assets/Scripts/TutorialMethod.cs.meta",
+      "bytes": 243,
+      "sha256": "65dd26b983215bc71ab3b04eb5c1b7141e9ace51c8e32199149fdf23f0d64de6"
+    },
+    {
+      "caminho": "Assets/Scripts/WaypointsAirPhase.cs",
+      "bytes": 1018,
+      "sha256": "4692885b5c2afed9b7c3760a6bb0b0602ba202de2a62393188f72875a8b76b7d"
+    },
+    {
+      "caminho": "Assets/Scripts/WaypointsAirPhase.cs.meta",
+      "bytes": 243,
+      "sha256": "f93b39aa6ff5c3a7234984f253631ff9669380917674e8dbc39b9a99c930a323"
+    },
+    {
+      "caminho": "Assets/Scripts/plataforma.cs",
+      "bytes": 720,
+      "sha256": "2a22bd54e70e1c09f6ae9b5de91bd6dcb70730820e52a073f99297b04a814361"
+    },
+    {
+      "caminho": "Assets/Scripts/plataforma.cs.meta",
+      "bytes": 243,
+      "sha256": "67675813fb15c078ff85cf9b310bc4c1d8b9fae281f85993b94211269ce04ae1"
+    },
+    {
+      "caminho": "Assets/Scripts/portalR.cs",
+      "bytes": 381,
+      "sha256": "a87569adc73419249e8beb32e3bdb9c4e98f4e9c7181f3ec74f1608e38773e56"
+    },
+    {
+      "caminho": "Assets/Scripts/portalR.cs.meta",
+      "bytes": 243,
+      "sha256": "ad50fa21d22383532ab93f295911c480acaaa92e49306b8191ceb151f4db0026"
+    },
+    {
+      "caminho": "Assets/Scripts/portaldentro.cs",
+      "bytes": 389,
+      "sha256": "c55820ee97ee4f78a28b4a4f6aca1baa485aa39836d4327d70a75614016ffd6e"
+    },
+    {
+      "caminho": "Assets/Scripts/portaldentro.cs.meta",
+      "bytes": 243,
+      "sha256": "34e21bf9894b8423462f66d8b1966854f49c75ab6a7014233cbf5e5c1afdd76c"
+    },
+    {
+      "caminho": "Packages/manifest.json",
+      "bytes": 1765,
+      "sha256": "1f466240de3df6f54416336bac9e45f60e2fd8ae2b106fa662db2c33d379101c"
+    },
+    {
+      "caminho": "Packages/packages-lock.json",
+      "bytes": 9877,
+      "sha256": "4dae346a4d9d35554ee474413c51abfede2a3e2fdfeec1dcb155f787e8b0a907"
+    },
+    {
+      "caminho": "ProjectSettings/AudioManager.asset",
+      "bytes": 416,
+      "sha256": "f2ed914f70919b6434c647bd820850be731b408f0f0c31e3bf7f98c8cafb617f"
+    },
+    {
+      "caminho": "ProjectSettings/ClusterInputManager.asset",
+      "bytes": 114,
+      "sha256": "40e65dd214bf254955d2c8829ca8ce2130fd3510485560ce012e9a1ddd93e623"
+    },
+    {
+      "caminho": "ProjectSettings/DynamicsManager.asset",
+      "bytes": 1287,
+      "sha256": "991d2c4845c571fff7adcdbb02a168975a828edde449f311ced518076121bd7e"
+    },
+    {
+      "caminho": "ProjectSettings/EditorBuildSettings.asset",
+      "bytes": 654,
+      "sha256": "2c398e2714100b08a8492d0e497cb0a5685882c8c70bf347c616a6bfff1ddcbf"
+    },
+    {
+      "caminho": "ProjectSettings/EditorSettings.asset",
+      "bytes": 969,
+      "sha256": "400d69c0e03fbd789b0fae6f6b04c3266953df48b57e91aca4d93e8e9b0e29c2"
+    },
+    {
+      "caminho": "ProjectSettings/GraphicsSettings.asset",
+      "bytes": 2230,
+      "sha256": "442894020eebc9cfeddc7b95f3e637fdcf033513a507e0fbe231a8e0e4f7d60b"
+    },
+    {
+      "caminho": "ProjectSettings/InputManager.asset",
+      "bytes": 5793,
+      "sha256": "1fb1c30f8a1615cf9a4220be6d18a33eccd3a09cc4cd0a3c7cd0a38a7c083134"
+    },
+    {
+      "caminho": "ProjectSettings/NavMeshAreas.asset",
+      "bytes": 1308,
+      "sha256": "80106cfa7e6181a1928b142c075f3e510d527441e3d79bc83590e4ac91e7cd66"
+    },
+    {
+      "caminho": "ProjectSettings/PackageManagerSettings.asset",
+      "bytes": 1053,
+      "sha256": "acebb5f9cb94afc07793ec10a124fa94b61ab330ba214a5b6ea47ce41ccd417d"
+    },
+    {
+      "caminho": "ProjectSettings/Physics2DSettings.asset",
+      "bytes": 2028,
+      "sha256": "d57a0fe55659c33879e8b70bc01c5ea9cdf082069dab649905c6c5138531e6eb"
+    },
+    {
+      "caminho": "ProjectSettings/PresetManager.asset",
+      "bytes": 146,
+      "sha256": "29c125923fe6e29f90190d4fce1c82d660e7051546e2c9d02908d18c9cf2436c"
+    },
+    {
+      "caminho": "ProjectSettings/ProjectSettings.asset",
+      "bytes": 19529,
+      "sha256": "66a4fea8d24d8776ac7ca2678144d7bdb6724c71405adc556b44944785441d3d"
+    },
+    {
+      "caminho": "ProjectSettings/ProjectVersion.txt",
+      "bytes": 85,
+      "sha256": "823c4916aac401765564f39ac2a4b2b4f6068a75eb5fec757abf730f6cb3bf12"
+    },
+    {
+      "caminho": "ProjectSettings/QualitySettings.asset",
+      "bytes": 6451,
+      "sha256": "a3ca8808f262670070b0f15411e87ab40d25a7bafda8a36d6f313b577d04b80f"
+    },
+    {
+      "caminho": "ProjectSettings/TagManager.asset",
+      "bytes": 664,
+      "sha256": "07f1615e8533d52021b354b79ed1f58df624bc5b3bf2102d06603b8c2530d740"
+    },
+    {
+      "caminho": "ProjectSettings/TimeManager.asset",
+      "bytes": 202,
+      "sha256": "1a83e54adbbda7c9f4851103a0c6ab7f6448a3343d4ea5b7620452fa08416ecd"
+    },
+    {
+      "caminho": "ProjectSettings/UnityConnectSettings.asset",
+      "bytes": 901,
+      "sha256": "e9c5e12ed98a58993b8b19b8e93e4e1cf5b954f1243c588ae118ad259614db9b"
+    },
+    {
+      "caminho": "ProjectSettings/VFXManager.asset",
+      "bytes": 308,
+      "sha256": "f066c6483919961332415ee64204f74fe52f38c02e82892eb02b7a5b2e381f0e"
+    },
+    {
+      "caminho": "ProjectSettings/VersionControlSettings.asset",
+      "bytes": 188,
+      "sha256": "e7bda45bf7a394745fee1316e6c71fa676004d591ad1f3aa247fd3e4ceb86071"
+    },
+    {
+      "caminho": "ProjectSettings/XRSettings.asset",
+      "bytes": 158,
+      "sha256": "edd2beb4a2e388312b4b7da241aa51070434005d82c59363f1237dd2e567585f"
+    }
+  ]
+}
