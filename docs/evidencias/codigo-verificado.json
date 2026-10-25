@@ -155,5 +155,12 @@
       "caminho": "Assets/Scripts/portaldentro.cs",
       "sha256": "c55820ee97ee4f78a28b4a4f6aca1baa485aa39836d4327d70a75614016ffd6e"
     }
-  ]
+  ],
+  "commit_codigo_validado": "a6e072ddc617f1bee0cb248fe7cb3d2ee22e2ac4",
+  "ci_windows": {
+    "run_id": 40245039208,
+    "resultado": "success",
+    "regressoes_core": 25,
+    "integracao_preparador": 6
+  }
 }

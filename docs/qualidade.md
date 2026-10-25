@@ -16,7 +16,7 @@ O instalador portátil do SDK reportou erro ao aplicar proprietário de arquivos
 
 O workflow `Qualidade das correções` executa as 25 verificações C# e seis testes de integração do preparador no Windows. A integração utiliza um ZIP fictício montado a partir dos 79 arquivos originais e cinco cenas de teste sem jogabilidade.
 
-A [execução 40238785280](https://github.com/Mateus1804/Nox/actions/runs/40238785280), sobre o commit `a41ff629197dae6de91fca9fc40da357ec0980bc`, aprovou as 25 verificações C# e os seis testes de integração no Windows, sem testes pulados. O trabalho de CI concluiu com sucesso. A execução não inclui Unity Editor ou testes de jogabilidade.
+A [execução 40245039208](https://github.com/Mateus1804/Nox/actions/runs/40245039208), sobre o commit `a6e072ddc617f1bee0cb248fe7cb3d2ee22e2ac4`, aprovou as 25 verificações C# e os seis testes de integração no Windows, sem testes pulados. O trabalho de CI concluiu com sucesso. A execução não inclui Unity Editor ou testes de jogabilidade.
 
 ## Tentativa de execução do Unity
 
