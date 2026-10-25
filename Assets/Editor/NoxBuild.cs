@@ -34,7 +34,7 @@ public static class NoxBuild
                 {
                     foreach (Button button in root.GetComponentsInChildren<Button>(true)) RepairButton(button);
                     foreach (EventTrigger trigger in root.GetComponentsInChildren<EventTrigger>(true))
-                        foreach (EventTrigger.Entry entry in trigger.triggers) RemoveMissingCallbacks(entry.callback, trigger.GetComponentInParent<Button>());
+                        foreach (EventTrigger.Entry entry in trigger.triggers) RemoveMissingCallbacks(entry.callback, FindButtonIncludingInactive(trigger.transform));
                     foreach (TutorialMethod tutorial in root.GetComponentsInChildren<TutorialMethod>(true))
                     {
                         Match number = Regex.Match(tutorial.name, @"Collider(\d+)$");
@@ -54,6 +54,18 @@ public static class NoxBuild
         {
             if (!Application.isBatchMode) EditorSceneManager.RestoreSceneManagerSetup(previous);
         }
+    }
+
+    private static Button FindButtonIncludingInactive(Transform node)
+    {
+        // A sobrecarga GetComponentInParent<T>(bool) não existe no editor original.
+        while (node != null)
+        {
+            Button button = node.GetComponent<Button>();
+            if (button != null) return button;
+            node = node.parent;
+        }
+        return null;
     }
 
     private static void RepairButton(Button button)

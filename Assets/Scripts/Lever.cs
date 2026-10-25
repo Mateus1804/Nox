@@ -18,7 +18,11 @@ public class Lever : MonoBehaviour
     private void Awake()
     {
         indicator = GetComponent<Renderer>();
-        if (indicator != null) indicatorMaterial = indicator.material;
+        if (indicator != null)
+        {
+            indicatorMaterial = indicator.material;
+            indicatorMaterial.color = Color.red;
+        }
         if (door == null || waypoints == null || waypoints.Length < 2 || waypoints[0] == null || waypoints[1] == null)
         {
             Debug.LogError("A alavanca exige uma porta e dois pontos válidos.", this);

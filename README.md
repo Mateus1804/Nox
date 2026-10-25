@@ -4,7 +4,7 @@ Jogo acadêmico desenvolvido com Unity e C# durante o curso Técnico em Programa
 
 ## Estado atual
 
-Esta branch contém uma **versão candidata de correções**, ainda sem validação de uma nova build no Unity. A compilação C# dos 32 scripts de execução passou usando as bibliotecas gerenciadas da build original; as 25 verificações das regras também passaram. Esses resultados não substituem a importação do projeto, a compilação do código Editor ou os testes de jogabilidade.
+Esta branch contém uma **versão candidata de correções**, ainda sem validação de uma nova build no Unity. A compilação C# dos 32 scripts de execução passou usando as bibliotecas gerenciadas da build original; as 25 verificações das regras também passaram. O código de preparação Editor também passou pela compilação isolada contra as bibliotecas de 2021.1.28f1. Esses resultados não substituem a importação e compilação pelo próprio Unity nem os testes de jogabilidade.
 
 Cenas e recursos visuais/sonoros continuam no `Nox_Project.zip` original. O repositório público não redistribui esses materiais. O preparador combina o arquivo local original com as correções em uma pasta nova, sem alterar o ZIP ou sobrescrever uma pasta existente.
 

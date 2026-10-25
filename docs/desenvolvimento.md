@@ -28,7 +28,7 @@ Após abrir a cópia no Unity, o menu **Nox → Preparar cenas recuperadas** apl
 
 Os scripts e os `.meta` corrigidos são sobrepostos apenas na nova pasta. O original permanece no ZIP. Hash incompatível indica outra referência: o processo interrompe em vez de aplicar correções sobre um projeto diferente silenciosamente.
 
-A preparação corrige os vínculos antigos conhecidos sem recriar cenas ou inventar fases de água e terra. Mudanças em métodos/campos serializados devem preservar nomes ou possuir migração explícita. O código de Editor só é compilado dentro do Unity.
+A preparação corrige os vínculos antigos conhecidos sem recriar cenas ou inventar fases de água e terra. Mudanças em métodos/campos serializados devem preservar nomes ou possuir migração explícita. O código de Editor depende das bibliotecas de Editor e não integra o executável do jogo. A importação e a execução dessas ações exigem o Unity.
 
 ## Testes independentes
 

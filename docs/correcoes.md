@@ -39,9 +39,9 @@ Os scripts alterados foram normalizados para UTF-8. Os arquivos de metadata orig
 
 ## Limitações e itens não concluídos
 
-Esta versão não foi declarada pronta para distribuição. Falta executar o editor completo, compilar o código de Editor, aplicar a preparação nas cenas reais, gerar a build e testar o fluxo completo no Windows.
+Esta versão não foi declarada pronta para distribuição. Falta executar o editor completo, conferir a integração do código de Editor, aplicar a preparação nas cenas reais, gerar a build e testar o fluxo completo no Windows.
 
-O prefab legado Enemy contém GUIDs de scripts não resolvidos pelo catálogo dos 28 componentes. Não foi removido ou reassociado por suposição. A confirmação de Missing Script depende do catálogo completo e do Inspector. Sons de cristais, licenças, referências de animação e gráficos de Visual Scripting também precisam da conferência completa; a emissão compartilhada de áudio não foi alterada sem evidência de falha.
+O prefab legado Enemy contém GUIDs de scripts não resolvidos pelo catálogo dos 28 componentes. Não foi removido ou reassociado por suposição. A conferência adicional do catálogo completo de Assets não encontrou esses dois GUIDs, nem DLLs em Assets ou referências serializadas ao prefab legado. A apresentação como Missing Script e o descarte definitivo ainda exigem a conferência no Inspector. Sons de cristais, licenças, referências de animação e gráficos de Visual Scripting também precisam da conferência completa; a emissão compartilhada de áudio não foi alterada sem evidência de falha.
 
 O PlayerTwo ainda conserva uma implementação paralela para preservar as referências e diferenças originais. A consolidação estrutural poderá ocorrer depois da referência jogável. Não houve migração geral para Unity 6, conversão de pipeline gráfico, calibração de NavMesh ou teste de desempenho.
 
