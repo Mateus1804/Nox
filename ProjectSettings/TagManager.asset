@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Enemy
+  - Turtle
+  - Trap
+  - BulletTurret
+  - Bullet
+  - Box
+  - InRange
+  - Impulse
+  - Limbo
+  - HealthBar
+  - Mira
+  - Eagle
+  - platforms
+  - Heal
+  - BossHeaalthBar
+  - Cristais
+  - Boss
+  - Fogo
+  - AreaWin
+  - Slash
+  - LifeCamera
+  - Pushing
+  - Menus
+  - GameADM
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - WhatIsGround
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
