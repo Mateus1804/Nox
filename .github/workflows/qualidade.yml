@@ -1,0 +1,22 @@
+name: Qualidade das correções
+on:
+  push:
+    branches: [main, 'fix/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  regras-e-preparacao:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      - name: Regressão das regras em C#
+        run: dotnet run --project Tests/Core/CoreTests.csproj --configuration Release
+      - name: Recuperação em pasta isolada
+        run: python Tests/test_preparation.py

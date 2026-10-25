@@ -14,15 +14,16 @@ public class CameraFollow : MonoBehaviour
     }
 
 
-    void FixedUpdate()
+    void LateUpdate()
     {
-        // PosiÁ„o deesejada e a prÛpria posiÁ„o + um ajuste(offset)
+        // Posi√ß√£o deesejada e a pr√≥pria posi√ß√£o + um ajuste(offset)
+        if (target == null) return;
         Vector3 desiredPosition = target.transform.position + offset;
 
-        // Faz uma transiÁ„o suave entre a posiÁ„o inicial e a posiÁ„o final
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, speed);
+        // Faz uma transi√ß√£o suave entre a posi√ß√£o inicial e a posi√ß√£o final
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, 1f - Mathf.Exp(-Mathf.Max(0, speed) * 50f * Time.deltaTime));
 
-        // Atualiza a posiÁ„o da c‚merda
+        // Atualiza a posi√ß√£o da c√¢merda
         transform.position = smoothedPosition;
 
     }

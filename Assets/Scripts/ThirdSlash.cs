@@ -8,14 +8,14 @@ public class ThirdSlash : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Destroy(gameObject, 1.5f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        speed = Mathf.Lerp(speed, 4, 1);
+        speed = 4f;
         this.transform.position = transform.position - transform.right * speed * Time.deltaTime;
-        Destroy(this.gameObject, 1.5f);
+
     }
 }

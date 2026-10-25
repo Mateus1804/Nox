@@ -16,12 +16,15 @@ public class WaypointsAirPhase : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!NoxSession.CanPlay || waypoints == null || waypoints.Length == 0) return;
+        if (!NoxRules.IsValidIndex(currentWaypointIndex, waypoints.Length)) currentWaypointIndex = 0;
+        if (waypoints[currentWaypointIndex] == null) return;
 
         distance = Vector3.Distance(transform.position, waypoints[currentWaypointIndex].transform.position);
 

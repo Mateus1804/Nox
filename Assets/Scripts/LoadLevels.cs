@@ -6,14 +6,14 @@ using UnityEngine.SceneManagement;
 public class LoadLevels : MonoBehaviour
 {
     /*
-    Esse È o script que desbloqueia a prÛxima fase no menu, apÛs o Player concluir a fase anterior. Para ele funciona vocÍ precisa:
-    ï Associar esse script ao GameADM
-    ï Associar
+    Esse √© o script que desbloqueia a pr√≥xima fase no menu, ap√≥s o Player concluir a fase anterior. Para ele funciona voc√™ precisa:
+    ‚Ä¢ Associar esse script ao GameADM
+    ‚Ä¢ Associar
 
 
-    */ 
-    
-    
+    */
+
+
     public static LoadLevels Instance;
 
     #region Awake()
@@ -35,44 +35,44 @@ public class LoadLevels : MonoBehaviour
     public int acessLevelWater = 0;
     public int acessLevelLand = 0;
 
-    //Vari·vel que armazena o bot„o da fase de ar
+    //Vari√°vel que armazena o bot√£o da fase de ar
     public GameObject buttonAirLevel;
 
-    //Vari·vel que armazena o bot„o da fase de fogo
+    //Vari√°vel que armazena o bot√£o da fase de fogo
     public GameObject buttonFireLevel;
 
-    //Vari·vel que armazena o bot„o da fase de ·gua
+    //Vari√°vel que armazena o bot√£o da fase de √°gua
     public GameObject buttonWaterLevel;
 
-    //Vari·vel que armazena o bot„o da fase de terra
+    //Vari√°vel que armazena o bot√£o da fase de terra
     public GameObject buttonLandLevel;
 
 
     public void FireLevelUnlocked()
     {
-        if (acessLevelFire == 1)
+        if (acessLevelFire > 0)
         {
-            buttonFireLevel.SetActive(true);
+            if (buttonFireLevel != null) buttonFireLevel.SetActive(true);
             DontDestroyOnLoad(this.gameObject);
         }
     }
     public void WaterLevelUnlocked()
     {
-        if (acessLevelWater == 1)
+        if (acessLevelWater > 0)
         {
-            buttonWaterLevel.SetActive(true);
+            if (buttonWaterLevel != null) buttonWaterLevel.SetActive(true);
             DontDestroyOnLoad(this.gameObject);
         }
-        
+
     }
     public void LandLevelUnlocked()
     {
-        if (acessLevelLand == 1)
+        if (acessLevelLand > 0)
         {
-            buttonLandLevel.SetActive(true);
+            if (buttonLandLevel != null) buttonLandLevel.SetActive(true);
             DontDestroyOnLoad(this.gameObject);
         }
-       
+
     }
 
     void Start()
@@ -80,7 +80,7 @@ public class LoadLevels : MonoBehaviour
 
     }
 
-    // Declaramos os metÛdos abaixo, para que a condiÁ„o de acesso as fases seja checada a todo momento.
+    // Declaramos os met√≥dos abaixo, para que a condi√ß√£o de acesso as fases seja checada a todo momento.
     void Update()
     {
         FireLevelUnlocked();
@@ -88,4 +88,14 @@ public class LoadLevels : MonoBehaviour
         LandLevelUnlocked();
     }
 
+
+    public void UnlockFire() { acessLevelFire = 1; FireLevelUnlocked(); }
+    public void UnlockWater() { acessLevelWater = 1; WaterLevelUnlocked(); }
+    public void UnlockLand() { acessLevelLand = 1; LandLevelUnlocked(); }
+
+    // Estas fases n√£o existem na lista original de build; nunca carregar um √≠ndice inventado.
+    public void ButtonLevelWater() { Debug.Log("A fase de √°gua ainda n√£o faz parte desta vers√£o."); }
+    public void ButtonLevelLand() { Debug.Log("A fase de terra ainda n√£o faz parte desta vers√£o."); }
+
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 }

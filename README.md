@@ -1,32 +1,48 @@
 # Nox
 
-Projeto de jogo desenvolvido durante o curso Técnico em Programação de Jogos Digitais do SENAI, com Unity e C#.
+Jogo acadêmico desenvolvido com Unity e C# durante o curso Técnico em Programação de Jogos Digitais do SENAI. A recuperação atual preserva as referências e os recursos originais, corrigindo problemas de estado, vida, interação e interface.
 
-## Estado do repositório
+## Estado atual
 
-A recuperação do projeto original está em andamento. Esta importação reúne **28 scripts**, seus arquivos `.meta`, a configuração de pacotes e as configurações do Unity. Os arquivos importados foram preservados sem alterações de lógica, nomes ou GUIDs.
+Esta branch contém uma **versão candidata de correções**, ainda sem validação de uma nova build no Unity. A compilação C# dos 32 scripts de execução passou usando as bibliotecas gerenciadas da build original; as 25 verificações das regras também passaram. Esses resultados não substituem a importação do projeto, a compilação do código Editor ou os testes de jogabilidade.
 
-**Este repositório ainda não contém uma cópia jogável completa.** Cenas, prefabs, imagens, modelos, materiais, áudio e demais recursos continuam no arquivo original e não acompanham esta importação. Abrir apenas esta cópia no editor não reproduz o jogo original.
+Cenas e recursos visuais/sonoros continuam no `Nox_Project.zip` original. O repositório público não redistribui esses materiais. O preparador combina o arquivo local original com as correções em uma pasta nova, sem alterar o ZIP ou sobrescrever uma pasta existente.
 
-O projeto original registra **Unity 2021.1.28f1**, revisão `f3f9dc10f3dd`, com TextMesh Pro 3.0.6 e Unity Test Framework 1.1.33. Não houve atualização do editor ou dos pacotes.
+## Preparação no Windows
 
-## Organização
+O ponto de entrada é **`Preparar-Nox.cmd`**. Ele solicita o ZIP original e o executável do editor Unity instalado. A recuperação confere os 79 arquivos de referência, extrai somente Assets, Packages e ProjectSettings, aplica os scripts e solicita a preparação das cenas e a build Windows. Em caso de sucesso, o executável fica em `Builds/Windows/Nox.exe` dentro da nova pasta.
 
-- `Assets/Scripts/`: movimentação, combate, inimigos, câmera, interface, tutoriais, portais e progressão entre fases.
-- `Packages/`: dependências e respectivas versões originais.
-- `ProjectSettings/`: entradas, física, tags, cenas de build e demais configurações originais.
-- `docs/importacao.json`: relação dos 79 arquivos recuperados, tamanhos e hashes SHA-256.
-- `docs/desenvolvimento.md`: recuperação local e preparação do envio completo.
-- `docs/qualidade.md`: conferências realizadas, limitações e roteiro de testes.
+O processo depende de um editor Unity instalado e licenciado, com suporte a build Windows. O original registra **2021.1.28f1**; **2021.3 LTS** é a primeira alternativa de recuperação. A compatibilidade com Unity 6 ainda não foi validada. Uma atualização ocorre somente na cópia preparada.
 
-## Recuperação e próximos passos
+Os procedimentos e os limites estão em [Desenvolvimento](docs/desenvolvimento.md). A preparação não significa que o jogo tenha sido testado ou que uma build já esteja disponível para download.
 
-O primeiro objetivo é reproduzir a versão original no editor correspondente e validar sua build. A recuperação dos recursos deve preservar os arquivos `.meta`, pois suas referências ligam scripts, cenas, materiais e prefabs.
+## Correções
 
-O arquivo original também contém packs de terceiros, exemplos de bibliotecas e músicas. Sua presença em um projeto acadêmico não foi tratada como comprovação de autorização para redistribuir os arquivos-fonte. As licenças desses recursos e os créditos da equipe precisam ser conferidos antes de ampliar a importação pública.
+- Vida e barra derivadas da mesma regra, com limites de cura e dano.
+- Morte dos chefes e conclusão executadas uma única vez.
+- Estados separados para menu, partida, pausa, vitória e derrota.
+- Navegação com limite de cenas e retorno definido após a última fase.
+- Movimentação pelo Rigidbody e salto solicitado por comando, com altura configurável.
+- Interação com a caixa mais próxima em alcance, separando objeto candidato e segurado.
+- Identidade do jogador preservada ao empurrar; dano de torre tratado pelo controlador principal.
+- Tutoriais com índices fixos e validação das referências.
+- Alavanca com conjunto de ocupantes, sem fechar ao sair apenas uma caixa.
+- Silêncio de áudio respeitado nos quadros seguintes.
+- Preparação de vínculos de botões antigos e desativação dos controles de fases/dificuldade não implementados.
 
-Depois de estabelecer uma versão reproduzível, o planejamento inclui documentar controles e cenas, conferir o fluxo completo do jogo, introduzir testes para regras isoláveis e avaliar uma demonstração para Windows ou navegador. Nenhuma dessas validações foi declarada concluída nesta etapa.
+As mudanças intencionais e os pontos ainda pendentes constam em [Correções e validação](docs/correcoes.md).
 
-## Autoria e recursos externos
+## Estrutura
 
-O desenvolvimento ocorreu em contexto acadêmico. Os créditos individuais e as contribuições da equipe permanecem em conferência com a documentação original. Não foi aplicada uma licença geral que conceda direitos sobre código ou recursos de terceiros.
+- `Assets/Scripts/`: componentes originais e regras de sessão, vida e navegação.
+- `Assets/Editor/NoxBuild.cs`: preparação das cenas e geração Windows no editor.
+- `Packages/` e `ProjectSettings/`: referência de dependências e configuração original.
+- `Tests/`: regressões C# e integração do preparador com arquivos fictícios.
+- `tools/Preparar-Nox.ps1`: recuperação em pasta isolada e chamada do Unity.
+- `docs/importacao.json`: hashes dos 79 arquivos originais anteriores às correções, usados para identificar o ZIP de referência.
+
+## Qualidade e limites
+
+Os resultados efetivamente executados estão em [Qualidade](docs/qualidade.md). O CI verifica regras e o preparo do projeto com um ZIP sintético, sem redistribuir assets ou executar Unity. Não comprova renderização, física, áudio ou funcionamento de uma build.
+
+A autoria e as contribuições individuais permanecem em conferência com a documentação acadêmica. Licenças dos recursos externos devem ser preservadas. Nenhuma licença geral foi aplicada sobre materiais de terceiros.

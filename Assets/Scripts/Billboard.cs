@@ -7,6 +7,7 @@ public class Billboard : MonoBehaviour
     public Transform cam;
     void Update()
     {
+        if (cam == null) return;
         transform.LookAt(transform.position + cam.forward);
     }
 }

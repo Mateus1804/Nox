@@ -19,22 +19,28 @@ public class EnemyPatrol : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("SortPosition", 0, 3);
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+        if (player == null) player = GameObject.FindGameObjectWithTag("Player");
+        nextMove = transform.position;
+        InvokeRepeating(nameof(SortPosition), 0, 3);
         anim = GetComponent<Animator> ();
     }
 
     void Update()
     {
-        yPlayer = player.GetComponent<Transform>().position.y;
+        if (!NoxSession.CanPlay || player == null || agent == null || !agent.isOnNavMesh) return;
+        yPlayer = player.transform.position.y;
         yEnemy = transform.position.y;
 
         currentDistance = Vector3.Distance(transform.position, player.transform.position);
         distanceToNextMove = Vector3.Distance(transform.position, nextMove);
+        Movimentation(yEnemy, yPlayer, agent, nextMove, currentDistance, followDistance, player);
     }
 
     public void SortPosition()
     {
-        nextMove = new Vector3(Random.Range(-12, 12), 0, Random.Range(10, -13));
+        Vector3 sample = transform.position + new Vector3(Random.Range(-12f, 12f), 0, Random.Range(-13f, 10f));
+        if (NavMesh.SamplePosition(sample, out NavMeshHit hit, 5f, NavMesh.AllAreas)) nextMove = hit.position;
     }
 
     public void Movimentation(float enemyYY, float playerYY, NavMeshAgent agentZ, Vector3 newMoviment, float distanciaAtual, float distanciaPersegue, GameObject player)

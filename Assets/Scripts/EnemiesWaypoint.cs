@@ -15,8 +15,11 @@ public class EnemiesWaypoint : MonoBehaviour
 
     void Update()
     {
+        if (!NoxSession.CanPlay || waypoints == null || waypoints.Length == 0) return;
+        if (!NoxRules.IsValidIndex(currentWaypointIndex, waypoints.Length)) currentWaypointIndex = 0;
+        if (waypoints[currentWaypointIndex] == null) return;
         #region Turtle
-        if (this.turtle.hpTurtle > 0)
+        if (turtle != null && this.turtle.hpTurtle > 0)
         {
             distance = Vector3.Distance(transform.position, waypoints[currentWaypointIndex].transform.position);
 

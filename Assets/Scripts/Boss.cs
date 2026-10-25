@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Boss : MonoBehaviour
 {
+    private bool deathHandled;
+    private float maximumHealth;
     public GameObject player;
     public NavMeshAgent agent;
 
@@ -22,23 +24,13 @@ public class Boss : MonoBehaviour
 
     public void Morte()
     {
-        if (hpBoss <= 0)
-        {
-            PlaceHolderPanel.PHP.PanelWinOrLose("Stage Completed");
-            PlaceHolderPanel.PHP.buttonNextLevel.SetActive(false);
-            LoadLevels.Instance.acessLevelWater += 1;
-          //  HUDAndSounds.Singleton.InGameSound2Stop();
-            Destroy(gameObject, 1.5f);
-        }
-
-        if (PlaceHolderPanel.PHP.placeHolderPanel.activeSelf == true || Time.timeScale == 0)
-        {
-            CanvasLifeBoss.SetActive(false);
-        }
-        else
-        {
-            CanvasLifeBoss.SetActive(true);
-        }
+        if (deathHandled || hpBoss > 0) return;
+        deathHandled = true;
+        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+        if (areaAttack != null) areaAttack.enabled = false;
+        if (LoadLevels.Instance != null) LoadLevels.Instance.UnlockWater();
+        if (PlaceHolderPanel.PHP != null) PlaceHolderPanel.PHP.PanelWinOrLose("Stage Completed");
+        Destroy(gameObject);
     }
 
     public void Persegue()
@@ -52,7 +44,7 @@ public class Boss : MonoBehaviour
         if (!attack)
         {
             attack = true;
-            areaAttack.enabled = true;
+            if (areaAttack != null) areaAttack.enabled = true;
         }
 
     }
@@ -72,10 +64,9 @@ public class Boss : MonoBehaviour
 
     public void LifeCountBoss(float damage, float hp_amount)
     {
-
-        hpBoss -= damage;
-
-        BossHealthBar.fillAmount -= hp_amount;
+        if (deathHandled || !NoxSession.CanPlay || damage <= 0) return;
+        hpBoss = NoxRules.AdjustHealth(hpBoss, -damage, maximumHealth);
+        if (BossHealthBar != null) BossHealthBar.fillAmount = NoxRules.HealthRatio(hpBoss, maximumHealth);
     }
 
     public void OnTriggerEnter(Collider other)
@@ -89,18 +80,22 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
+        maximumHealth = Mathf.Max(1, hpBoss);
         player = GameObject.FindGameObjectWithTag("Player");
 
         agent = GetComponent<NavMeshAgent>();
-        BossHealthBar = BossHealthBarObj.GetComponent<Image>();
+        if (BossHealthBarObj != null) BossHealthBar = BossHealthBarObj.GetComponent<Image>();
 
     }
 
     void Update()
     {
+        if (CanvasLifeBoss != null) CanvasLifeBoss.SetActive(!deathHandled && NoxSession.CanPlay);
+        if (deathHandled) return;
         Morte();
+        if (deathHandled || !NoxSession.CanPlay || player == null || agent == null || !agent.isOnNavMesh) return;
 
-        #region Movimentação e Ataque
+        #region MovimentaÃ§Ã£o e Ataque
         transform.LookAt(player.transform.position);
         currentDistance = Vector3.Distance(transform.position, player.transform.position);
 
@@ -113,12 +108,14 @@ public class Boss : MonoBehaviour
 
         {
             attack = false;
-            areaAttack.enabled = false;
+            if (areaAttack != null) areaAttack.enabled = false;
             agent.SetDestination(player.transform.position);
         }
 
         else
         {
+            attack = false;
+            if (areaAttack != null) areaAttack.enabled = false;
             agent.SetDestination(this.transform.position);
         }
         #endregion

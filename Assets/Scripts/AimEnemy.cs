@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class AimEnemy : MonoBehaviour
 {
-    #region Variaveis > Balas   
-    //Declarando a vari·vel das balas
+    #region Variaveis > Balas
+    //Declarando a vari√°vel das balas
     public GameObject bullet;
     public GameObject mira;
     #endregion
 
     #region Variaveis > FireRate
-    //Declarando as vari·veis do fire rate
+    //Declarando as vari√°veis do fire rate
     public float startTime;
     public float currentTime;
     public bool shootTime;
@@ -27,7 +27,7 @@ public class AimEnemy : MonoBehaviour
             startTime = Time.time;
             shootTime = false;
         }
-     
+
 
         if (!shootTime)
         {
@@ -46,6 +46,6 @@ public class AimEnemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Shoot();
+        if (NoxSession.CanPlay && bullet != null && mira != null) Shoot();
     }
 }

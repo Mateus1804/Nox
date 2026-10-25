@@ -9,15 +9,19 @@ using UnityEngine.UI;
 public class HUDAndSounds : MonoBehaviour
 {
     public static HUDAndSounds Singleton;
+    private bool isMuted;
+    private AudioSource[] controlledSources;
 
     public void Awake()
     {
         if (Singleton != null)
         {
             Destroy(gameObject);
+            return;
         }
         else
         {
+            Singleton = this;
             DontDestroyOnLoad(gameObject);
         }
     }
@@ -27,7 +31,7 @@ public class HUDAndSounds : MonoBehaviour
     public GameObject main_menu;
     public GameObject levels_menu;
 
-    // Vari·veis dos paineis
+    // Vari√°veis dos paineis
     public GameObject options_panel;
     public GameObject controls_panel;
     public GameObject audio_panel;
@@ -48,7 +52,7 @@ public class HUDAndSounds : MonoBehaviour
     public AudioSource in_GameMusic;
     public AudioSource in_GameMusic2;
 
-    // Variaveis de ·udio
+    // Variaveis de √°udio
     public Slider volume_slider;
 
     #region Metodos Paineis
@@ -166,70 +170,49 @@ public class HUDAndSounds : MonoBehaviour
     #region Pause Menu - Metodos
     public void Continue_Button()
     {
-        if (pause_panel.activeSelf)
-        {
-            pause_panel.SetActive(false);
+        if (NoxSession.State != NoxGameState.Paused) return;
+        PauseAndContinue();
+        if (PlayerScript.PT != null && PlayerScript.PT.healthBar_Canvas != null)
             PlayerScript.PT.healthBar_Canvas.SetActive(true);
-            Click();
-            Time.timeScale = 1;
-        }
-
-        else
-        {
-            pause_panel.SetActive(true);
-            Back();
-        }
+        Click();
     }
 
     public void QuitThePauseMenu_Button()
     {
-        Time.timeScale = 0;
-        SceneManager.LoadScene(0);
-        Click();
-        main_menu.SetActive(true);
-        levels_menu.SetActive(true);
         pause_panel.SetActive(false);
+        NoxSession.LoadScene(0);
     }
 
     public void PauseAndContinue()
     {
-        if (Time.timeScale == 0)
+        if (NoxSession.State == NoxGameState.Playing)
         {
-            Time.timeScale = 1;
+            NoxSession.SetState(NoxGameState.Paused);
+            pause_panel.SetActive(true);
+        }
+        else if (NoxSession.State == NoxGameState.Paused)
+        {
+            NoxSession.SetState(NoxGameState.Playing);
             pause_panel.SetActive(false);
             options_panel.SetActive(false);
-        }
-
-        else
-        {
-            Time.timeScale = 0;
-            pause_panel.SetActive(true);
         }
     }
 
     public void Pause_Keycode()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && main_menu.activeSelf == false && levels_menu.activeSelf == false)
-        {
-            if(PlayerScript.PT.healthBar_Canvas.activeSelf == true)
-            {
-                PlayerScript.PT.healthBar_Canvas.SetActive(false);
-            }
-            else
-            {
-                PlayerScript.PT.healthBar_Canvas.SetActive(true);
-            }
-
-            PauseAndContinue();
-            PopMenu();
-        }
+        if (!Input.GetKeyDown(KeyCode.Escape)) return;
+        if (NoxSession.State != NoxGameState.Playing && NoxSession.State != NoxGameState.Paused) return;
+        PauseAndContinue();
+        if (PlayerScript.PT != null && PlayerScript.PT.healthBar_Canvas != null)
+            PlayerScript.PT.healthBar_Canvas.SetActive(NoxSession.CanPlay);
+        PopMenu();
     }
     #endregion
 
-    #region MetÛdo de Niveis
+    #region Met√≥do de Niveis
     public void AirPhase_Button()
     {
-        SceneManager.LoadScene(1);
+        NoxSession.LoadScene(1);
         InGameSound();
 
         if (levels_menu.activeSelf == true)
@@ -243,7 +226,7 @@ public class HUDAndSounds : MonoBehaviour
 
     public void FirePhase_Button()
     {
-        SceneManager.LoadScene(4);
+        NoxSession.LoadScene(4);
         InGameSound2();
 
         if (levels_menu.activeSelf == true)
@@ -332,7 +315,7 @@ public class HUDAndSounds : MonoBehaviour
     public void InGameSound2()
     {
         in_GameMusic2.Play();
-    }   
+    }
     public void InGameSound2Stop()
     {
         in_GameMusic2.Stop();
@@ -340,85 +323,48 @@ public class HUDAndSounds : MonoBehaviour
 
     public void Sound_On()
     {
-        if (main_menu.activeSelf == true)
-        {
-            mainMenuMusic.Play();
-        }
-        if (main_menu.activeSelf == false && SceneManager.GetActiveScene() != SceneManager.GetSceneByBuildIndex(4))
-        {
-            in_GameMusic.Play();
-        }
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(3))
-        {
-            PlayerScript.PT.soundBossWater.Play();
-        }
-
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(4))
-        {
-            in_GameMusic2.Play();
-        }
-
-        popSound.volume = 1;
-        backSound.volume = 1;
-        clickSound.volume = 1;
+        isMuted = false;
+        ApplyVolume();
     }
     public void Sound_Off()
     {
-        mainMenuMusic.Stop();
-        in_GameMusic.Stop();
-        in_GameMusic2.Stop();
-        if (main_menu.activeSelf == false && SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(3))
-        {
-            PlayerScript.PT.soundBossWater.Stop();
-        }
-        popSound.volume = 0;
-        backSound.volume = 0;
-        clickSound.volume = 0;
+        isMuted = true;
+        ApplyVolume();
     }
     #endregion
 
 
     void Start()
     {
+        controlledSources = new[] { mainMenuMusic, in_GameMusic, in_GameMusic2, popSound, backSound, clickSound };
+        NoxSession.SetState(NoxGameState.Menu);
+        ApplyVolume();
         MenuMusic();
     }
 
     void Update()
     {
         Pause_Keycode();
-        ShadowsQuality();
+        if (sunBeaming != null && shadowQuality != null) ShadowsQuality();
+        if (sunBeaming != null && shadowLevel != null) sunBeaming.shadowStrength = shadowLevel.value;
+        ApplyVolume();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (NoxSession.CanPlay && Input.GetKeyDown(KeyCode.L)) NoxSession.LoadNextScene();
+#endif
+    }
 
-       sunBeaming.shadowStrength = shadowLevel.value;
-      
-        if (main_menu.activeSelf == true)
-        {
-            mainMenuMusic.volume = volume_slider.value;
-        }
+    private void ApplyVolume()
+    {
+        float volume = isMuted ? 0f : volume_slider != null ? volume_slider.value : 1f;
+        if (controlledSources == null) return;
+        foreach (AudioSource source in controlledSources)
+            if (source != null) source.volume = volume;
+        if (PlayerScript.PT != null && PlayerScript.PT.soundBossWater != null)
+            PlayerScript.PT.soundBossWater.volume = volume;
+    }
 
-        if(in_GameMusic == true)
-        {
-            in_GameMusic.volume = volume_slider.value;
-        }
-        if (in_GameMusic2 == true)
-        {
-            in_GameMusic2.volume = volume_slider.value;
-        }
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(3) && PlayerScript.PT.soundBossWater == true)
-        {
-            PlayerScript.PT.soundBossWater.volume = volume_slider.value;
-        }
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(3))
-        {
-            in_GameMusic.Stop();
-        }
-
-        popSound.volume = volume_slider.value;
-        backSound.volume = volume_slider.value;
-        clickSound.volume = volume_slider.value;
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
+    private void OnDestroy()
+    {
+        if (Singleton == this) Singleton = null;
     }
 }

@@ -8,8 +8,9 @@ public class PlaceHolderPanel : MonoBehaviour
 
 {
     public HUDAndSounds HUD;
+    private bool resultShown;
     public static PlaceHolderPanel PHP;
-    
+
 
     public GameObject placeHolderPanel;
     public GameObject buttonNextLevel;
@@ -34,56 +35,65 @@ public class PlaceHolderPanel : MonoBehaviour
     #region GameWinLose
     public void PanelWinOrLose(string text)
     {
-        placeHolderText.text = text;
-        placeHolderPanel.SetActive(true);
-        PlayerScript.PT.healthBar_Canvas.SetActive(false);
-
-        //Time.timeScale = 0; *Por algum motivo o jogo começa pausado se essa linha não estiver comentada. (João)
-        if (text == "Stage Completed")
-        {
-            buttonNextLevel.SetActive(true);
-            buttonRestart.SetActive(false);
-        }
-        if (text == "Game Over")
-        {
-            buttonNextLevel.SetActive(false);
-            buttonRestart.SetActive(true);
-        }
-
-        if (HUD.main_menu.activeSelf == true)
-        {
-            placeHolderPanel.SetActive(false);
-        }
+        if (resultShown || (HUD != null && HUD.main_menu.activeSelf)) return;
+        bool won = text == "Stage Completed";
+        resultShown = true;
+        NoxSession.SetState(won ? NoxGameState.Won : NoxGameState.Lost);
+        if (placeHolderText != null) placeHolderText.text = won ? "Fase concluÃ­da" : "Fim de jogo";
+        if (placeHolderPanel != null) placeHolderPanel.SetActive(true);
+        if (PlayerScript.PT != null && PlayerScript.PT.healthBar_Canvas != null)
+            PlayerScript.PT.healthBar_Canvas.SetActive(false);
+        bool hasNext = SceneManager.GetActiveScene().buildIndex + 1 < SceneManager.sceneCountInBuildSettings;
+        if (buttonNextLevel != null) buttonNextLevel.SetActive(won && hasNext);
+        if (buttonRestart != null) buttonRestart.SetActive(!won);
     }
     #endregion
 
     #region ButtonMenu
     public void BackPlaceHolder_Button()
     {
-        SceneManager.LoadScene(0);
-        HUD.Click();
-        HUD.main_menu.SetActive(true);
-        HUD.levels_menu.SetActive(true);
-        placeHolderPanel.SetActive(false);
+        ResetPanel();
+        NoxSession.LoadScene(0);
     }
     #endregion
     public void ButtonRestart()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        Time.timeScale = 1;
-        HUD.Click();
-        PlayerScript.PT.hp = 3;
-        placeHolderPanel.SetActive(false);
+        ResetPanel();
+        NoxSession.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void ButtonNextLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
-        Time.timeScale = 1;
-        placeHolderPanel.SetActive(false);
-        HUD.Click();
-        HUD.in_GameMusic.Stop();
-        HUD.in_GameMusic2.Play();
+        ResetPanel();
+        NoxSession.LoadNextScene();
     }
 
+
+    private void OnEnable() { SceneManager.sceneLoaded += SceneLoaded; }
+    private void OnDisable() { SceneManager.sceneLoaded -= SceneLoaded; }
+    private void SceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ResetPanel();
+        if (HUD != null)
+        {
+            HUD.main_menu.SetActive(scene.buildIndex == 0);
+            HUD.levels_menu.SetActive(scene.buildIndex == 0);
+            HUD.pause_panel.SetActive(false);
+            if (HUD.in_GameMusic != null) HUD.in_GameMusic.Stop();
+            if (HUD.in_GameMusic2 != null) HUD.in_GameMusic2.Stop();
+            if (scene.buildIndex == 0) HUD.MenuMusic();
+            else
+            {
+                if (HUD.mainMenuMusic != null) HUD.mainMenuMusic.Stop();
+                if (scene.buildIndex == 4) HUD.InGameSound2(); else if (scene.buildIndex != 3) HUD.InGameSound();
+            }
+        }
+        NoxSession.SetState(scene.buildIndex == 0 ? NoxGameState.Menu : NoxGameState.Playing);
+    }
+    private void ResetPanel()
+    {
+        resultShown = false;
+        if (placeHolderPanel != null) placeHolderPanel.SetActive(false);
+    }
+    private void OnDestroy() { if (PHP == this) PHP = null; }
 }

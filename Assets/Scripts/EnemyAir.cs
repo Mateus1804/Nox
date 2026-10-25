@@ -1,30 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EnemyAir : MonoBehaviour
 {
     public Animator animin;
-    Image TurtleHealthBar;
+    private bool deathHandled;
     public float hpTurtle;
 
 
     public void Morte()
     {
-        if (hpTurtle <= 0)
-        {
-            animin.SetBool("IsDie", true);
-            gameObject.GetComponent<SphereCollider>().enabled = false;
-            Destroy(gameObject, 1.5f);
-        }
+        if (deathHandled || hpTurtle > 0) return;
+        deathHandled = true;
+        if (animin != null) animin.SetBool("IsDie", true);
+        foreach (Collider hitbox in GetComponents<Collider>()) hitbox.enabled = false;
+        Destroy(gameObject, 1.5f);
     }
 
 
     public void LifeCountTurtle(float damage)
     {
 
-        hpTurtle -= damage;
+        if (!deathHandled && NoxSession.CanPlay && damage > 0) hpTurtle = Mathf.Max(0, hpTurtle - damage);
 
     }
 
@@ -33,11 +31,11 @@ public class EnemyAir : MonoBehaviour
         if (other.gameObject.tag == "Slash")
         {
             LifeCountTurtle(1);
-            Debug.Log("Acertou miser·vel!");
+            Debug.Log("Acertou miser√°vel!");
         }
         else
         {
-            animin.SetBool("Hit", false);
+            if (animin != null) animin.SetBool("Hit", false);
         }
     }
 
@@ -51,5 +49,5 @@ public class EnemyAir : MonoBehaviour
         Morte();
     }
 
-  
+
 }

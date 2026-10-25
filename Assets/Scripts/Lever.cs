@@ -1,85 +1,54 @@
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Lever : MonoBehaviour
 {
     public GameObject[] waypoints;
-    public int currentWaypointIndex = 0;
-
-    public bool playerCheck = false;
-    public bool boxCheck = false;
-
+    public int currentWaypointIndex;
+    public bool playerCheck;
+    public bool boxCheck;
     public float speed = 1f;
-
     public float distance;
-
     public GameObject door;
+    private readonly HashSet<Collider> occupants = new HashSet<Collider>();
+    private Renderer indicator;
+    private Material indicatorMaterial;
+    private bool wasOccupied;
 
-    #region Colliders
+    private void Awake()
+    {
+        indicator = GetComponent<Renderer>();
+        if (indicator != null) indicatorMaterial = indicator.material;
+        if (door == null || waypoints == null || waypoints.Length < 2 || waypoints[0] == null || waypoints[1] == null)
+        {
+            Debug.LogError("A alavanca exige uma porta e dois pontos vÃ¡lidos.", this);
+            enabled = false;
+        }
+    }
     public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
-        {
-            playerCheck = true;
-        }
-
-        if (other.gameObject.tag == "Box")
-        {
-            boxCheck = true;
-        }
+        if (other.CompareTag("Player") || other.CompareTag("Box")) occupants.Add(other);
     }
-
-    public void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other) { occupants.Remove(other); }
+    private void Update()
     {
-        if (other.gameObject.tag == "Player")
+        if (!NoxSession.CanPlay) return;
+        occupants.RemoveWhere(item => item == null || !item.enabled || !item.gameObject.activeInHierarchy);
+        playerCheck = false;
+        boxCheck = false;
+        foreach (Collider item in occupants)
         {
-            playerCheck = false;
+            playerCheck |= item.CompareTag("Player");
+            boxCheck |= item.CompareTag("Box");
         }
-
-        if (other.gameObject.tag == "Box")
-        {
-            boxCheck = false;
-        }
+        bool occupied = playerCheck || boxCheck;
+        if (indicatorMaterial != null && occupied != wasOccupied)
+            indicatorMaterial.color = occupied ? Color.green : Color.red;
+        wasOccupied = occupied;
+        currentWaypointIndex = occupied ? 1 : 0;
+        door.transform.position = Vector3.MoveTowards(door.transform.position,
+            waypoints[currentWaypointIndex].transform.position, speed * (occupied ? 1 : 5) * Time.deltaTime);
     }
-
-    #endregion
-
-
-    void Update()
-    {
-        //Se a variável "boxCheck" ou a variável "playerCheck" forem true, a porta sobe 
-        if (playerCheck == true || boxCheck == true)
-        {
-            this.gameObject.GetComponent<Renderer>().material.color = Color.green;
-
-            if (Vector3.Distance(door.transform.position, waypoints[currentWaypointIndex].transform.position) <= 0)
-            {
-                currentWaypointIndex++;
-
-                if (currentWaypointIndex >= waypoints.Length)
-                {
-                    currentWaypointIndex = 1;
-                }
-            }
-
-            door.transform.position = Vector3.MoveTowards(door.transform.position, waypoints[currentWaypointIndex].transform.position, speed * Time.deltaTime);
-        }
-
-        //Se a variável"boxCheck" ou a variável "playerCheck" forem false, a porta desce
-        if (playerCheck == false && boxCheck == false)
-        {
-            this.gameObject.GetComponent<Renderer>().material.color = Color.red;
-
-            //Para que ela desça, declaramos que a variável "currentWaypointIndex" tem o valor de 0.
-            currentWaypointIndex = 0;
-
-            //Depois declaramos que o "transform" da porta, deveria se mover a posição atual do "transform" do waypoint "0", por uma velocidade fixa.
-            door.transform.position = Vector3.MoveTowards(door.transform.position, waypoints[currentWaypointIndex].transform.position, (speed * 5) * Time.deltaTime);
-        } 
-
-        
-
-
-
-    }
+    private void OnDisable() { occupants.Clear(); }
+    private void OnDestroy() { if (indicatorMaterial != null) Destroy(indicatorMaterial); }
 }

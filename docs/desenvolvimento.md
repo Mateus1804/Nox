@@ -1,35 +1,42 @@
 # Desenvolvimento e recuperação
 
-## Referência original
+## Requisitos
 
-O ZIP `Nox_Project.zip` contém a pasta `Nox_Project`, com Unity 2021.1.28f1. O arquivo `NOX.unitypackage.gz` é outro pacote disponível, não uma substituição comprovada do projeto completo. Há também `Build.zip`, separado do código-fonte. O arquivo original deve permanecer como cópia de segurança.
+Windows com PowerShell 5.1 ou superior, o ZIP original `Nox_Project.zip` e Unity Editor instalado/licenciado pelo Hub, com suporte a build Windows. O arquivo de referência registra 2021.1.28f1. A primeira alternativa é 2021.3 LTS, em uma cópia de trabalho. Unity 6 não foi homologado nesta recuperação.
 
-O inventário do ZIP identificou 31.051 entradas, incluindo diretórios. `Library` ocupa aproximadamente 2,43 GB descompactados e `Assets` aproximadamente 1,26 GB. Excluir caches do controle de versão reduz o volume, mas não elimina o peso dos recursos originais.
+## Recuperação assistida
 
-## Abertura da referência local
+1. Baixar a branch de correções e extrair o repositório.
+2. Executar `Preparar-Nox.cmd`.
+3. Selecionar `Nox_Project.zip` e o `Unity.exe` do editor instalado.
+4. Aguardar a importação e a build. Os assets originais têm cerca de 1,26 GB; o cache será regenerado pelo editor.
+5. Conferir o resultado em `Documentos/Nox-Recuperado-<data>/Builds/Windows/Nox.exe`, quando houver sucesso. O arquivo `build-windows.log` fica na pasta do projeto preparado.
 
-1. Baixar e extrair `Nox_Project.zip` em uma pasta de trabalho, preservando o ZIP.
-2. Instalar pelo Unity Hub o editor 2021.1.28f1 e adicionar a pasta que contém `Assets`, `Packages` e `ProjectSettings`.
-3. Abrir uma cópia de trabalho. Se o Hub sugerir atualização, conservar primeiro a referência na versão original.
-4. Aguardar a importação e registrar os erros do Console antes de corrigir código.
-5. Conferir as cenas em Build Settings e iniciar pelo menu. As cinco cenas habilitadas na configuração original são `Menu1.2`, `AirPhase1.4`, `AirPhase2.4`, `AirPhase3.5` e `FirePhase1.4`.
+O processo não instala nem ativa o Unity. Falhas de instalação, licença, pacote ou compilação interrompem o preparo/build e mantêm o log. Não existe um executável novo validado incluído nesta branch.
 
-Esta sequência exige o arquivo original: as cenas não estão nesta importação parcial.
+## Preparação sem gerar build
 
-## Envio pelo computador
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/Preparar-Nox.ps1 -OriginalZip "C:\Jogos\Nox_Project.zip" -Destino "C:\Jogos\Nox-Recuperado"
+```
 
-O repositório pode ser clonado com GitHub Desktop pela URL `https://github.com/Mateus1804/Nox.git`. A branch `chore/importacao-inicial-unity` contém a recuperação parcial para revisão. A raiz de trabalho deve conter diretamente `Assets`, `Packages` e `ProjectSettings`, sem criar uma pasta `Nox_Project` adicional dentro dela.
+O destino deve ser novo. O ZIP é identificado pelos hashes dos 79 arquivos de referência, e as cinco cenas de build precisam estar presentes. Somente Assets, Packages e ProjectSettings são extraídos. Library, caches, builds anteriores e materiais de outras pastas do Drive ficam fora do preparo.
 
-Antes de copiar novos recursos, a revisão das licenças deve identificar quais podem constar em repositório público e quais precisam ser obtidos separadamente pelo desenvolvedor. Recursos restritos podem ser substituídos ou documentados como dependências externas. Mudar a visibilidade de um repositório também não substitui as condições das licenças.
+Após abrir a cópia no Unity, o menu **Nox → Preparar cenas recuperadas** aplica os reparos de UI e índices dos tutoriais. O menu **Nox → Gerar versão Windows** faz a preparação e solicita a compilação. A versão final deve ser testada fora do editor antes de ser distribuída.
 
-A transferência deve conservar cenas, prefabs e `.meta` correspondentes. `Library`, `Temp`, `Logs`, `obj` e saídas de compilação ficam fora do Git pelo `.gitignore`. O GitHub Desktop permite conferir a lista de alterações antes do commit e do envio. A opção de adicionar todos os arquivos sem revisão não faz parte deste procedimento.
+## Alterações e referências
 
-O inventário não encontrou arquivos individuais acima de 100 MiB dentro de `Assets`, `Packages` ou `ProjectSettings`. Isso não garante que o tamanho total seja adequado: os assets somam cerca de 1,26 GB, com modelos, áudios e texturas binários. Git LFS não foi ativado, e nenhum consumo adicional desse serviço foi configurado. A decisão depende dos recursos que permanecerem após a revisão.
+Os scripts e os `.meta` corrigidos são sobrepostos apenas na nova pasta. O original permanece no ZIP. Hash incompatível indica outra referência: o processo interrompe em vez de aplicar correções sobre um projeto diferente silenciosamente.
 
-## Compatibilidade e manutenção
+A preparação corrige os vínculos antigos conhecidos sem recriar cenas ou inventar fases de água e terra. Mudanças em métodos/campos serializados devem preservar nomes ou possuir migração explícita. O código de Editor só é compilado dentro do Unity.
 
-Os bytes dos 79 arquivos originais incluídos constam em `importacao.json`. Treze scripts contêm bytes incompatíveis com UTF-8; a importação os preservou sem conversão. A normalização de codificação deve ser uma alteração separada, com conferência dos comentários e do comportamento no editor.
+## Testes independentes
 
-Os nomes de classes, arquivos, campos públicos e métodos devem ser preservados até conferir as referências serializadas em cenas, prefabs e eventos da interface. `PlayerScript` e `PlayerTwo` têm responsabilidades semelhantes; isso é um candidato de revisão, não prova de que um deles possa ser removido.
+```powershell
+dotnet run --project Tests/Core/CoreTests.csproj --configuration Release
+python Tests/test_preparation.py
+```
 
-A presença de `com.unity.test-framework` no manifesto não significa que já existam testes ou que estes tenham passado. Build, Play Mode e testes Unity dependem do editor e dos recursos completos.
+A segunda suíte usa PowerShell 7 (`pwsh`) e fixtures criadas com os arquivos originais obtidos do histórico Git. Os dados de cena dessas fixtures não são jogáveis. O checkout precisa conter o commit de referência, como no CI com histórico completo.
+
+Compilar C# contra as referências gerenciadas da build original verifica tipos e assinaturas desses scripts, mas não substitui o processamento de assets nem a compilação completa no editor. As bibliotecas privadas usadas nessa conferência não são versionadas.
