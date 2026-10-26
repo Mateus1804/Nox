@@ -24,6 +24,16 @@ Os procedimentos e os limites estão em [Desenvolvimento](docs/desenvolvimento.m
 
 O comando **Nox → Verificar física em cena isolada** permite conferir transporte e salto em um cenário temporário. O uso do modelo original do personagem depende de sua localização; nenhum asset de terceiros foi apresentado como Nox. O fluxo de vinculação e os limites constam em [Física e personagem](docs/fisica-e-personagem.md).
 
+## Recursos da revisão geral
+
+- Volume e silêncio persistentes, aplicados a todos os sons do jogo.
+- Desbloqueios de fases salvos localmente e retomada da última fase pelo botão **Continuar fase**.
+- Pausa automática ao perder o foco da janela, sem retomada forçada.
+- Combate com registro por golpe/alvo e navegação dos chefes separada da decisão de ataque.
+- Preparação de cenas com backup anterior e ferramenta de auditoria de referências no Unity.
+
+A retomada começa na entrada da fase: posição, vida, caixas e estado dos chefes não são salvos. As fases de água e terra continuam fora da build. A [revisão geral](docs/revisao-geral.md) registra decisões, achados, testes e critérios de aceite.
+
 ## Correções
 
 - Vida e barra derivadas da mesma regra, com limites de cura e dano.

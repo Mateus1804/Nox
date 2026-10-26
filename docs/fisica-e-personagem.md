@@ -48,3 +48,7 @@ O menu **Nox → Verificar física em cena isolada** executa sete verificações
 - [Unity 2021: FixedJoint](https://docs.unity3d.com/2021.1/Documentation/Manual/class-FixedJoint.html).
 
 Os recursos visuais originais permanecem locais, com seus avisos e licenças. Nenhum pacote ou asset de terceiros foi publicado nesta revisão.
+
+## Continuidade da revisão
+
+A ampliação posterior, em `revisao-geral.md`, mantém o motor de plataformas e adiciona deduplicação de golpes, áudio/progresso persistentes, proteção das ferramentas de cena e auditoria. A preparação v3 possui marca própria e backup de cenas; não requer remover manualmente a marca v2.

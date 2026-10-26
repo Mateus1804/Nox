@@ -1,5 +1,18 @@
 # Qualidade da recuperação e revisões
 
+## Revisão geral e funcionalidades — 26/10/2026
+
+- [CI Windows 40267779204](https://github.com/Mateus1804/Nox/actions/runs/40267779204), código `122937b24487a27a761467425dc298d0f8c7776c`: **87 verificações C#, oito testes de preparação/atualização e quatro testes de contratos aprovados**, sem testes pulados. Foram conferidos status, etapas e logs do job `121393822366`.
+- A rodada de push `40267774096` também concluiu com sucesso; não houve ampliação da matriz.
+- Execução local: mesmas 87 verificações e suítes de oito/quatro testes aprovadas. Os testes independentes usam .NET 8 e PowerShell 7.6.9; não executam Unity.
+- Compilação isolada dos **43 scripts próprios de execução e cinco de Editor** com bibliotecas da versão original 2021.1.28f1, C# 8 e avisos tratados como erros: sem erros e sem avisos.
+- A revisão anterior já aprovava 49 verificações e oito testes. Os novos casos cobrem volume, identidade de golpes, retomada elegível, trava de carregamento e escolha de ação dos chefes. A suíte de contratos confere nomes públicos/GUIDs e separação runtime/Editor; não substitui um compilador semântico ou a conferência dos UnityEvents.
+- O código de preparação v3, a transação/backup de cenas e a auditoria foram compilados, mas **não executados no Unity neste ambiente**. A suíte do preparador não é uma prova de restauração real das cenas por essas ferramentas de Editor.
+
+Ainda faltam Play e inspeção visual do novo botão, teste de áudio global, perda de foco, leitura/gravação de PlayerPrefs no Unity, NavMesh, animações, golpes e geração/execução da nova build. A retomada salva o índice da fase, não a posição ou o estado completo. O modelo original Nox permanece pendente. Nenhuma build nova é apresentada como validada.
+
+O relatório `revisao-geral.md` diferencia bugs de lógica, riscos de configuração, mudanças de organização e funcionalidades acrescentadas. `evidencias/revisao-geral-verificada.json` registra o código e os hashes conferidos. Commits posteriores de documentação não alteram os scripts e ferramentas validados.
+
 ## Revisão de física e interação — 26/10/2026
 
 - Baseline executável das regras: 25 verificações aprovadas antes de ampliar a suíte.

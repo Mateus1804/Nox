@@ -26,9 +26,9 @@ A chamada equivalente no PowerShell, dentro da pasta de correções, é:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\Atualizar-Nox.ps1" -Projeto "C:\Users\mateu\Documents\Nox-Recuperado-20261025-224115"
 ```
 
-Após reabrir o Unity e concluir a compilação, **Nox → Preparar cenas recuperadas** aplica a preparação v2. A marca anterior não bloqueia essa revisão. A ação altera e salva as cenas habilitadas na build, acrescentando a configuração física de plataformas e caixas. O código atualizado usa a pasta existente; não exige baixar ou extrair novamente o ZIP original.
+Após reabrir o Unity e concluir a compilação, **Nox → Preparar cenas recuperadas** aplica a preparação v3. As marcas v1/v2 não bloqueiam essa revisão. As cenas são copiadas para `Backups/Preparacao-v3/` antes de alterações; falhas na operação acionam a tentativa de reversão. A ação altera e salva as cenas habilitadas na build, acrescentando a configuração física de plataformas e caixas. O código atualizado usa a pasta existente; não exige baixar ou extrair novamente o ZIP original.
 
-A restauração de scripts consiste em fechar o Unity e recuperar os dois diretórios do backup. Alterações de cena feitas depois pelo editor são separadas desse backup; antes da preparação v2, uma cópia completa da pasta recuperada permite retornar também ao estado das cenas.
+A restauração de scripts consiste em fechar o Unity e recuperar os dois diretórios do backup. Alterações de cena feitas depois pelo editor são separadas desse backup; antes da preparação v3, o backup criado pela preparação v3 preserva os arquivos anteriores das cenas. Uma cópia completa da pasta ainda é útil para cobrir configurações, recursos e alterações feitas fora dessas ferramentas.
 
 ## Preparação sem gerar build
 
@@ -51,8 +51,15 @@ A preparação corrige os vínculos antigos conhecidos sem recriar cenas ou inve
 ```powershell
 dotnet run --project Tests/Core/CoreTests.csproj --configuration Release
 python Tests/test_preparation.py
+python Tests/test_source_contracts.py
 ```
 
 A segunda suíte usa PowerShell 7 (`pwsh`) e fixtures criadas com os arquivos originais obtidos do histórico Git. Os dados de cena dessas fixtures não são jogáveis. O checkout precisa conter o commit de referência, como no CI com histórico completo.
 
 Compilar C# contra as referências gerenciadas da build original verifica tipos e assinaturas desses scripts, mas não substitui o processamento de assets nem a compilação completa no editor. As bibliotecas privadas usadas nessa conferência não são versionadas.
+
+## Preferências e retomada
+
+PlayerPrefs utiliza o prefixo `Nox.v1.` para volume, silêncio, desbloqueios e última fase. A mudança não remove preferências de outros projetos. O botão **Continuar fase** é inserido pela preparação v3 na seleção de fases. A retomada usa o início da fase salva, com os valores de vida e objetos definidos na cena. Não há salvamento de posição.
+
+A auditoria está em **Nox → Auditar cenas e referências**, com saída em `Logs/Nox-Auditoria.txt`. O relatório apresenta achados para revisão; não corrige todos os campos vazios automaticamente. Os backups de cenas ficam fora de Assets, em `Backups/`, e não devem ser publicados como código do projeto.
