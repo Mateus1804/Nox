@@ -9,7 +9,7 @@
 - Oito testes de integração em PowerShell 7.6.9/Linux: aprovados, incluindo os seis de recuperação, atualização com cópia dos scripts anteriores/preservação das cenas e rejeição de pasta inválida. Nenhum teste foi pulado.
 - GUIDs dos componentes existentes preservados; a ordem de execução de WaypointsAirPhase passou para -200 no metadado, consistente com o atributo C#.
 
-A validação local foi feita pelo compilador Roslyn e pelo host .NET diretamente. Não se afirma que uma compilação integral do Unity foi executada. O CI Windows desta revisão será identificado após a execução efetiva.
+A validação local foi feita pelo compilador Roslyn e pelo host .NET diretamente. Não se afirma que uma compilação integral do Unity foi executada. O [CI Windows 40265063605](https://github.com/Mateus1804/Nox/actions/runs/40265063605), com o código do commit `b1d42ff94800ec979e02f4483ae4b8fc0df459ac` no merge temporário da PR, aprovou as 49 verificações C# e os oito testes do preparador/atualizador, sem testes pulados. Foram consultados o resultado do job e suas mensagens de execução. Isso não inclui o motor Unity. A rodada de push 40265061435 também foi disparada; não é necessária outra matriz de plataformas para esta etapa.
 
 ### Relato manual recebido
 
