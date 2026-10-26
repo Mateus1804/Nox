@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
-
 
 public class BossScript : MonoBehaviour
 {
 
     #region Variaveis > Agent, Player, Animin
+    private readonly NoxChaseController chase = new NoxChaseController();
     private bool deathHandled;
     private float maximumHealth;
     public GameObject player;
@@ -18,7 +16,6 @@ public class BossScript : MonoBehaviour
     #region Variaveis > Distância, Collider e Ataque
     public float maxDistance = 10;
     float currentDistance = 200;
-
 
     public float rangeAttack = 1;
     public SphereCollider areaAttack;
@@ -31,29 +28,13 @@ public class BossScript : MonoBehaviour
     public GameObject healthBarBg;
     #endregion
 
-
-
     #region Collider
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Slash")
+        if (!deathHandled && NoxAttackHitbox.Accept(other, this))
         {
             BarCount(1, 0.20f);
         }
-    }
-    #endregion
-
-
-
-    #region Metodo > Ataque
-    void Attack()
-    {
-        if (!attack)
-        {
-            attack = true;
-            if (areaAttack != null) areaAttack.enabled = true;
-        }
-
     }
     #endregion
 
@@ -71,7 +52,7 @@ public class BossScript : MonoBehaviour
     #region BarCount
     public void BarCount(int damage, float amount)
     {
-        if (deathHandled || !NoxSession.CanPlay || damage <= 0) return;
+        if (deathHandled || !NoxSession.CanPlay || damage <= 0 || !NoxRules.IsFinite(damage)) return;
         hp = (int)NoxRules.AdjustHealth(hp, -damage, maximumHealth);
         if (healthBar != null) healthBar.fillAmount = NoxRules.HealthRatio(hp, maximumHealth);
     }
@@ -81,7 +62,7 @@ public class BossScript : MonoBehaviour
     {
         if (deathHandled || hp > 0) return;
         deathHandled = true;
-        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+        NoxChaseController.Stop(agent);
         if (areaAttack != null) areaAttack.enabled = false;
         if (LoadLevels.Instance != null) LoadLevels.Instance.UnlockFire();
         if (PlaceHolderPanel.PHP != null) PlaceHolderPanel.PHP.PanelWinOrLose("Stage Completed");
@@ -90,15 +71,20 @@ public class BossScript : MonoBehaviour
 
     public void Persegue()
     {
-        agent.SetDestination(player.transform.position);
+        if (NoxSession.CanPlay && player != null && NoxChaseController.Ready(agent))
+        {
+            agent.isStopped = false;
+            agent.SetDestination(player.transform.position);
+        }
     }
 
     void Start()
     {
         maximumHealth = Mathf.Max(1, hp);
-        player = GameObject.FindGameObjectWithTag("Player");
-        agent = GetComponent<NavMeshAgent>();
+        if (player == null) player = GameObject.FindGameObjectWithTag("Player");
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
 
+        if (healthBar != null) healthBar.fillAmount = NoxRules.HealthRatio(hp, maximumHealth);
     }
 
     void Update()
@@ -106,31 +92,19 @@ public class BossScript : MonoBehaviour
         if (healthBarBg != null) healthBarBg.SetActive(!deathHandled && NoxSession.CanPlay);
         if (deathHandled) return;
         BossDeath();
-        if (deathHandled || !NoxSession.CanPlay || player == null || agent == null || !agent.isOnNavMesh) return;
+        if (deathHandled) return;
+        attack = chase.Update(agent, player != null ? player.transform : null,
+            rangeAttack, maxDistance, Time.time, out currentDistance);
+        if (areaAttack != null) areaAttack.enabled = attack;
+        if (!NoxSession.CanPlay || player == null) return;
+        Vector3 facing = player.transform.position - transform.position;
+        facing.y = 0;
+        if (facing.sqrMagnitude > 0.001f) transform.rotation = Quaternion.LookRotation(facing);
+    }
 
-        #region Movimentação e Ataque
-        transform.LookAt(player.transform.position);
-        currentDistance = Vector3.Distance(transform.position, player.transform.position);
-
-        if (currentDistance <= rangeAttack)
-        {
-            Attack();
-        }
-
-        else if (currentDistance <= maxDistance)
-
-        {
-            attack = false;
-            if (areaAttack != null) areaAttack.enabled = false;
-            agent.SetDestination(player.transform.position);
-        }
-
-        else
-        {
-            attack = false;
-            if (areaAttack != null) areaAttack.enabled = false;
-            agent.SetDestination(this.transform.position);
-        }
-        #endregion
+    private void OnDisable()
+    {
+        NoxChaseController.Stop(agent);
+        if (areaAttack != null) areaAttack.enabled = false;
     }
 }

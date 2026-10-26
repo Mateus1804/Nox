@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerScript : MonoBehaviour
     public Rigidbody rigid;
 
     public AudioSource soundBossWater;
+    private bool bossEncounterStarted;
 
     [SerializeField, Min(1f)] private float maxHealth = 3f;
     [SerializeField, Min(0.1f)] private float jumpHeight = 3.5f;
@@ -108,7 +110,9 @@ public class PlayerScript : MonoBehaviour
         currentTime = Time.time - startTime;
         if (!NoxSession.CanPlay || !IsAlive || isPushing || !Input.GetKey(KeyCode.Mouse0)
             || currentTime < cooldown || prefab == null || crosshair == null) return;
-        Instantiate(prefab, crosshair.transform.position, crosshair.transform.rotation);
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        GameObject effect = Instantiate(prefab, crosshair.transform.position, crosshair.transform.rotation);
+        if (effect.GetComponent<NoxAttackHitbox>() == null) effect.AddComponent<NoxAttackHitbox>();
         startTime = Time.time;
         currentTime = 0;
         shootTime = false;
@@ -201,20 +205,23 @@ public class PlayerScript : MonoBehaviour
         if (other.gameObject.tag == "AreaWin")
         {
             NoxSession.LoadNextScene();
+            return;
         }
 
         if (other.gameObject.tag == "Limbo")
         {
             hp = 0;
             NoxSession.SetState(NoxGameState.Lost);
+            return;
         }
 
-        if (other.gameObject.tag == "LifeCamera")
+        if (other.gameObject.tag == "LifeCamera" && !bossEncounterStarted)
         {
+            bossEncounterStarted = true;
             CameraFollow follow = mainCameraObj != null ? mainCameraObj.GetComponent<CameraFollow>() : null;
             if (follow != null) follow.offset = newOffset;
             if (bossCanvas != null) bossCanvas.SetActive(true);
-            Invoke("InvisibleWall", 2);
+            Invoke(nameof(InvisibleWall), 2);
 
             SoundBossWater();
         }
@@ -225,7 +232,11 @@ public class PlayerScript : MonoBehaviour
 
     public void SoundBossWater()
     {
-        if (soundBossWater != null) soundBossWater.Play();
+        if (soundBossWater != null)
+        {
+            if (HUDAndSounds.Singleton != null) HUDAndSounds.Singleton.StopMusic();
+            soundBossWater.Play();
+        }
     }
 
     void Awake()
@@ -291,7 +302,7 @@ public class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rigid == null || !IsAlive || !NoxSession.CanPlay) return;
+        if (rigid == null || motor == null || !IsAlive || !NoxSession.CanPlay) return;
         motor.Step(desiredMovement, movementSpeed, jumpRequested && !isPushing, jumpHeight, WhatIsGround);
         grounded = motor.Grounded;
         jumpRequested = false;

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlayerTwo : MonoBehaviour
 {
@@ -95,7 +96,9 @@ public class PlayerTwo : MonoBehaviour
         currentTime = Time.time - startTime;
         if (!NoxSession.CanPlay || !IsAlive || isPushing || !Input.GetKey(KeyCode.Mouse0)
             || currentTime < cooldown || prefab == null || crosshair == null) return;
-        Instantiate(prefab, crosshair.transform.position, crosshair.transform.rotation);
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        GameObject effect = Instantiate(prefab, crosshair.transform.position, crosshair.transform.rotation);
+        if (effect.GetComponent<NoxAttackHitbox>() == null) effect.AddComponent<NoxAttackHitbox>();
         startTime = Time.time;
         currentTime = 0;
         shootTime = false;
@@ -178,16 +181,18 @@ public class PlayerTwo : MonoBehaviour
         }
         ApplyContactDamage(other.gameObject);
 
-        if (other.CompareTag("Cristais")) Destroy(other.gameObject);
+        // A coleta e seu áudio pertencem ao componente Cristais.
         if (other.gameObject.tag == "AreaWin")
         {
             NoxSession.LoadNextScene();
+            return;
         }
 
         if (other.gameObject.tag == "Limbo")
         {
             hp = 0;
             NoxSession.SetState(NoxGameState.Lost);
+            return;
         }
     }
     #endregion
@@ -255,7 +260,7 @@ public class PlayerTwo : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rigid == null || !IsAlive || !NoxSession.CanPlay) return;
+        if (rigid == null || motor == null || !IsAlive || !NoxSession.CanPlay) return;
         motor.Step(desiredMovement, movementSpeed, jumpRequested && !isPushing, jumpHeight, WhatIsGround);
         grounded = motor.Grounded;
         jumpRequested = false;

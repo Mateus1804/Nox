@@ -1,35 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Cristais : MonoBehaviour
 {
-
     public AudioSource breakCristals;
+    private bool collected;
 
     public void BreakCristal()
     {
-        breakCristals.Play();
+        if (breakCristals == null || breakCristals.clip == null) return;
+        if (breakCristals.transform.IsChildOf(transform))
+        {
+            // Um som pertencente ao objeto coletado precisa sobreviver ao seu descarte.
+            AudioSource.PlayClipAtPoint(breakCristals.clip, transform.position, breakCristals.volume);
+        }
+        else breakCristals.PlayOneShot(breakCristals.clip);
     }
-
-    void Start()
-    {
-
-    }
-
-
-    void Update()
-    {
-
-    }
-
-
     public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
-        {
-            BreakCristal();
-            Destroy(gameObject);
-        }
+        if (collected || !NoxSession.CanPlay || other == null || !other.CompareTag("Player")) return;
+        collected = true;
+        foreach (Collider item in GetComponentsInChildren<Collider>()) item.enabled = false;
+        BreakCristal();
+        Destroy(gameObject);
     }
 }

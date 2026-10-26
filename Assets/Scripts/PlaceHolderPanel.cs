@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine;
@@ -35,7 +33,7 @@ public class PlaceHolderPanel : MonoBehaviour
     #region GameWinLose
     public void PanelWinOrLose(string text)
     {
-        if (resultShown || (HUD != null && HUD.main_menu.activeSelf)) return;
+        if (resultShown || (HUD != null && HUD.main_menu != null && HUD.main_menu.activeSelf)) return;
         bool won = text == "Stage Completed";
         resultShown = true;
         NoxSession.SetState(won ? NoxGameState.Won : NoxGameState.Lost);
@@ -73,22 +71,7 @@ public class PlaceHolderPanel : MonoBehaviour
     private void OnDisable() { SceneManager.sceneLoaded -= SceneLoaded; }
     private void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        ResetPanel();
-        if (HUD != null)
-        {
-            HUD.main_menu.SetActive(scene.buildIndex == 0);
-            HUD.levels_menu.SetActive(scene.buildIndex == 0);
-            HUD.pause_panel.SetActive(false);
-            if (HUD.in_GameMusic != null) HUD.in_GameMusic.Stop();
-            if (HUD.in_GameMusic2 != null) HUD.in_GameMusic2.Stop();
-            if (scene.buildIndex == 0) HUD.MenuMusic();
-            else
-            {
-                if (HUD.mainMenuMusic != null) HUD.mainMenuMusic.Stop();
-                if (scene.buildIndex == 4) HUD.InGameSound2(); else if (scene.buildIndex != 3) HUD.InGameSound();
-            }
-        }
-        NoxSession.SetState(scene.buildIndex == 0 ? NoxGameState.Menu : NoxGameState.Playing);
+        if (mode != LoadSceneMode.Additive) ResetPanel();
     }
     private void ResetPanel()
     {

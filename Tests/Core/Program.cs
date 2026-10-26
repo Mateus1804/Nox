@@ -69,6 +69,54 @@ public static class Program
         Equal(0, NoxRules.IsSupport(0.2f, 0) ? 1 : 0);
         Equal(0, NoxRules.IsSupport(1, 4) ? 1 : 0);
         Equal(0, NoxRules.IsSupport(float.NaN, 0) ? 1 : 0);
+        // Volume global: limite, silêncio, números inválidos e preservação da preferência.
+        Equal(0.75f, NoxRules.EffectiveVolume(0.75f, false));
+        Equal(0, NoxRules.EffectiveVolume(0.75f, true));
+        Equal(1, NoxRules.EffectiveVolume(5, false));
+        Equal(0, NoxRules.EffectiveVolume(-5, false));
+        Equal(0, NoxRules.EffectiveVolume(float.NaN, false));
+        Equal(0, NoxRules.EffectiveVolume(float.PositiveInfinity, false));
+        Equal(0, NoxRules.EffectiveVolume(float.NegativeInfinity, false));
+        Equal(1, NoxRules.IsFinite(0) ? 1 : 0);
+        Equal(0, NoxRules.IsFinite(float.NaN) ? 1 : 0);
+        // Um golpe afeta cada alvo uma vez; outro golpe pode atingir o mesmo inimigo.
+        var hits = new NoxHitRegistry();
+        Equal(1, hits.TryHit(42) ? 1 : 0);
+        Equal(0, hits.TryHit(42) ? 1 : 0);
+        Equal(1, hits.TryHit(99) ? 1 : 0);
+        Equal(0, hits.TryHit(99) ? 1 : 0);
+        Equal(1, new NoxHitRegistry().TryHit(42) ? 1 : 0);
+        // Retomada é de fase, não de posição: rejeita menu, índices ausentes e fogo bloqueado.
+        Equal(0, NoxProgressRules.CanResume(-1, 5, true) ? 1 : 0);
+        Equal(0, NoxProgressRules.CanResume(0, 5, true) ? 1 : 0);
+        Equal(1, NoxProgressRules.CanResume(1, 5, false) ? 1 : 0);
+        Equal(1, NoxProgressRules.CanResume(3, 5, false) ? 1 : 0);
+        Equal(0, NoxProgressRules.CanResume(4, 5, false) ? 1 : 0);
+        Equal(1, NoxProgressRules.CanResume(4, 5, true) ? 1 : 0);
+        Equal(0, NoxProgressRules.CanResume(5, 5, true) ? 1 : 0);
+        Equal(0, NoxProgressRules.CanResume(1, 0, true) ? 1 : 0);
+        // Callbacks concorrentes não iniciam duas trocas de cena.
+        var gate = new NoxSceneLoadGate();
+        Equal(0, gate.TryBegin(-1, 5) ? 1 : 0);
+        Equal(0, gate.Busy ? 1 : 0);
+        Equal(1, gate.TryBegin(1, 5) ? 1 : 0);
+        Equal(1, gate.Busy ? 1 : 0);
+        Equal(0, gate.TryBegin(2, 5) ? 1 : 0);
+        gate.Complete();
+        Equal(0, gate.Busy ? 1 : 0);
+        Equal(1, gate.TryBegin(0, 5) ? 1 : 0);
+        gate.Complete();
+        gate.Complete();
+        Equal(1, gate.TryBegin(4, 5) ? 1 : 0);
+        // Ataque interrompe perseguição; configuração inválida não produz destino.
+        Equal((int)NoxEnemyAction.Attack, (int)NoxRules.ChooseEnemyAction(1, 1, 10));
+        Equal((int)NoxEnemyAction.Chase, (int)NoxRules.ChooseEnemyAction(5, 1, 10));
+        Equal((int)NoxEnemyAction.Idle, (int)NoxRules.ChooseEnemyAction(11, 1, 10));
+        Equal((int)NoxEnemyAction.Chase, (int)NoxRules.ChooseEnemyAction(10, 1, 10));
+        Equal((int)NoxEnemyAction.Idle, (int)NoxRules.ChooseEnemyAction(float.NaN, 1, 10));
+        Equal((int)NoxEnemyAction.Idle, (int)NoxRules.ChooseEnemyAction(1, float.PositiveInfinity, 10));
+        Equal((int)NoxEnemyAction.Idle, (int)NoxRules.ChooseEnemyAction(-1, 1, 10));
+        Equal((int)NoxEnemyAction.Attack, (int)NoxRules.ChooseEnemyAction(1, 2, 0));
         Console.WriteLine($"{passed} verificações de regressão aprovadas.");
     }
 }

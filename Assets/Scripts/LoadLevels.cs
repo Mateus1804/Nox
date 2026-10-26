@@ -1,101 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LoadLevels : MonoBehaviour
 {
-    /*
-    Esse é o script que desbloqueia a próxima fase no menu, após o Player concluir a fase anterior. Para ele funciona você precisa:
-    • Associar esse script ao GameADM
-    • Associar
-
-
-    */
-
-
     public static LoadLevels Instance;
-
-    #region Awake()
-    void Awake()
+    public int acessLevelFire, acessLevelWater, acessLevelLand;
+    public GameObject buttonAirLevel, buttonFireLevel, buttonWaterLevel, buttonLandLevel;
+    private int lastFire = -1, lastWater = -1, lastLand = -1;
+    private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this; DontDestroyOnLoad(gameObject);
     }
-    #endregion
-
-    public int acessLevelFire = 0;
-    public int acessLevelWater = 0;
-    public int acessLevelLand = 0;
-
-    //Variável que armazena o botão da fase de ar
-    public GameObject buttonAirLevel;
-
-    //Variável que armazena o botão da fase de fogo
-    public GameObject buttonFireLevel;
-
-    //Variável que armazena o botão da fase de água
-    public GameObject buttonWaterLevel;
-
-    //Variável que armazena o botão da fase de terra
-    public GameObject buttonLandLevel;
-
-
-    public void FireLevelUnlocked()
+    private void Start()
     {
-        if (acessLevelFire > 0)
-        {
-            if (buttonFireLevel != null) buttonFireLevel.SetActive(true);
-            DontDestroyOnLoad(this.gameObject);
-        }
+        acessLevelFire = Mathf.Max(acessLevelFire, NoxProgress.FireUnlocked ? 1 : 0);
+        acessLevelWater = Mathf.Max(acessLevelWater, NoxProgress.WaterUnlocked ? 1 : 0);
+        acessLevelLand = Mathf.Max(acessLevelLand, NoxProgress.LandUnlocked ? 1 : 0);
+        if (acessLevelFire > 0 && !NoxProgress.FireUnlocked) NoxProgress.Unlock("Fire");
+        if (acessLevelWater > 0 && !NoxProgress.WaterUnlocked) NoxProgress.Unlock("Water");
+        if (acessLevelLand > 0 && !NoxProgress.LandUnlocked) NoxProgress.Unlock("Land");
+        FireLevelUnlocked(); WaterLevelUnlocked(); LandLevelUnlocked();
     }
-    public void WaterLevelUnlocked()
+    public void FireLevelUnlocked() { if (buttonFireLevel != null) buttonFireLevel.SetActive(acessLevelFire > 0); lastFire = acessLevelFire; }
+    public void WaterLevelUnlocked() { if (buttonWaterLevel != null) buttonWaterLevel.SetActive(acessLevelWater > 0); lastWater = acessLevelWater; }
+    public void LandLevelUnlocked() { if (buttonLandLevel != null) buttonLandLevel.SetActive(acessLevelLand > 0); lastLand = acessLevelLand; }
+    private void Update()
     {
-        if (acessLevelWater > 0)
-        {
-            if (buttonWaterLevel != null) buttonWaterLevel.SetActive(true);
-            DontDestroyOnLoad(this.gameObject);
-        }
-
+        // Compatibilidade com campos públicos alterados por eventos/scripts legados.
+        if (lastFire != acessLevelFire) FireLevelUnlocked();
+        if (lastWater != acessLevelWater) WaterLevelUnlocked();
+        if (lastLand != acessLevelLand) LandLevelUnlocked();
     }
-    public void LandLevelUnlocked()
-    {
-        if (acessLevelLand > 0)
-        {
-            if (buttonLandLevel != null) buttonLandLevel.SetActive(true);
-            DontDestroyOnLoad(this.gameObject);
-        }
-
-    }
-
-    void Start()
-    {
-
-    }
-
-    // Declaramos os metódos abaixo, para que a condição de acesso as fases seja checada a todo momento.
-    void Update()
-    {
-        FireLevelUnlocked();
-        WaterLevelUnlocked();
-        LandLevelUnlocked();
-    }
-
-
-    public void UnlockFire() { acessLevelFire = 1; FireLevelUnlocked(); }
-    public void UnlockWater() { acessLevelWater = 1; WaterLevelUnlocked(); }
-    public void UnlockLand() { acessLevelLand = 1; LandLevelUnlocked(); }
-
-    // Estas fases não existem na lista original de build; nunca carregar um índice inventado.
+    public void UnlockFire() { acessLevelFire = 1; NoxProgress.Unlock("Fire"); FireLevelUnlocked(); }
+    public void UnlockWater() { acessLevelWater = 1; NoxProgress.Unlock("Water"); WaterLevelUnlocked(); }
+    public void UnlockLand() { acessLevelLand = 1; NoxProgress.Unlock("Land"); LandLevelUnlocked(); }
     public void ButtonLevelWater() { Debug.Log("A fase de água ainda não faz parte desta versão."); }
     public void ButtonLevelLand() { Debug.Log("A fase de terra ainda não faz parte desta versão."); }
-
     private void OnDestroy() { if (Instance == this) Instance = null; }
 }
