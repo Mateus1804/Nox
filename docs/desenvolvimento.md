@@ -14,6 +14,22 @@ Windows com PowerShell 5.1 ou superior, o ZIP original `Nox_Project.zip` e Unity
 
 O processo não instala nem ativa o Unity. Falhas de instalação, licença, pacote ou compilação interrompem o preparo/build e mantêm o log. Não existe um executável novo validado incluído nesta branch.
 
+## Atualização do projeto já recuperado
+
+Com o Unity fechado, o ponto de entrada é `Atualizar-Nox.cmd`, executado por duplo clique a partir do ZIP de correções extraído. O arquivo CMD não deve ser colado linha a linha no PowerShell. A seleção aponta para a pasta raiz que contém `Assets` e `ProjectSettings`.
+
+Uma cópia dos diretórios anteriores `Assets/Scripts` e `Assets/Editor` é salva ao lado do projeto, em `<projeto>-Backup-Scripts-<data>`. Os arquivos da revisão são sobrepostos nesses dois diretórios; modelos, materiais, áudio, cenas e configurações permanecem intactos nessa etapa. Em caso de erro de cópia, o processo interrompe e informa onde estão os scripts anteriores; não há reversão automática anunciada.
+
+A chamada equivalente no PowerShell, dentro da pasta de correções, é:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\Atualizar-Nox.ps1" -Projeto "C:\Users\mateu\Documents\Nox-Recuperado-20261025-224115"
+```
+
+Após reabrir o Unity e concluir a compilação, **Nox → Preparar cenas recuperadas** aplica a preparação v2. A marca anterior não bloqueia essa revisão. A ação altera e salva as cenas habilitadas na build, acrescentando a configuração física de plataformas e caixas. O código atualizado usa a pasta existente; não exige baixar ou extrair novamente o ZIP original.
+
+A restauração de scripts consiste em fechar o Unity e recuperar os dois diretórios do backup. Alterações de cena feitas depois pelo editor são separadas desse backup; antes da preparação v2, uma cópia completa da pasta recuperada permite retornar também ao estado das cenas.
+
 ## Preparação sem gerar build
 
 ```powershell

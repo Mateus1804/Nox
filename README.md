@@ -4,7 +4,9 @@ Jogo acadêmico desenvolvido com Unity e C# durante o curso Técnico em Programa
 
 ## Estado atual
 
-Esta branch contém uma **versão candidata de correções**, ainda sem validação de uma nova build no Unity. A compilação C# dos 32 scripts de execução passou usando as bibliotecas gerenciadas da build original; as 25 verificações das regras também passaram. O código de preparação Editor também passou pela compilação isolada contra as bibliotecas de 2021.1.28f1. Esses resultados não substituem a importação e compilação pelo próprio Unity nem os testes de jogabilidade.
+A recuperação já foi aberta no Play do Unity pelo responsável pelo projeto: áudio, movimentação, salto, vida, pausa e navegação entre fases funcionaram na conferência relatada. Foram observados aprisionamento e deformação nas plataformas móveis; ataque e cura ainda precisam de conferência dirigida.
+
+A revisão atual remove o parentesco entre jogador e plataforma, compartilha o motor físico entre os controladores e organiza dano, cura, caixas e ataque. As verificações de regras e a compilação isolada estão registradas em [Qualidade](docs/qualidade.md). A jogabilidade desta nova revisão ainda depende de validação no Unity.
 
 Cenas e recursos visuais/sonoros continuam no `Nox_Project.zip` original. O repositório público não redistribui esses materiais. O preparador combina o arquivo local original com as correções em uma pasta nova, sem alterar o ZIP ou sobrescrever uma pasta existente.
 
@@ -16,6 +18,12 @@ O processo depende de um editor Unity instalado e licenciado, com suporte a buil
 
 Os procedimentos e os limites estão em [Desenvolvimento](docs/desenvolvimento.md). A preparação não significa que o jogo tenha sido testado ou que uma build já esteja disponível para download.
 
+## Atualização de uma cópia já recuperada
+
+`Atualizar-Nox.cmd` atualiza somente os scripts e o código de Editor de uma pasta recuperada, com o Unity fechado. Uma cópia dos scripts anteriores é criada ao lado do projeto. Cenas, modelos, áudio e configurações locais são preservados pela atualização. Após reabrir, **Nox → Preparar cenas recuperadas** aplica a revisão física às cenas.
+
+O comando **Nox → Verificar física em cena isolada** permite conferir transporte e salto em um cenário temporário. O uso do modelo original do personagem depende de sua localização; nenhum asset de terceiros foi apresentado como Nox. O fluxo de vinculação e os limites constam em [Física e personagem](docs/fisica-e-personagem.md).
+
 ## Correções
 
 - Vida e barra derivadas da mesma regra, com limites de cura e dano.
@@ -23,7 +31,7 @@ Os procedimentos e os limites estão em [Desenvolvimento](docs/desenvolvimento.m
 - Estados separados para menu, partida, pausa, vitória e derrota.
 - Navegação com limite de cenas e retorno definido após a última fase.
 - Movimentação pelo Rigidbody e salto solicitado por comando, com altura configurável.
-- Interação com a caixa mais próxima em alcance, separando objeto candidato e segurado.
+- Interação com a caixa mais próxima em alcance, separando objeto candidato e segurado, com junta física em vez de parentesco de Transform.
 - Identidade do jogador preservada ao empurrar; dano de torre tratado pelo controlador principal.
 - Tutoriais com índices fixos e validação das referências.
 - Alavanca com conjunto de ocupantes, sem fechar ao sair apenas uma caixa.

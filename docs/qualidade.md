@@ -1,4 +1,28 @@
-# Qualidade da versão candidata
+# Qualidade da recuperação e revisões
+
+## Revisão de física e interação — 26/10/2026
+
+- Baseline executável das regras: 25 verificações aprovadas antes de ampliar a suíte.
+- Nova suíte C#: 49 verificações aprovadas, incluindo limites de cura, proteção de dano, impactos simultâneos, morte, entradas inválidas e classificação de apoio.
+- Compilação isolada dos 35 scripts de execução: zero erros e avisos, com C# 8 e as bibliotecas da build original.
+- Compilação isolada dos três scripts de Editor, contra as bibliotecas oficiais 2021.1.28f1: zero erros e avisos. Uma duplicidade de referências no comando temporário de compilação foi removida; não foi alterado o projeto Unity para contorná-la.
+- Oito testes de integração em PowerShell 7.6.9/Linux: aprovados, incluindo os seis de recuperação, atualização com cópia dos scripts anteriores/preservação das cenas e rejeição de pasta inválida. Nenhum teste foi pulado.
+- GUIDs dos componentes existentes preservados; a ordem de execução de WaypointsAirPhase passou para -200 no metadado, consistente com o atributo C#.
+
+A validação local foi feita pelo compilador Roslyn e pelo host .NET diretamente. Não se afirma que uma compilação integral do Unity foi executada. O CI Windows desta revisão será identificado após a execução efetiva.
+
+### Relato manual recebido
+
+O responsável informou funcionamento no Play de áudio e silêncio, movimentação, salto, vida, pausa e fluxo de conclusão/avanço/retorno. Informou também aprisionamento e deformação do cubo em plataformas. Ataque e limite de cura permaneceram sem confirmação. Essa observação corresponde à revisão anterior e não aprova automaticamente o novo código.
+
+### Limites desta revisão
+
+O verificador de sete cenários físicos foi compilado, mas não executado no motor Unity neste ambiente. Os trajetos reais, caixas, combate, dano contínuo, visual do Nox e a nova build Windows permanecem pendentes de Play e execução do jogo. O modelo original do personagem não foi localizado no inventário do ZIP; o comando de vinculação está implementado, mas a substituição não foi apresentada como concluída. Pastas individuais dos colaboradores não foram usadas como fonte de assets.
+
+Os testes do atualizador conferem dados e backups em fixtures. A janela de seleção de pasta e o PowerShell 5.1 do usuário não foram executados neste ambiente.
+
+## Histórico: primeira recuperação
+
 
 ## Executado localmente
 
