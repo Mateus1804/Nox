@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,47 +13,97 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public static class NoxBuild
 {
     [MenuItem("Nox/Preparar cenas recuperadas")]
-    public static void PrepareScenes()
+    public static void PrepareScenes() { TryPrepareScenes(); }
+
+    private static bool TryPrepareScenes()
     {
-        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v2.txt");
-        if (File.Exists(marker)) return;
-        if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-        SceneSetup[] previous = EditorSceneManager.GetSceneManagerSetup();
-        try
+        if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes de preparar as cenas.");
+        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v3.txt");
+        if (File.Exists(marker)) return true;
+        if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return false;
+        using (var transaction = new NoxSceneTransaction("Preparacao-v3"))
         {
             foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes.Where(item => item.enabled))
             {
-                if (!File.Exists(scene.path)) throw new FileNotFoundException("Cena original ausente", scene.path);
                 Scene opened = EditorSceneManager.OpenScene(scene.path, OpenSceneMode.Single);
                 foreach (GameObject root in opened.GetRootGameObjects())
                 {
                     PreparePhysics(root);
                     foreach (Button button in root.GetComponentsInChildren<Button>(true)) RepairButton(button);
                     foreach (EventTrigger trigger in root.GetComponentsInChildren<EventTrigger>(true))
-                        foreach (EventTrigger.Entry entry in trigger.triggers) RemoveMissingCallbacks(entry.callback, FindButtonIncludingInactive(trigger.transform));
+                    {
+                        if (trigger.triggers == null) continue;
+                        foreach (EventTrigger.Entry entry in trigger.triggers)
+                            if (entry != null) RemoveMissingCallbacks(entry.callback, FindButtonIncludingInactive(trigger.transform));
+                    }
+                    foreach (HUDAndSounds hud in root.GetComponentsInChildren<HUDAndSounds>(true)) PrepareContinueButton(hud);
                     foreach (TutorialMethod tutorial in root.GetComponentsInChildren<TutorialMethod>(true))
                     {
                         Match number = Regex.Match(tutorial.name, @"Collider(\d+)$");
                         if (!number.Success) throw new InvalidOperationException("Índice de tutorial não identificado: " + tutorial.name);
                         tutorial.i = int.Parse(number.Groups[1].Value) - 1;
-                        if (tutorial.list == null || !NoxRules.IsValidIndex(tutorial.i, tutorial.list.tutorials.Count))
+                        if (tutorial.list == null || tutorial.list.tutorials == null ||
+                            !NoxRules.IsValidIndex(tutorial.i, tutorial.list.tutorials.Count))
                             throw new InvalidOperationException("Tutorial sem painel correspondente: " + tutorial.name);
                         EditorUtility.SetDirty(tutorial);
                     }
                 }
                 EditorSceneManager.MarkSceneDirty(opened);
-                EditorSceneManager.SaveScene(opened);
+                if (!EditorSceneManager.SaveScene(opened)) throw new IOException("A cena não pôde ser salva: " + scene.path);
             }
-            File.WriteAllText(marker, "Preparação de cenas aplicada pelo NoxBuild.\n");
+            File.WriteAllText(marker + ".tmp", "Preparação v3 aplicada com backup das cenas.\n");
+            File.Move(marker + ".tmp", marker);
+            transaction.Commit();
         }
-        finally
+        return true;
+    }
+
+    private static void PrepareContinueButton(HUDAndSounds hud)
+    {
+        if (hud.levels_menu == null || hud.levels_menu.transform.Find("NoxContinueButton") != null) return;
+        LoadLevels levels = hud.GetComponent<LoadLevels>();
+        if (levels == null || levels.buttonAirLevel == null) return;
+        GameObject item = UnityEngine.Object.Instantiate(levels.buttonAirLevel, hud.levels_menu.transform);
+        item.name = "NoxContinueButton";
+        RectTransform rect = item.GetComponent<RectTransform>();
+        Button button = item.GetComponent<Button>();
+        if (rect == null || button == null) throw new InvalidOperationException("Botão de fase sem Button/RectTransform.");
+        foreach (EventTrigger trigger in item.GetComponentsInChildren<EventTrigger>(true))
         {
-            if (!Application.isBatchMode) EditorSceneManager.RestoreSceneManagerSetup(previous);
+            if (trigger.triggers == null) continue;
+            foreach (EventTrigger.Entry entry in trigger.triggers)
+            {
+                if (entry == null || entry.eventID != EventTriggerType.PointerClick) continue;
+                entry.callback = new EventTrigger.TriggerEvent();
+                UnityEventTools.AddVoidPersistentListener(entry.callback, hud.ContinueSavedGame_Button);
+                ChangeTextColor color = trigger.GetComponent<ChangeTextColor>();
+                if (color != null) UnityEventTools.AddVoidPersistentListener(entry.callback, color.ResetTheColor);
+            }
         }
+        rect.anchorMin = rect.anchorMax = Vector2.zero;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(260, 150);
+        rect.sizeDelta = new Vector2(400, 80);
+        button.onClick = new Button.ButtonClickedEvent();
+        UnityEventTools.AddPersistentListener(button.onClick, hud.ContinueSavedGame_Button);
+        NoxResumeButton state = item.GetComponent<NoxResumeButton>();
+        if (state == null) state = item.AddComponent<NoxResumeButton>();
+        state.button = button;
+        state.label = item.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (state.label != null)
+        {
+            state.label.text = "Continuar fase";
+            state.label.enableAutoSizing = true;
+            state.label.fontSizeMin = 20;
+            state.label.fontSizeMax = 40;
+            state.label.raycastTarget = true;
+        }
+        item.SetActive(true);
     }
 
     private static void PreparePhysics(GameObject root)
@@ -129,6 +178,7 @@ public static class NoxBuild
 
     private static void RemoveMissingCallbacks(UnityEventBase callback, Button button)
     {
+        if (callback == null) return;
         for (int i = callback.GetPersistentEventCount() - 1; i >= 0; i--)
         {
             UnityEngine.Object target = callback.GetPersistentTarget(i);
@@ -137,6 +187,8 @@ public static class NoxBuild
             bool unavailable = method == "ButtonLevelWater" || method == "ButtonLevelLand" || method == "EasyMediumHard_Button";
             bool missing = target == null || target.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance).All(item => item.Name != method);
             if (!missing && !unavailable) continue;
+            if (missing && !unavailable)
+                Debug.LogWarning("Callback inválido removido: " + method + "; botão: " + (button != null ? button.name : "sem botão"));
             UnityEventTools.RemovePersistentListener(callback, i);
             if (button != null && unavailable) button.interactable = false;
         }
@@ -145,7 +197,9 @@ public static class NoxBuild
     [MenuItem("Nox/Gerar versão Windows")]
     public static void Windows()
     {
-        PrepareScenes();
+        if (!TryPrepareScenes()) return;
+        if (EditorBuildSettings.scenes.All(item => !item.enabled))
+            throw new InvalidOperationException("Não há cenas habilitadas para gerar a build.");
         string output = Path.GetFullPath(Path.Combine("Builds", "Windows", "Nox.exe"));
         Directory.CreateDirectory(Path.GetDirectoryName(output));
         BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions

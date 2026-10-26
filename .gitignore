@@ -41,3 +41,6 @@ Thumbs.db
 !/Tests/Core/CoreTests.csproj
 **/bin/
 **/obj/
+
+# Cópias locais de cenas; contêm recursos do projeto original.
+/Backups/

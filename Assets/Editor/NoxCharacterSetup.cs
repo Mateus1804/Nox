@@ -11,6 +11,7 @@ public static class NoxCharacterSetup
     [MenuItem("Nox/Vincular modelo selecionado do Nox")]
     public static void BindSelectedModel()
     {
+        if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes de vincular o modelo.");
         GameObject model = Selection.activeObject as GameObject;
         if (model == null || !AssetDatabase.Contains(model) || model.GetComponentsInChildren<Renderer>(true).Length == 0)
             throw new InvalidOperationException("Selecionar no painel Project o prefab ou FBX original do personagem Nox.");
@@ -20,9 +21,8 @@ public static class NoxCharacterSetup
             model.GetComponentsInChildren<MonoBehaviour>(true).Length != 0)
             throw new InvalidOperationException("Usar um prefab visual, sem scripts, colliders ou Rigidbody. Preservar o original ao criar essa cópia.");
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-        SceneSetup[] previous = EditorSceneManager.GetSceneManagerSetup();
         int changed = 0;
-        try
+        using (var transaction = new NoxSceneTransaction("Visual-Nox"))
         {
             foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes.Where(item => item.enabled))
             {
@@ -31,10 +31,10 @@ public static class NoxCharacterSetup
                     foreach (PlayerScript player in root.GetComponentsInChildren<PlayerScript>(true))
                     { Bind(player.gameObject, model); changed++; }
                 EditorSceneManager.MarkSceneDirty(opened);
-                EditorSceneManager.SaveScene(opened);
+                if (!EditorSceneManager.SaveScene(opened)) throw new InvalidOperationException("Falha ao salvar " + scene.path);
             }
+            transaction.Commit();
         }
-        finally { EditorSceneManager.RestoreSceneManagerSetup(previous); }
         Debug.Log("Modelo do Nox vinculado a " + changed + " jogador(es). Conferir orientação, materiais e animações no Play.");
     }
 
@@ -44,7 +44,6 @@ public static class NoxCharacterSetup
         if (body == null) throw new InvalidOperationException("Jogador sem collider: " + player.name);
         Transform previous = player.transform.Find("NoxVisual");
         // Somente o filho de apresentação gerado por este comando é substituído.
-        if (previous != null) UnityEngine.Object.DestroyImmediate(previous.gameObject);
         GameObject holder = new GameObject("NoxVisual");
         holder.transform.SetParent(player.transform, false);
         GameObject visual = PrefabUtility.InstantiatePrefab(model) as GameObject;
@@ -64,6 +63,7 @@ public static class NoxCharacterSetup
         NoxCharacterVisual adapter = player.GetComponent<NoxCharacterVisual>();
         if (adapter == null) adapter = player.AddComponent<NoxCharacterVisual>();
         adapter.modelPrefab = model;
+        if (previous != null) UnityEngine.Object.DestroyImmediate(previous.gameObject);
         MeshRenderer cube = player.GetComponent<MeshRenderer>();
         if (cube != null) cube.enabled = false;
         EditorUtility.SetDirty(player);
