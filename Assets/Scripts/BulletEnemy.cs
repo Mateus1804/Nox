@@ -22,14 +22,19 @@ public class BulletEnemy : MonoBehaviour
 
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other) { Hit(other); }
+
+    public void Hit(Collider other)
     {
-        if (!consumed && NoxSession.CanPlay && other.gameObject.CompareTag("Player"))
-        {
-            consumed = true;
-            BulletCollision();
-            Destroy(gameObject);
-        }
+        if (consumed || other == null || !NoxSession.CanPlay) return;
+        PlayerScript player = other.GetComponentInParent<PlayerScript>();
+        PlayerTwo alternate = other.GetComponentInParent<PlayerTwo>();
+        if (player == null && alternate == null) return;
+        consumed = true;
+        foreach (Collider item in GetComponentsInChildren<Collider>()) item.enabled = false;
+        if (player != null) player.TakeDamage(1f); else alternate.TakeDamage(1f);
+        BulletCollision();
+        Destroy(gameObject);
     }
     #endregion
 

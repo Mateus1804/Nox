@@ -18,6 +18,11 @@ public static class NoxRules
         return AdjustHealth(current, 0, maximum) / maximum;
     }
 
+    public static bool IsSupport(float normalY, float relativeVerticalSpeed)
+    {
+        return normalY >= 0.65f && relativeVerticalSpeed <= 0.15f;
+    }
+
     public static int NextScene(int current, int sceneCount)
     {
         if (sceneCount < 1 || current < 0 || current >= sceneCount)

@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../Assets/Scripts/NoxRules.cs" Link="NoxRules.cs" />
+    <Compile Include="../../Assets/Scripts/NoxDamageWindow.cs" Link="NoxDamageWindow.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

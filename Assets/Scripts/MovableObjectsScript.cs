@@ -3,13 +3,11 @@ using UnityEngine;
 
 public class MovableObjectsScript : MonoBehaviour
 {
-    // Preservado para as referências serializadas das cenas originais.
     public PlayerScript playerScript;
-    public float countdown;
+    public float countdown; // Contrato serializado legado.
     private readonly HashSet<Collider> candidates = new HashSet<Collider>();
-    private Transform heldObject;
-    private Transform originalParent;
     private Rigidbody heldBody;
+    private FixedJoint grip;
     private bool originalKinematic;
 
     private void Awake()
@@ -19,54 +17,57 @@ public class MovableObjectsScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("InRange") && other.transform.parent != null) candidates.Add(other);
+        if (other.CompareTag("InRange") && other.attachedRigidbody != null) candidates.Add(other);
     }
-
     private void OnTriggerExit(Collider other) { candidates.Remove(other); }
 
     public void Player_GrabDrop()
     {
-        if (playerScript == null || !playerScript.IsAlive || !NoxSession.CanPlay) return;
-        if (!Input.GetKeyDown(KeyCode.E)) return;
-        if (heldObject != null) { Drop(); return; }
+        if (playerScript == null || !playerScript.IsAlive || !NoxSession.CanPlay || !Input.GetKeyDown(KeyCode.E)) return;
+        if (heldBody != null) { Drop(); return; }
         if (!playerScript.grounded) return;
         candidates.RemoveWhere(item => item == null || !item.enabled || !item.gameObject.activeInHierarchy);
-        Transform selected = null;
+        Rigidbody selected = null;
         float nearest = float.PositiveInfinity;
         foreach (Collider candidate in candidates)
         {
-            if (candidate.transform.parent == null) continue;
-            float distance = (candidate.transform.position - transform.position).sqrMagnitude;
-            if (distance < nearest) { nearest = distance; selected = candidate.transform.parent; }
+            Rigidbody body = candidate.attachedRigidbody;
+            if (body == null || body == playerScript.rigid || !body.CompareTag("Box")) continue;
+            float distance = (body.position - transform.position).sqrMagnitude;
+            if (distance < nearest) { nearest = distance; selected = body; }
         }
         if (selected == null) return;
-        heldObject = selected;
-        originalParent = heldObject.parent;
-        heldBody = heldObject.GetComponent<Rigidbody>();
-        if (heldBody != null)
-        {
-            originalKinematic = heldBody.isKinematic;
-            heldBody.isKinematic = true;
-        }
-        heldObject.SetParent(transform, true);
+        heldBody = selected;
+        originalKinematic = heldBody.isKinematic;
+        heldBody.isKinematic = false;
+        // A junta mantém a distância sem herdar escala nem atravessar obstáculos por teletransporte.
+        grip = heldBody.gameObject.AddComponent<FixedJoint>();
+        grip.connectedBody = playerScript.rigid;
+        grip.enableCollision = false;
+        grip.breakForce = 2000f;
+        grip.breakTorque = 2000f;
         playerScript.SetPushing(true);
         countdown = 1;
     }
 
     private void Drop()
     {
-        if (heldObject != null) heldObject.SetParent(originalParent, true);
+        if (grip != null)
+        {
+            grip.connectedBody = null;
+            Destroy(grip);
+        }
         if (heldBody != null) heldBody.isKinematic = originalKinematic;
-        heldObject = null;
         heldBody = null;
+        grip = null;
         countdown = 0;
         if (playerScript != null) playerScript.SetPushing(false);
     }
 
     private void Update()
     {
-        if (playerScript != null && !playerScript.IsAlive) { Drop(); return; }
-        if (heldObject == null && countdown != 0) Drop();
+        if (playerScript == null || !playerScript.IsAlive || (countdown != 0 && (heldBody == null || grip == null)))
+        { Drop(); return; }
         Player_GrabDrop();
     }
     private void OnDisable() { Drop(); candidates.Clear(); }

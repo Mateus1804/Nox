@@ -1,46 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(-200)]
+[RequireComponent(typeof(Rigidbody))]
 public class WaypointsAirPhase : MonoBehaviour
 {
-
     public GameObject[] waypoints;
-    int currentWaypointIndex = 0;
-
     public float speed = 1f;
-
     public float distance;
+    private int currentWaypointIndex;
+    private Rigidbody body;
+    public Vector3 SupportVelocity { get; private set; }
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-
+        body = GetComponent<Rigidbody>();
+        body.isKinematic = true;
+        body.useGravity = false;
+        body.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
+        SupportVelocity = Vector3.zero;
         if (!NoxSession.CanPlay || waypoints == null || waypoints.Length == 0) return;
         if (!NoxRules.IsValidIndex(currentWaypointIndex, waypoints.Length)) currentWaypointIndex = 0;
-        if (waypoints[currentWaypointIndex] == null) return;
-
-        distance = Vector3.Distance(transform.position, waypoints[currentWaypointIndex].transform.position);
-
-        if (Vector3.Distance(transform.position, waypoints[currentWaypointIndex].transform.position) <= 1)
+        GameObject target = waypoints[currentWaypointIndex];
+        if (target == null) return;
+        distance = Vector3.Distance(body.position, target.transform.position);
+        if (distance <= 0.01f)
         {
-
-            currentWaypointIndex++;
-
-
-            if (currentWaypointIndex >= waypoints.Length)
-            {
-
-                currentWaypointIndex = 0;
-            }
+            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+            target = waypoints[currentWaypointIndex];
+            if (target == null) return;
         }
-
-        transform.position = Vector3.MoveTowards(transform.position, waypoints[currentWaypointIndex].transform.position, speed * Time.deltaTime);
+        Vector3 next = Vector3.MoveTowards(body.position, target.transform.position,
+            Mathf.Max(0, speed) * Time.fixedDeltaTime);
+        SupportVelocity = (next - body.position) / Time.fixedDeltaTime;
+        body.MovePosition(next);
     }
+
+    private void OnDisable() { SupportVelocity = Vector3.zero; }
 }

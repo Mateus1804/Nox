@@ -20,7 +20,7 @@ public static class NoxBuild
     [MenuItem("Nox/Preparar cenas recuperadas")]
     public static void PrepareScenes()
     {
-        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared.txt");
+        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v2.txt");
         if (File.Exists(marker)) return;
         if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         SceneSetup[] previous = EditorSceneManager.GetSceneManagerSetup();
@@ -32,6 +32,7 @@ public static class NoxBuild
                 Scene opened = EditorSceneManager.OpenScene(scene.path, OpenSceneMode.Single);
                 foreach (GameObject root in opened.GetRootGameObjects())
                 {
+                    PreparePhysics(root);
                     foreach (Button button in root.GetComponentsInChildren<Button>(true)) RepairButton(button);
                     foreach (EventTrigger trigger in root.GetComponentsInChildren<EventTrigger>(true))
                         foreach (EventTrigger.Entry entry in trigger.triggers) RemoveMissingCallbacks(entry.callback, FindButtonIncludingInactive(trigger.transform));
@@ -53,6 +54,46 @@ public static class NoxBuild
         finally
         {
             if (!Application.isBatchMode) EditorSceneManager.RestoreSceneManagerSetup(previous);
+        }
+    }
+
+    private static void PreparePhysics(GameObject root)
+    {
+        foreach (WaypointsAirPhase platform in root.GetComponentsInChildren<WaypointsAirPhase>(true))
+        {
+            Rigidbody body = platform.GetComponent<Rigidbody>();
+            if (body == null) body = platform.gameObject.AddComponent<Rigidbody>();
+            body.isKinematic = true;
+            body.useGravity = false;
+            body.interpolation = RigidbodyInterpolation.Interpolate;
+            EditorUtility.SetDirty(body);
+        }
+        foreach (Transform item in root.GetComponentsInChildren<Transform>(true))
+        {
+            if (!item.CompareTag("Box")) continue;
+            Collider solid = item.GetComponent<Collider>();
+            if (solid == null)
+            {
+                MeshFilter mesh = item.GetComponent<MeshFilter>();
+                if (mesh == null || mesh.sharedMesh == null)
+                    throw new InvalidOperationException("Caixa sem geometria para colisão: " + item.name);
+                BoxCollider box = item.gameObject.AddComponent<BoxCollider>();
+                box.center = mesh.sharedMesh.bounds.center;
+                box.size = mesh.sharedMesh.bounds.size;
+                solid = box;
+            }
+            solid.isTrigger = false;
+            Rigidbody body = item.GetComponent<Rigidbody>();
+            if (body == null) body = item.gameObject.AddComponent<Rigidbody>();
+            body.isKinematic = false;
+            body.useGravity = true;
+            body.constraints |= RigidbodyConstraints.FreezeRotation;
+            body.interpolation = RigidbodyInterpolation.Interpolate;
+            body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            foreach (Collider range in item.GetComponentsInChildren<Collider>(true))
+                if (range.CompareTag("InRange")) { range.isTrigger = true; EditorUtility.SetDirty(range); }
+            EditorUtility.SetDirty(body);
+            EditorUtility.SetDirty(solid);
         }
     }
 
