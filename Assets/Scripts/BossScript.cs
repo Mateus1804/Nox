@@ -9,34 +9,36 @@ public class BossScript : MonoBehaviour
 {
 
     #region Variaveis > Agent, Player, Animin
+    private bool deathHandled;
+    private float maximumHealth;
     public GameObject player;
     public NavMeshAgent agent;
     #endregion
 
-    #region Variaveis > Distância, Collider e Ataque
+    #region Variaveis > DistÃ¢ncia, Collider e Ataque
     public float maxDistance = 10;
     float currentDistance = 200;
 
-    
+
     public float rangeAttack = 1;
     public SphereCollider areaAttack;
     public bool attack = false;
     #endregion
 
-    #region Variáveis > HP e Healthbar
+    #region VariÃ¡veis > HP e Healthbar
     public int hp;
     public Image healthBar;
     public GameObject healthBarBg;
     #endregion
 
-    
+
 
     #region Collider
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Slash")
         {
-            BarCount(1, 0.20f);   
+            BarCount(1, 0.20f);
         }
     }
     #endregion
@@ -49,7 +51,7 @@ public class BossScript : MonoBehaviour
         if (!attack)
         {
             attack = true;
-            areaAttack.enabled = true;
+            if (areaAttack != null) areaAttack.enabled = true;
         }
 
     }
@@ -69,28 +71,21 @@ public class BossScript : MonoBehaviour
     #region BarCount
     public void BarCount(int damage, float amount)
     {
-        hp -= damage;
-        healthBar.fillAmount -= amount;
+        if (deathHandled || !NoxSession.CanPlay || damage <= 0) return;
+        hp = (int)NoxRules.AdjustHealth(hp, -damage, maximumHealth);
+        if (healthBar != null) healthBar.fillAmount = NoxRules.HealthRatio(hp, maximumHealth);
     }
     #endregion
 
     public void BossDeath()
     {
-        if (hp <= 0)
-        {
-            PlaceHolderPanel.PHP.PanelWinOrLose("Stage Completed");
-            LoadLevels.Instance.acessLevelFire += 1;
-            Destroy(gameObject);
-        }
-
-        if (PlaceHolderPanel.PHP.placeHolderPanel.activeSelf == true || Time.timeScale == 0)
-        {
-            healthBarBg.SetActive(false);
-        }
-        else
-        {
-            healthBarBg.SetActive(true);
-        }
+        if (deathHandled || hp > 0) return;
+        deathHandled = true;
+        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+        if (areaAttack != null) areaAttack.enabled = false;
+        if (LoadLevels.Instance != null) LoadLevels.Instance.UnlockFire();
+        if (PlaceHolderPanel.PHP != null) PlaceHolderPanel.PHP.PanelWinOrLose("Stage Completed");
+        Destroy(gameObject);
     }
 
     public void Persegue()
@@ -100,6 +95,7 @@ public class BossScript : MonoBehaviour
 
     void Start()
     {
+        maximumHealth = Mathf.Max(1, hp);
         player = GameObject.FindGameObjectWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
 
@@ -107,9 +103,12 @@ public class BossScript : MonoBehaviour
 
     void Update()
     {
+        if (healthBarBg != null) healthBarBg.SetActive(!deathHandled && NoxSession.CanPlay);
+        if (deathHandled) return;
         BossDeath();
+        if (deathHandled || !NoxSession.CanPlay || player == null || agent == null || !agent.isOnNavMesh) return;
 
-        #region Movimentação e Ataque
+        #region MovimentaÃ§Ã£o e Ataque
         transform.LookAt(player.transform.position);
         currentDistance = Vector3.Distance(transform.position, player.transform.position);
 
@@ -122,12 +121,14 @@ public class BossScript : MonoBehaviour
 
         {
             attack = false;
-            areaAttack.enabled = false;
+            if (areaAttack != null) areaAttack.enabled = false;
             agent.SetDestination(player.transform.position);
         }
 
         else
         {
+            attack = false;
+            if (areaAttack != null) areaAttack.enabled = false;
             agent.SetDestination(this.transform.position);
         }
         #endregion

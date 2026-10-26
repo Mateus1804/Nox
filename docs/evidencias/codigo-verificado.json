@@ -1,0 +1,166 @@
+{
+  "editor_referencia": "2021.1.28f1 (f3f9dc10f3dd)",
+  "linguagem": "C# 8",
+  "compilacao_runtime_proprio": {
+    "scripts": 32,
+    "erros": 0,
+    "avisos": 0
+  },
+  "compilacao_editor_isolada": {
+    "scripts": 1,
+    "erros": 0,
+    "avisos": 0
+  },
+  "compilacao_runtime_com_pacotes": {
+    "scripts": 71,
+    "erros": 0,
+    "avisos": 1,
+    "aviso": "CS0169 no exemplo Benchmark01 do TextMesh Pro"
+  },
+  "regressoes_core": 25,
+  "integracao_preparador": 6,
+  "unity_batch_exit_code": 134,
+  "build_corrigida_gerada": false,
+  "jogabilidade_validada": false,
+  "arquivos": [
+    {
+      "caminho": "Assets/Editor/NoxBuild.cs",
+      "sha256": "111af65ad4399d936f021e83a1360187dc8f719bea32dfd374b99d32c79b158d"
+    },
+    {
+      "caminho": "Assets/Scripts/AimEnemy.cs",
+      "sha256": "43c19b7f27f137e221d7233c6d4bf76ef1db3fb65ab3219d80c12d4649269130"
+    },
+    {
+      "caminho": "Assets/Scripts/Billboard.cs",
+      "sha256": "5df5b4342a10133af22455a22f98eabae2a6539b468ce143b5f3c156dd44a5d3"
+    },
+    {
+      "caminho": "Assets/Scripts/Boss.cs",
+      "sha256": "aabb2b1f0ff638db86a7b58dc04ba0daa94146907ab4d8529f90d822444ec24f"
+    },
+    {
+      "caminho": "Assets/Scripts/BossScript.cs",
+      "sha256": "dec463b98d1a09a39b2d864ce87cee49fd770303ac9e01a028be43809ca3fcce"
+    },
+    {
+      "caminho": "Assets/Scripts/Bullet.cs",
+      "sha256": "0bbc2c2c1f04ef7cd98790c88dc6fdb7e043a58d1bf72aa787cba05b362859bf"
+    },
+    {
+      "caminho": "Assets/Scripts/BulletEnemy.cs",
+      "sha256": "cf688cf5145b9c4d5b59d1cb7f026902380dc0e5da85b812ca1bf383c83979d9"
+    },
+    {
+      "caminho": "Assets/Scripts/CameraFollow.cs",
+      "sha256": "26720fe15f304bf638199a17f6577a2531af587c8c2709a91e314de72523d745"
+    },
+    {
+      "caminho": "Assets/Scripts/ChangeTextColor.cs",
+      "sha256": "4196bf13a05d2bb6e6265c879b7062c26037e9847e8f3ec8bf7bdb2ee613016e"
+    },
+    {
+      "caminho": "Assets/Scripts/Cristais.cs",
+      "sha256": "a20f032a2f7b81422943ecf5581e173237f0389f59e66db738f89dfec6cdf852"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemiesWaypoint.cs",
+      "sha256": "11f979ca7c5fd7af6d69178517568038ac2b9dd71d36920adce95db6baafdf80"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemyAir.cs",
+      "sha256": "9852cb8266f80e05c4c60821685163257cd3c9b8640c554588c5b4d2a323dd42"
+    },
+    {
+      "caminho": "Assets/Scripts/EnemyPatrol.cs",
+      "sha256": "cd09ce81e1e764b7d0722daaf32c9ab7520286ae73a36b07dbd1f9c9f66ca997"
+    },
+    {
+      "caminho": "Assets/Scripts/HUDAndSounds.cs",
+      "sha256": "75db99b892a4a7efdce720794aa0a6446e0e84233c18307ee575e44da21d1f79"
+    },
+    {
+      "caminho": "Assets/Scripts/Lever.cs",
+      "sha256": "ccd3f6fcc43364a39d1070f53f44e7632bd4e95e58dcaf3b5338f1067de22d9c"
+    },
+    {
+      "caminho": "Assets/Scripts/LoadLevels.cs",
+      "sha256": "8b79aa9f692e7bfdc373f2ae420eeceb44b56d7023e9bc0b5b17a3f019e10e30"
+    },
+    {
+      "caminho": "Assets/Scripts/MovableObjectsScript.cs",
+      "sha256": "be2495aa2fd1093dd7c96248f7dea4f2b1be6e4e4e78d210207c6a4f1e2f8152"
+    },
+    {
+      "caminho": "Assets/Scripts/NoxBootstrap.cs",
+      "sha256": "1967b282f5728c351e6ee98996b715dd6811ce2541c34d580fe24a7900a95fa9"
+    },
+    {
+      "caminho": "Assets/Scripts/NoxRules.cs",
+      "sha256": "a27d697beb412a60200ce0a1c0bdd7a83bfc1a01750a11ed315da0fa62f5136a"
+    },
+    {
+      "caminho": "Assets/Scripts/NoxSceneActions.cs",
+      "sha256": "7a52468e92d892260d1b53e5638c3f8e66f5c15aa5a27645610cee68652a42aa"
+    },
+    {
+      "caminho": "Assets/Scripts/NoxSession.cs",
+      "sha256": "b79b3f40f54646599c329064dad2d0865a16acb51d5c9f5776a5e72fea5c0c05"
+    },
+    {
+      "caminho": "Assets/Scripts/PlaceHolderPanel.cs",
+      "sha256": "c4a298ff67ceda652ad6768206d6a33ed060e9dac1768e4277fac87c866c08f8"
+    },
+    {
+      "caminho": "Assets/Scripts/PlayerScript.cs",
+      "sha256": "e239aa87bd61ade0e1dcf53c1ffa3f642e88baa55a1feff3248db8a3f8e0d299"
+    },
+    {
+      "caminho": "Assets/Scripts/PlayerTwo.cs",
+      "sha256": "df1a947e5fdd50522e5f4eabbe08eceb81e15a0cec6f5cfa3522423c6096ea2a"
+    },
+    {
+      "caminho": "Assets/Scripts/RotateSky.cs",
+      "sha256": "d9c73e1951e67e77afa4466da0fbe19dd8cb6b2d82f7251d1463e994360077f8"
+    },
+    {
+      "caminho": "Assets/Scripts/SlashScript.cs",
+      "sha256": "8abf515ab036dfd7abdbb1daa6abb54e2a7f888806dd6054a5c69f4ddcfde82a"
+    },
+    {
+      "caminho": "Assets/Scripts/ThirdSlash.cs",
+      "sha256": "0aabb4e43e5a1f19800b78648c4b73166923e8ba0ef6a00e93ed4bf2f1ce5834"
+    },
+    {
+      "caminho": "Assets/Scripts/TutorialList.cs",
+      "sha256": "305e7918558cd5f73eba9c514eb601fd5ebe2df34f28025eb84c39bb62f58349"
+    },
+    {
+      "caminho": "Assets/Scripts/TutorialMethod.cs",
+      "sha256": "3c0dfb523178d58013977a0edad350c49f65ff10679687c0fc4180d95a0bbd7b"
+    },
+    {
+      "caminho": "Assets/Scripts/WaypointsAirPhase.cs",
+      "sha256": "d2e6025de29fc659b4da22f9f530d1288b7a1f2e09ba2d97b4b197ab1816d0e4"
+    },
+    {
+      "caminho": "Assets/Scripts/plataforma.cs",
+      "sha256": "ba06b128a451148fc35f0880928e5f7c57d64ef1ef22bc0a84463a4152ad5e38"
+    },
+    {
+      "caminho": "Assets/Scripts/portalR.cs",
+      "sha256": "a87569adc73419249e8beb32e3bdb9c4e98f4e9c7181f3ec74f1608e38773e56"
+    },
+    {
+      "caminho": "Assets/Scripts/portaldentro.cs",
+      "sha256": "c55820ee97ee4f78a28b4a4f6aca1baa485aa39836d4327d70a75614016ffd6e"
+    }
+  ],
+  "commit_codigo_validado": "a6e072ddc617f1bee0cb248fe7cb3d2ee22e2ac4",
+  "ci_windows": {
+    "run_id": 40245039208,
+    "resultado": "success",
+    "regressoes_core": 25,
+    "integracao_preparador": 6
+  }
+}

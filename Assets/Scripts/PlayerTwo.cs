@@ -10,13 +10,24 @@ public class PlayerTwo : MonoBehaviour
 
     //public GameObject painelGameOver;
 
-    // Vari·vel que corresponde ao script "PlayerTwo", serve como "singleton"
+    // Vari√°vel que corresponde ao script "PlayerTwo", serve como "singleton"
     public static PlayerTwo PT;
 
-    // Vari·vel que corresponde ao componente "Rigidbody" do Player
+    // Vari√°vel que corresponde ao componente "Rigidbody" do Player
     public Rigidbody rigid;
 
-    #region Vari·veis relacionadas a atirar
+
+    [SerializeField, Min(1f)] private float maxHealth = 3f;
+    [SerializeField, Min(0.1f)] private float jumpHeight = 3.5f;
+    private Vector3 desiredMovement;
+    private Collider bodyCollider;
+    private bool jumpRequested;
+    private bool isPushing;
+    private float movementSpeed;
+    public bool IsAlive => hp > 0;
+    public void SetPushing(bool value) { isPushing = value; }
+
+    #region Vari√°veis relacionadas a atirar
     public GameObject crosshair;
     public GameObject firstSlash;
     public GameObject secondSlash;
@@ -27,134 +38,72 @@ public class PlayerTwo : MonoBehaviour
     public bool shootTime = false;
     #endregion
 
-    #region Vari·veis relacionadas ao pulo e raycast
+    #region Vari√°veis relacionadas ao pulo e raycast
 
-    // Vari·vel que corresponde a layer dentro da Unity
+    // Vari√°vel que corresponde a layer dentro da Unity
     public LayerMask WhatIsGround;
 
-    // Vari·vel que corresponde a forÁa do pulo do jogador
+    // Vari√°vel que corresponde a for√ßa do pulo do jogador
     public float jumpForce;
 
-    // Vari·vel que informa se o jogador est· no ch„o ou n„o
+    // Vari√°vel que informa se o jogador est√° no ch√£o ou n√£o
     public bool grounded = false;
 
-    // Vari·vel que corresponde ao comprimento do raio
-    float rayDistance = 2f;
 
-    // Vari·vel que corresponde a dist‚ncia que existe do jogador e o ponto onde o raio È criado
-    Vector3 rayOffset = new Vector3(0, 0.3f, 1);
+
+
     #endregion
 
-    #region Vari·veis relacionadas a velocidade
+    #region Vari√°veis relacionadas a velocidade
 
-    // Vari·vel que corresponde a velocidade ao empurrar objetos
+    // Vari√°vel que corresponde a velocidade ao empurrar objetos
     float pushingSpeed = 3f;
 
-    // Vari·vel que corresponde a velocidade normal do jogador
+    // Vari√°vel que corresponde a velocidade normal do jogador
     float normalSpeed = 6f;
 
     #endregion
 
-    #region Vari·veis relacionadas ao HP
+    #region Vari√°veis relacionadas ao HP
 
-    // Vari·vel que corresponde ao HP
+    // Vari√°vel que corresponde ao HP
     public float hp;
 
-    // Vari·vel que corresponde a "imagem" da barra de vida, a quantidade de vida
+    // Vari√°vel que corresponde a "imagem" da barra de vida, a quantidade de vida
     public Image healthBar;
 
-    // Vari·vel que corresponde a barra de vida dentro da Unity
+    // Vari√°vel que corresponde a barra de vida dentro da Unity
     public GameObject healthBarOBj;
     #endregion
 
 
-    #region MetÛdos de movimentaÁ„o: normal e empurrando
+    #region Met√≥dos de movimenta√ß√£o: normal e empurrando
     public void CharacterPushing()
     {
-        float vertical = Input.GetAxis("Vertical") * pushingSpeed;
-        float horizontal = Input.GetAxis("Horizontal") * pushingSpeed;
-
-
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
-        {
-            rigid.velocity = new Vector3(0, 0, -vertical);
-        }
-
-
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
-        {
-            rigid.velocity = new Vector3(-horizontal, 0, 0);
-        }
+        desiredMovement = Vector3.ClampMagnitude(new Vector3(
+            Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")), 1f);
+        movementSpeed = pushingSpeed;
     }
 
     public void CharacterMove()
     {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            if (transform.eulerAngles != Vector3.zero)
-            {
-                transform.eulerAngles = Vector3.zero;
-            }
-        }
-
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            Vector3 backAxis = new Vector3(0, 180, 0);
-            if (transform.eulerAngles != backAxis)
-            {
-                transform.eulerAngles = backAxis;
-            }
-        }
-
-
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            Vector3 rightAxis = new Vector3(0, 90, 0);
-            if (transform.eulerAngles != rightAxis)
-            {
-                transform.eulerAngles = rightAxis;
-            }
-        }
-
-
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            Vector3 leftAxis = new Vector3(0, -90, 0);
-            if (transform.eulerAngles != leftAxis)
-            {
-                transform.eulerAngles = leftAxis;
-            }
-        }
-
-
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
-        {
-            transform.position = transform.position + transform.forward * normalSpeed * Time.deltaTime;
-            //animin.SetBool("IsWalk", true);
-        }
-        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
-        {
-            //animin.SetBool("IsWalk", false);
-        }
+        desiredMovement = Vector3.ClampMagnitude(new Vector3(
+            Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")), 1f);
+        movementSpeed = normalSpeed;
+        if (desiredMovement.sqrMagnitude > 0.001f)
+            transform.forward = desiredMovement;
     }
     #endregion
 
-    #region MetÛdo de pulo
+    #region Met√≥do de pulo
    public void CharacterJump()
     {
-        if (Input.GetKey(KeyCode.Space) && grounded == true)
-        {
-            rigid.AddForce(Vector3.up * jumpForce);
-            //animin.SetBool("IsJump", true);
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            // animin.SetBool("IsJump", false);
-        }
+        if (!isPushing && Input.GetKeyDown(KeyCode.Space))
+            jumpRequested = true;
     }
     #endregion
 
-    #region MetÛdo de ataque
+    #region Met√≥do de ataque
     public void CharacterSlash()
     {
         if (Input.GetKey(KeyCode.Mouse0) && currentTime >= 0.3f && Time.timeScale == 1)
@@ -211,34 +160,22 @@ public class PlayerTwo : MonoBehaviour
 
     #endregion
 
-    #region MetÛdo das barras
+    #region Met√≥do das barras
     public float BarCount(float value, float moreOrLess, float amount, Image bar)
     {
-        value -= moreOrLess;
-
-        bar.fillAmount -= amount;
-
-        return value;
+        float next = NoxRules.AdjustHealth(value, -moreOrLess, maxHealth);
+        if (bar != null) bar.fillAmount = NoxRules.HealthRatio(next, maxHealth);
+        return next;
     }
     #endregion
 
-    #region MetÛdo de troca de cor da barra de vida
+    #region Met√≥do de troca de cor da barra de vida
     public void ChangeColor()
     {
-        if (hp == 3)
-        {
-            healthBar.color = Color.green;
-        }
-
-        if (hp == 2)
-        {
-            healthBar.color = Color.yellow;
-        }
-
-        if (hp == 1)
-        {
-            healthBar.color = Color.red;
-        }
+        if (healthBar == null) return;
+        float ratio = NoxRules.HealthRatio(hp, maxHealth);
+        healthBar.fillAmount = ratio;
+        healthBar.color = ratio > 2f / 3f ? Color.green : ratio > 1f / 3f ? Color.yellow : Color.red;
     }
     #endregion
 
@@ -250,7 +187,7 @@ public class PlayerTwo : MonoBehaviour
         {
             hp = BarCount(hp, 1, 0.25f, healthBar);
             Destroy(collision.gameObject, 0.5f);
-            
+
         }
 
         if (collision.gameObject.tag == "Impulse")
@@ -262,6 +199,7 @@ public class PlayerTwo : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        if (!NoxSession.CanPlay || !IsAlive) return;
         if (other.gameObject.tag == "BulletTurret")
         {
             hp = BarCount(hp, 1, 0.25f, healthBar);
@@ -276,8 +214,8 @@ public class PlayerTwo : MonoBehaviour
 
         if (other.gameObject.tag == "Cristais")
         {
-            //4 de mana s„o 100% do fillamount, 1 de mana È igual a 25% e 0.10 de mana È igual a 0.025 de fillamount que significa 2,5% do valor total (que È 4). 
-            //Quando for atribuir um valor ao fillamount, dividir o valor perdido ou recebido pelo valor total. Esse ser· o valor do fillamount.
+            //4 de mana s√£o 100% do fillamount, 1 de mana √© igual a 25% e 0.10 de mana √© igual a 0.025 de fillamount que significa 2,5% do valor total (que √© 4).
+            //Quando for atribuir um valor ao fillamount, dividir o valor perdido ou recebido pelo valor total. Esse ser√° o valor do fillamount.
             Destroy(other.gameObject);
         }
 
@@ -288,13 +226,13 @@ public class PlayerTwo : MonoBehaviour
 
         if (other.gameObject.tag == "AreaWin")
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            NoxSession.LoadNextScene();
         }
 
         if (other.gameObject.tag == "Limbo")
         {
             hp = 0;
-            Time.timeScale = 0;
+            NoxSession.SetState(NoxGameState.Lost);
         }
     }
     #endregion
@@ -314,65 +252,76 @@ public class PlayerTwo : MonoBehaviour
 
     void Start()
     {
-        //animin = gameObject.GetComponent<Animator>();
+        if (rigid == null) rigid = GetComponent<Rigidbody>();
+        if (rigid == null)
+        {
+            Debug.LogError("O jogador precisa de Rigidbody.", this);
+            enabled = false;
+            return;
+        }
+        bodyCollider = GetComponent<Collider>();
+        rigid.interpolation = RigidbodyInterpolation.Interpolate;
+        rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         healthBarOBj = GameObject.FindGameObjectWithTag("HealthBar");
-        healthBar = healthBarOBj.GetComponent<Image>();
-
-        currentTime = 1;
-        startTime = currentTime;
+        if (healthBarOBj != null) healthBar = healthBarOBj.GetComponent<Image>();
+        hp = NoxRules.AdjustHealth(hp > 0 ? hp : maxHealth, 0, maxHealth);
+        currentTime = 1f;
+        startTime = Time.time - currentTime;
+        ChangeColor();
     }
 
 
     void Update()
     {
-
-        if (this.gameObject.tag == "Player")
+        if (!IsAlive)
         {
-            CharacterMove();
+            desiredMovement = Vector3.zero;
+            jumpRequested = false;
+            if (PlaceHolderPanel.PHP != null)
+                PlaceHolderPanel.PHP.PanelWinOrLose("Game Over");
+            return;
         }
-
-        if (this.gameObject.tag == "Pushing")
+        if (!NoxSession.CanPlay)
         {
-            CharacterPushing();
+            desiredMovement = Vector3.zero;
+            jumpRequested = false;
+            return;
         }
-
-        if (slashCount == 0)
+        if (isPushing) CharacterPushing(); else CharacterMove();
+        switch ((int)slashCount)
         {
-            CharacterSlash();
+            case 0: CharacterSlash(); break;
+            case 1: CharacterSlash2(); break;
+            case 2: CharacterSlash3(); break;
+            default: slashCount = 0; break;
         }
-
-        if (slashCount == 1)
-        {
-            CharacterSlash2();
-        }
-
-        if (slashCount == 2)
-        {
-            CharacterSlash3();
-        }
-
-        if (currentTime >= 2)
-        {
-            slashCount = 0;
-        }
-
+        if (currentTime > 2f) slashCount = 0;
         CharacterJump();
         ChangeColor();
-        
-        if (Physics.Raycast(transform.position + rayOffset, Vector3.down, rayDistance, WhatIsGround))
+    }
+
+    private void FixedUpdate()
+    {
+        if (rigid == null || !IsAlive || !NoxSession.CanPlay) return;
+        // A consulta usa os p√©s do collider, em vez de um deslocamento global fixo.
+        Vector3 origin = bodyCollider != null
+            ? bodyCollider.bounds.center : transform.position + Vector3.up * 0.5f;
+        float length = bodyCollider != null ? bodyCollider.bounds.extents.y + 0.12f : 0.7f;
+        grounded = rigid.velocity.y <= 0.1f && Physics.Raycast(origin, Vector3.down,
+            length, WhatIsGround, QueryTriggerInteraction.Ignore);
+        Vector3 velocity = desiredMovement * movementSpeed;
+        velocity.y = rigid.velocity.y;
+        if (jumpRequested && grounded && !isPushing)
         {
-            Debug.DrawRay(transform.position + rayOffset, Vector3.down * rayDistance, Color.red);
-            grounded = true;
-        }
-        else
-        {
+            velocity.y = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
             grounded = false;
         }
+        jumpRequested = false;
+        rigid.velocity = velocity;
+    }
 
-        if (hp <= 0)
-        {
-            healthBarOBj.SetActive(false);
-            PlaceHolderPanel.PHP.PanelWinOrLose("Game Over");
-        }
+    private void OnDestroy()
+    {
+        if (PT == this) PT = null;
     }
 }

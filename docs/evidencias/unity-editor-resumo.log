@@ -1,0 +1,9 @@
+Editor: Unity 2021.1.28f1 (f3f9dc10f3dd)
+Modo: batchmode, nographics, quit
+Método solicitado: NoxBuild.Windows
+Resultado: processo encerrado com código 134; build não confirmada.
+Mensagens relevantes do log original:
+[LicensingClient] Error "0x80000000" attempting to connect to the Licensing Client
+[Licensing::Module] Error: Failed to connect to channel
+IPC channel to LicensingClient doesn't exist; falling back to Legacy licensing
+free(): double free detected in tcache 2

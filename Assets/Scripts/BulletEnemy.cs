@@ -7,6 +7,7 @@ public class BulletEnemy : MonoBehaviour
 
 {
     public float speed;
+    private bool consumed;
     public float radius;
     public float force;
 
@@ -14,7 +15,7 @@ public class BulletEnemy : MonoBehaviour
     #region OnDrawGizmos
     void OnDrawGizmos()
     {
-        // Area da colis„o do tiro
+        // Area da colis√£o do tiro
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, radius);
 
@@ -23,9 +24,11 @@ public class BulletEnemy : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        if (!consumed && NoxSession.CanPlay && other.gameObject.CompareTag("Player"))
         {
+            consumed = true;
             BulletCollision();
+            Destroy(gameObject);
         }
     }
     #endregion
@@ -35,10 +38,11 @@ public class BulletEnemy : MonoBehaviour
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
 
+        var affected = new HashSet<Rigidbody>();
         foreach (Collider nearbyObject in colliders)
         {
-            Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
-            if (rb != null)
+            Rigidbody rb = nearbyObject.attachedRigidbody;
+            if (rb != null && affected.Add(rb))
             {
                 rb.AddExplosionForce(force, transform.position, radius);
             }

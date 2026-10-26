@@ -17,17 +17,18 @@ public class Bullet : MonoBehaviour
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
 
+        var affected = new HashSet<Rigidbody>();
         foreach (Collider nearbyObject in colliders)
         {
-            Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
-            if (rb != null)
+            Rigidbody rb = nearbyObject.attachedRigidbody;
+            if (rb != null && affected.Add(rb))
             {
                 rb.AddExplosionForce(force, transform.position, radius);
             }
         }
     }
 
-   
+
     void Update()
     {
         transform.position = transform.position + transform.forward * speed * Time.deltaTime;
@@ -38,12 +39,12 @@ public class Bullet : MonoBehaviour
 
         if (other.gameObject.tag == "Turtle")
         {
-            Destroy(gameObject, 3);
+            Destroy(gameObject);
         }
 
         if(other.gameObject.tag == "Eagle")
         {
-            Destroy(gameObject, 3);
+            Destroy(gameObject);
         }
     }
 }

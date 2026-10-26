@@ -6,28 +6,39 @@ using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
-    // Variável que corresponde ao script "PlayerTwo", serve como "singleton"
+    // VariÃ¡vel que corresponde ao script "PlayerTwo", serve como "singleton"
     public static PlayerScript PT;
 
-    // Variável que corresponde ao componente "Rigidbody" do Player
+    // VariÃ¡vel que corresponde ao componente "Rigidbody" do Player
     public Rigidbody rigid;
 
     public AudioSource soundBossWater;
 
-    #region Variáveis para a mudança do offset da camera, e a ativação do canvas da vida do Boss, e a parede invisivel
-    // A câmera que segue o Player fica associada a essa variável
+
+    [SerializeField, Min(1f)] private float maxHealth = 3f;
+    [SerializeField, Min(0.1f)] private float jumpHeight = 3.5f;
+    private Vector3 desiredMovement;
+    private Collider bodyCollider;
+    private bool jumpRequested;
+    private bool isPushing;
+    private float movementSpeed;
+    public bool IsAlive => hp > 0;
+    public void SetPushing(bool value) { isPushing = value; }
+
+    #region VariÃ¡veis para a mudanÃ§a do offset da camera, e a ativaÃ§Ã£o do canvas da vida do Boss, e a parede invisivel
+    // A cÃ¢mera que segue o Player fica associada a essa variÃ¡vel
     public GameObject mainCameraObj;
 
-    // Esse é o novo offset da camera, dá pra mudar o valor no Inspector do Player 
+    // Esse Ã© o novo offset da camera, dÃ¡ pra mudar o valor no Inspector do Player
     public Vector3 newOffset;
 
-    // O canvas do Boss fica associado a essa variável
+    // O canvas do Boss fica associado a essa variÃ¡vel
     public GameObject bossCanvas;
 
     public GameObject invisibleWall;
     #endregion
 
-    #region Variáveis relacionadas a atacar
+    #region VariÃ¡veis relacionadas a atacar
     public GameObject crosshair;
     public GameObject slash1;
     public GameObject slash2;
@@ -38,136 +49,74 @@ public class PlayerScript : MonoBehaviour
     public bool shootTime = false;
     #endregion
 
-    #region Variáveis relacionadas ao pulo e raycast
+    #region VariÃ¡veis relacionadas ao pulo e raycast
 
-    // Variável que corresponde a layer dentro da Unity
+    // VariÃ¡vel que corresponde a layer dentro da Unity
     public LayerMask WhatIsGround;
 
-    // Variável que corresponde a força do pulo do jogador
+    // VariÃ¡vel que corresponde a forÃ§a do pulo do jogador
     public float jumpForce;
 
-    // Variável que informa se o jogador está no chão ou não
+    // VariÃ¡vel que informa se o jogador estÃ¡ no chÃ£o ou nÃ£o
     public bool grounded = false;
 
-    // Variável que corresponde ao comprimento do raio
-    float rayDistance = 2f;
 
-    // Variável que corresponde a distância que existe do jogador e o ponto onde o raio é criado
-    Vector3 rayOffset = new Vector3(0, 0.3f, 1);
+
+
     #endregion
 
-    #region Variáveis relacionadas a velocidade
+    #region VariÃ¡veis relacionadas a velocidade
 
-    // Variável que corresponde a velocidade ao empurrar objetos
+    // VariÃ¡vel que corresponde a velocidade ao empurrar objetos
     float pushingSpeed = 3f;
 
-    // Variável que corresponde a velocidade normal do jogador
+    // VariÃ¡vel que corresponde a velocidade normal do jogador
     float normalSpeed = 6f;
 
     #endregion
 
-    #region Variáveis relacionadas ao HP
+    #region VariÃ¡veis relacionadas ao HP
 
-    // Variável que corresponde ao HP
+    // VariÃ¡vel que corresponde ao HP
     public float hp;
 
-    // Variável que corresponde a "imagem" da barra de vida, a quantidade de vida
+    // VariÃ¡vel que corresponde a "imagem" da barra de vida, a quantidade de vida
     public Image healthBar;
 
-    // Variável que corresponde a barra de vida dentro da Unity
+    // VariÃ¡vel que corresponde a barra de vida dentro da Unity
     public GameObject healthBarObj;
 
     public GameObject healthBar_Canvas;
     #endregion
 
-    #region Metódos de movimentação: normal e empurrando
+    #region MetÃ³dos de movimentaÃ§Ã£o: normal e empurrando
     public void CharacterPushing()
     {
-        float vertical = Input.GetAxis("Vertical") * pushingSpeed;
-        float horizontal = Input.GetAxis("Horizontal") * pushingSpeed;
-
-
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
-        {
-            rigid.velocity = new Vector3(0, 0, vertical);
-        }
-
-
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
-        {
-            rigid.velocity = new Vector3(horizontal, 0, 0);
-        }
+        desiredMovement = Vector3.ClampMagnitude(new Vector3(
+            Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")), 1f);
+        movementSpeed = pushingSpeed;
     }
 
     public void CharacterMove()
     {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            if (transform.eulerAngles != Vector3.zero)
-            {
-                transform.eulerAngles = Vector3.zero;
-            }
-        }
-
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            Vector3 backAxis = new Vector3(0, 180, 0);
-            if (transform.eulerAngles != backAxis)
-            {
-                transform.eulerAngles = backAxis;
-            }
-        }
-
-
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            Vector3 rightAxis = new Vector3(0, 90, 0);
-            if (transform.eulerAngles != rightAxis)
-            {
-                transform.eulerAngles = rightAxis;
-            }
-        }
-
-
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            Vector3 leftAxis = new Vector3(0, -90, 0);
-            if (transform.eulerAngles != leftAxis)
-            {
-                transform.eulerAngles = leftAxis;
-            }
-        }
-
-
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
-        {
-            transform.position = transform.position + transform.forward * normalSpeed * Time.deltaTime;
-            //animin.SetBool("IsWalk", true);
-        }
-        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
-        {
-            //animin.SetBool("IsWalk", false);
-        }
+        desiredMovement = Vector3.ClampMagnitude(new Vector3(
+            Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")), 1f);
+        movementSpeed = normalSpeed;
+        if (desiredMovement.sqrMagnitude > 0.001f)
+            transform.forward = desiredMovement;
     }
     #endregion
 
-    #region Metódo de pulo
+    #region MetÃ³do de pulo
    public void CharacterJump()
     {
-        if (Input.GetKey(KeyCode.Space) && grounded == true)
-        {
-            rigid.AddForce(Vector3.up * jumpForce);
-            //animin.SetBool("IsJump", true);
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            // animin.SetBool("IsJump", false);
-        }
+        if (!isPushing && Input.GetKeyDown(KeyCode.Space))
+            jumpRequested = true;
     }
     #endregion
 
-    #region Metódo de ataque
-    // Metódo que invoca o primeiro Slash
+    #region MetÃ³do de ataque
+    // MetÃ³do que invoca o primeiro Slash
     public void CharacterSlash1()
     {
         if (Input.GetKey(KeyCode.Mouse0) && currentTime >= 0.4f && Time.timeScale == 1)
@@ -185,7 +134,7 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    // Metódo que invoca o segundo Slash
+    // MetÃ³do que invoca o segundo Slash
     public void CharacterSlash2()
     {
         if (Input.GetKey(KeyCode.Mouse0) && currentTime >= 0.2f && Time.timeScale == 1)
@@ -203,7 +152,7 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    // Metódo que invoca o terceiro Slash
+    // MetÃ³do que invoca o terceiro Slash
     public void CharacterSlash3()
     {
         if (Input.GetKey(KeyCode.Mouse0) && currentTime >= 0.4f && Time.timeScale == 1)
@@ -223,48 +172,38 @@ public class PlayerScript : MonoBehaviour
 
     #endregion
 
-    #region Metódo das barras
+    #region MetÃ³do das barras
     public float BarCount(float value, float moreOrLess, float amount, Image bar)
     {
-        value -= moreOrLess;
-
-        bar.fillAmount -= amount;
-
-        return value;
+        float next = NoxRules.AdjustHealth(value, -moreOrLess, maxHealth);
+        if (bar != null) bar.fillAmount = NoxRules.HealthRatio(next, maxHealth);
+        return next;
     }
     #endregion
 
-    #region Metódo de troca de cor da barra de vida
+    #region MetÃ³do de troca de cor da barra de vida
     public void ChangeColor()
     {
-        if (hp == 3)
-        {
-            healthBar.color = Color.green;
-        }
-
-        if (hp == 2)
-        {
-            healthBar.color = Color.yellow;
-        }
-
-        if (hp == 1)
-        {
-            healthBar.color = Color.red;
-        }
+        if (healthBar == null) return;
+        float ratio = NoxRules.HealthRatio(hp, maxHealth);
+        healthBar.fillAmount = ratio;
+        healthBar.color = ratio > 2f / 3f ? Color.green : ratio > 1f / 3f ? Color.yellow : Color.red;
     }
     #endregion
 
-    #region Metódo da parede invisivel 
+    #region MetÃ³do da parede invisivel
     public void InvisibleWall()
     {
-        invisibleWall.SetActive(true);
+        if (invisibleWall != null) invisibleWall.SetActive(true);
     }
     #endregion
 
-    
+
     #region Colliders
     private void OnCollisionEnter(Collision collision)
     {
+        if (!NoxSession.CanPlay || !IsAlive) return;
+        if (collision.gameObject.CompareTag("Fogo")) hp = BarCount(hp, 1, 0, healthBar);
         if (collision.gameObject.tag == "Impulse")
         {
             rigid.AddForce(Vector3.up * 1700);
@@ -273,6 +212,12 @@ public class PlayerScript : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        if (!NoxSession.CanPlay || !IsAlive) return;
+        if (other.CompareTag("BulletTurret"))
+        {
+            hp = BarCount(hp, 1, 0, healthBar);
+            Destroy(other.gameObject);
+        }
         if (other.gameObject.tag == "Heal")
         {
             hp = BarCount(hp, -1, -0.25f, healthBar);
@@ -280,28 +225,29 @@ public class PlayerScript : MonoBehaviour
         }
 
         if (other.gameObject.tag == "Enemy")
-        { 
+        {
             hp = BarCount(hp, 1, 0.25f, healthBar);
-            GetComponent<MeshRenderer>().material.color = Color.red;
+            // O feedback visual Ã© apresentado pela barra de vida.
         }
 
         if (other.gameObject.tag == "AreaWin")
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            NoxSession.LoadNextScene();
         }
 
         if (other.gameObject.tag == "Limbo")
         {
             hp = 0;
-            Time.timeScale = 0;
+            NoxSession.SetState(NoxGameState.Lost);
         }
 
         if (other.gameObject.tag == "LifeCamera")
         {
-            mainCameraObj.GetComponent<CameraFollow>().offset = newOffset;
-            bossCanvas.SetActive(true);
+            CameraFollow follow = mainCameraObj != null ? mainCameraObj.GetComponent<CameraFollow>() : null;
+            if (follow != null) follow.offset = newOffset;
+            if (bossCanvas != null) bossCanvas.SetActive(true);
             Invoke("InvisibleWall", 2);
-            Debug.Log("EU DÚVIDO VENCER ESSA, te pago uma coxinha.");
+
             SoundBossWater();
         }
 
@@ -317,14 +263,14 @@ public class PlayerScript : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
-            GetComponent<MeshRenderer>().material.color = Color.white;
+            // NÃ£o sobrescrever a cor original do material do personagem.
         }
     }
     #endregion
 
     public void SoundBossWater()
     {
-        soundBossWater.Play();
+        if (soundBossWater != null) soundBossWater.Play();
     }
 
     void Awake()
@@ -342,70 +288,76 @@ public class PlayerScript : MonoBehaviour
 
     void Start()
     {
-        //animin = gameObject.GetComponent<Animator>();
+        if (rigid == null) rigid = GetComponent<Rigidbody>();
+        if (rigid == null)
+        {
+            Debug.LogError("O jogador precisa de Rigidbody.", this);
+            enabled = false;
+            return;
+        }
+        bodyCollider = GetComponent<Collider>();
+        rigid.interpolation = RigidbodyInterpolation.Interpolate;
+        rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         healthBarObj = GameObject.FindGameObjectWithTag("HealthBar");
-        healthBar = healthBarObj.GetComponent<Image>();
-
-        currentTime = 1;
-        startTime = currentTime;
+        if (healthBarObj != null) healthBar = healthBarObj.GetComponent<Image>();
+        hp = NoxRules.AdjustHealth(hp > 0 ? hp : maxHealth, 0, maxHealth);
+        currentTime = 1f;
+        startTime = Time.time - currentTime;
+        ChangeColor();
     }
 
 
     void Update()
     {
-
-        #region Chamada do metódo de movimentação e empurrar/soltar objetos
-        if (this.gameObject.tag == "Player")
+        if (!IsAlive)
         {
-            CharacterMove();
+            desiredMovement = Vector3.zero;
+            jumpRequested = false;
+            if (PlaceHolderPanel.PHP != null)
+                PlaceHolderPanel.PHP.PanelWinOrLose("Game Over");
+            return;
         }
-
-        if (this.gameObject.tag == "Pushing")
+        if (!NoxSession.CanPlay)
         {
-            CharacterPushing();
+            desiredMovement = Vector3.zero;
+            jumpRequested = false;
+            return;
         }
-        #endregion
-
-        #region Chamada dos metódos de ataque
-        if (slashCount == 0)
+        if (isPushing) CharacterPushing(); else CharacterMove();
+        switch ((int)slashCount)
         {
-            CharacterSlash1();
+            case 0: CharacterSlash1(); break;
+            case 1: CharacterSlash2(); break;
+            case 2: CharacterSlash3(); break;
+            default: slashCount = 0; break;
         }
-
-        if (slashCount == 1)
-        {
-            CharacterSlash2();
-        }
-
-        if (slashCount == 2)
-        {
-            CharacterSlash3();
-        }
-
-        if (currentTime > 2)
-        {
-            slashCount = 0;
-        }
-
-        #endregion
-
+        if (currentTime > 2f) slashCount = 0;
         CharacterJump();
-
         ChangeColor();
+    }
 
-        if (Physics.Raycast(transform.position + rayOffset, Vector3.down, rayDistance, WhatIsGround))
+    private void FixedUpdate()
+    {
+        if (rigid == null || !IsAlive || !NoxSession.CanPlay) return;
+        // A consulta usa os pÃ©s do collider, em vez de um deslocamento global fixo.
+        Vector3 origin = bodyCollider != null
+            ? bodyCollider.bounds.center : transform.position + Vector3.up * 0.5f;
+        float length = bodyCollider != null ? bodyCollider.bounds.extents.y + 0.12f : 0.7f;
+        grounded = rigid.velocity.y <= 0.1f && Physics.Raycast(origin, Vector3.down,
+            length, WhatIsGround, QueryTriggerInteraction.Ignore);
+        Vector3 velocity = desiredMovement * movementSpeed;
+        velocity.y = rigid.velocity.y;
+        if (jumpRequested && grounded && !isPushing)
         {
-            Debug.DrawRay(transform.position + rayOffset, Vector3.down * rayDistance, Color.red);
-            grounded = true;
-        }
-        else
-        {
+            velocity.y = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
             grounded = false;
         }
+        jumpRequested = false;
+        rigid.velocity = velocity;
+    }
 
-        if (hp <= 0)
-        {
-            PlaceHolderPanel.PHP.PanelWinOrLose("Game Over");
-        }
+    private void OnDestroy()
+    {
+        if (PT == this) PT = null;
     }
 }

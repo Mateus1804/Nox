@@ -36,3 +36,8 @@ Thumbs.db
 !.env.example
 *.keystore
 *.jks
+
+# Projeto de testes independente do Unity.
+!/Tests/Core/CoreTests.csproj
+**/bin/
+**/obj/
