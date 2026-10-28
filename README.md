@@ -22,7 +22,7 @@ Os procedimentos e os limites estão em [Desenvolvimento](docs/desenvolvimento.m
 
 `Atualizar-Nox.cmd` atualiza somente os scripts e o código de Editor de uma pasta recuperada, com o Unity fechado. Uma cópia dos scripts anteriores é criada ao lado do projeto. Cenas, modelos, áudio e configurações locais são preservados pela atualização. Após reabrir, **Nox → Preparar cenas recuperadas** aplica a revisão física às cenas.
 
-O comando **Nox → Verificar física em cena isolada** permite conferir transporte e salto em um cenário temporário. O uso do modelo original do personagem depende de sua localização; nenhum asset de terceiros foi apresentado como Nox. O fluxo de vinculação e os limites constam em [Física e personagem](docs/fisica-e-personagem.md).
+O comando **Nox → Verificar física em cena isolada** permite conferir transporte e salto em um cenário temporário. O modelo original foi localizado e exportado com animações; a preparação v4 vincula o Nox no lugar do cubo. O fluxo de vinculação e os limites constam em [Física e personagem](docs/fisica-e-personagem.md).
 
 ## Recursos da revisão geral
 
@@ -64,3 +64,9 @@ As mudanças intencionais e os pontos ainda pendentes constam em [Correções e 
 Os resultados efetivamente executados estão em [Qualidade](docs/qualidade.md). O CI verifica regras e o preparo do projeto com um ZIP sintético, sem redistribuir assets ou executar Unity. Não comprova renderização, física, áudio ou funcionamento de uma build.
 
 A autoria e as contribuições individuais permanecem em conferência com a documentação acadêmica. Licenças dos recursos externos devem ser preservadas. Nenhuma licença geral foi aplicada sobre materiais de terceiros.
+
+## Personagem Nox
+
+O personagem acadêmico foi recuperado de `Nox.blend`: malha de 1.994 vértices, rig de 52 ossos e animações originais de repouso/caminhada. Foram acrescentados materiais, duas machadinhas visuais e poses de salto/ataque. O FBX é autocontido e a preparação v4 gera e vincula o prefab e o controlador de animação, preservando a física do jogador.
+
+[Visual, origem e validação do personagem](docs/personagem-nox.md). A renderização apresentada nessa documentação foi feita no Blender; a nova revisão ainda precisa de Play no Unity.

@@ -22,3 +22,5 @@ jobs:
         run: python Tests/test_preparation.py
       - name: Contratos dos componentes e metadados
         run: python Tests/test_source_contracts.py
+      - name: Integridade do personagem e clips FBX
+        run: python Tests/test_character_asset.py

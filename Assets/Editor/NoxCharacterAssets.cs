@@ -1,0 +1,96 @@
+#if UNITY_EDITOR
+using System;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+
+public static class NoxCharacterAssets
+{
+    public const string ModelPath = "Assets/Characters/Nox/Nox.fbx";
+    private const string ControllerPath = "Assets/Characters/Nox/Nox.controller";
+    private const string PrefabPath = "Assets/Characters/Nox/NoxPlayable.prefab";
+
+    public static GameObject Prepare()
+    {
+        GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        if (existing != null) return existing;
+        GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath);
+        if (model == null) throw new InvalidOperationException("Modelo original Nox não importado: " + ModelPath);
+        AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(ModelPath).OfType<AnimationClip>().ToArray();
+        string[] names = { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack" };
+        AnimationClip[] motions = names.Select(name => clips.FirstOrDefault(c => c.name.EndsWith(name, StringComparison.Ordinal))).ToArray();
+        if (motions.Any(c => c == null)) throw new InvalidOperationException("Um dos quatro clips do Nox não foi importado. Conferir a aba Animation do FBX.");
+        AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+        if (controller == null)
+        {
+            controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
+            controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
+            controller.AddParameter("Grounded", AnimatorControllerParameterType.Bool);
+            controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
+            AnimatorStateMachine machine = controller.layers[0].stateMachine;
+            AnimatorState idle = machine.AddState("Repouso"); idle.motion = motions[0];
+            AnimatorState walk = machine.AddState("Caminhada"); walk.motion = motions[1]; walk.speed = 1.8f;
+            AnimatorState jump = machine.AddState("Salto"); jump.motion = motions[2];
+            AnimatorState attack = machine.AddState("Ataque"); attack.motion = motions[3];
+            machine.defaultState = idle;
+            Transition(idle, walk, AnimatorConditionMode.Greater, 0.1f, "Speed");
+            Transition(walk, idle, AnimatorConditionMode.Less, 0.1f, "Speed");
+            Transition(idle, jump, AnimatorConditionMode.IfNot, 0, "Grounded");
+            Transition(walk, jump, AnimatorConditionMode.IfNot, 0, "Grounded");
+            Transition(jump, idle, AnimatorConditionMode.If, 0, "Grounded");
+            AnimatorStateTransition strike = machine.AddAnyStateTransition(attack);
+            strike.hasExitTime = false; strike.duration = 0.06f; strike.canTransitionToSelf = true;
+            strike.AddCondition(AnimatorConditionMode.If, 0, "Attack");
+            AnimatorStateTransition finish = attack.AddTransition(idle);
+            finish.hasExitTime = true; finish.exitTime = 0.95f; finish.duration = 0.08f;
+        }
+        GameObject instance = PrefabUtility.InstantiatePrefab(model) as GameObject;
+        if (instance == null) throw new InvalidOperationException("Não foi possível preparar o prefab Nox.");
+        try
+        {
+            instance.name = "NoxPlayable";
+            Animator animator = instance.GetComponent<Animator>();
+            if (animator == null) animator = instance.AddComponent<Animator>();
+            animator.runtimeAnimatorController = controller;
+            animator.applyRootMotion = false;
+            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(instance, PrefabPath);
+            if (prefab == null) throw new InvalidOperationException("Falha ao salvar prefab do Nox.");
+            AssetDatabase.SaveAssets();
+            return prefab;
+        }
+        finally { UnityEngine.Object.DestroyImmediate(instance); }
+    }
+    private static void Transition(AnimatorState from, AnimatorState to, AnimatorConditionMode mode, float value, string parameter)
+    {
+        AnimatorStateTransition transition = from.AddTransition(to);
+        transition.hasExitTime = false; transition.duration = 0.1f;
+        transition.AddCondition(mode, value, parameter);
+    }
+}
+
+public class NoxModelImporter : AssetPostprocessor
+{
+    private void OnPreprocessModel()
+    {
+        if (assetPath != NoxCharacterAssets.ModelPath) return;
+        ModelImporter importer = (ModelImporter)assetImporter;
+        importer.animationType = ModelImporterAnimationType.Generic;
+        importer.importAnimation = true;
+        importer.importCameras = false; importer.importLights = false;
+        importer.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+    }
+    private void OnPreprocessAnimation()
+    {
+        if (assetPath != NoxCharacterAssets.ModelPath) return;
+        ModelImporter importer = (ModelImporter)assetImporter;
+        ModelImporterClipAnimation[] clips = importer.defaultClipAnimations;
+        foreach (ModelImporterClipAnimation clip in clips)
+        {
+            clip.loopTime = !clip.name.EndsWith("Nox_Attack", StringComparison.Ordinal);
+            clip.lockRootRotation = true; clip.lockRootHeightY = true; clip.lockRootPositionXZ = true;
+        }
+        importer.clipAnimations = clips;
+    }
+}
+#endif

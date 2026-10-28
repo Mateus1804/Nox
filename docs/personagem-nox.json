@@ -1,0 +1,104 @@
+{
+  "fonte_modelo": {
+    "arquivo": "Nox.blend",
+    "drive_id": "1g-Vlu72YszGx0_dFsmGhVm1juCXCvCYr",
+    "sha256": "64f1fbfecaa22946aca67eafb90d7d5fbf9c9865377b3364482a54aa0ffc8f7e",
+    "malha": "panda",
+    "vertices": 1994,
+    "ossos": 52
+  },
+  "gdd": {
+    "arquivo": "GDD - Nox_ Between Worlds.docx",
+    "drive_id": "1KDIjPKkUhAy4fqxGTfDrm7Jn-DCl4D-t",
+    "sha256": "901d0cada0f70ab78a47b8b8d7f37ef983ec1785bc296a41fbe58264cf7e72c5",
+    "versao_documento": "2.0",
+    "atualizacao_documento": "31/01/2023"
+  },
+  "fbx_sha256": "08e9b038f9d8d8fa8c05f42db140f77dac1b2421f2a9d2ef54ddb516434040d2",
+  "exportador": "Blender 3.6.23 / FBX 7400",
+  "originais_preservados": true,
+  "clips_originais": {
+    "Nox_Idle": "vaijogarnaodoido? 150f",
+    "Nox_Walk": "ursorapperboladocaminhando 70f"
+  },
+  "clips_acrescentados": [
+    "Nox_Jump",
+    "Nox_Attack"
+  ],
+  "adicoes_visuais": [
+    "sete materiais com cores planas",
+    "duas machadinhas nas costas (quatro malhas adicionais)"
+  ],
+  "imagens_referencia_exportadas": false,
+  "reimportacao_blender": {
+    "meshes": [
+      [
+        "MachadinhaCabo-1",
+        8
+      ],
+      [
+        "MachadinhaCabo1",
+        8
+      ],
+      [
+        "MachadinhaLamina-1",
+        8
+      ],
+      [
+        "MachadinhaLamina1",
+        8
+      ],
+      [
+        "panda",
+        1994
+      ]
+    ],
+    "rigs": [
+      [
+        "NoxRig",
+        52
+      ]
+    ],
+    "clips": [
+      [
+        "NoxRig|NoxRig|Nox_Attack",
+        [
+          1.0,
+          19.0
+        ]
+      ],
+      [
+        "NoxRig|NoxRig|Nox_Idle",
+        [
+          1.0,
+          151.0
+        ]
+      ],
+      [
+        "NoxRig|NoxRig|Nox_Jump",
+        [
+          1.0,
+          33.0
+        ]
+      ],
+      [
+        "NoxRig|NoxRig|Nox_Walk",
+        [
+          1.0,
+          71.0
+        ]
+      ]
+    ],
+    "materials": [
+      "Nox_AxeSteel",
+      "Nox_AxeWood",
+      "Nox_Cloak",
+      "Nox_Cream",
+      "Nox_Dark",
+      "Nox_Eyes",
+      "Nox_Fur"
+    ],
+    "images": []
+  },
+  "unity_play_executado": false
+}

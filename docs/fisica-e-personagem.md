@@ -1,3 +1,5 @@
+> Atualização: o modelo original foi localizado e integrado pela preparação v4. A seção histórica de modelo pendente abaixo descreve o estado anterior; os detalhes atuais estão em [Personagem Nox](personagem-nox.md).
+
 # Física, combate e apresentação do personagem
 
 ## Referência observada

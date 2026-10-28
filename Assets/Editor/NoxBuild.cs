@@ -23,10 +23,11 @@ public static class NoxBuild
     private static bool TryPrepareScenes()
     {
         if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes de preparar as cenas.");
-        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v3.txt");
+        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v4.txt");
         if (File.Exists(marker)) return true;
         if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return false;
-        using (var transaction = new NoxSceneTransaction("Preparacao-v3"))
+        GameObject nox = NoxCharacterAssets.Prepare();
+        using (var transaction = new NoxSceneTransaction("Preparacao-v4"))
         {
             foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes.Where(item => item.enabled))
             {
@@ -34,6 +35,10 @@ public static class NoxBuild
                 foreach (GameObject root in opened.GetRootGameObjects())
                 {
                     PreparePhysics(root);
+                    foreach (PlayerScript player in root.GetComponentsInChildren<PlayerScript>(true))
+                        NoxCharacterSetup.Bind(player.gameObject, nox);
+                    foreach (PlayerTwo player in root.GetComponentsInChildren<PlayerTwo>(true))
+                        NoxCharacterSetup.Bind(player.gameObject, nox);
                     foreach (Button button in root.GetComponentsInChildren<Button>(true)) RepairButton(button);
                     foreach (EventTrigger trigger in root.GetComponentsInChildren<EventTrigger>(true))
                     {
@@ -56,7 +61,7 @@ public static class NoxBuild
                 EditorSceneManager.MarkSceneDirty(opened);
                 if (!EditorSceneManager.SaveScene(opened)) throw new IOException("A cena não pôde ser salva: " + scene.path);
             }
-            File.WriteAllText(marker + ".tmp", "Preparação v3 aplicada com backup das cenas.\n");
+            File.WriteAllText(marker + ".tmp", "Preparação v4 aplicada com backup das cenas.\n");
             File.Move(marker + ".tmp", marker);
             transaction.Commit();
         }
