@@ -58,6 +58,8 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual((ROOT / 'Assets/Scripts/PlayerScript.cs').read_bytes(), player.read_bytes())
         self.assertEqual(before_scene, scene.read_bytes())
+        self.assertEqual((ROOT/'Assets/Characters/Nox/Nox.fbx').read_bytes(),
+                         (self.destination/'Assets/Characters/Nox/Nox.fbx').read_bytes())
         backups = list(self.base.glob('projeto com espaços-Backup-Scripts-*'))
         self.assertEqual(1, len(backups))
         self.assertEqual(b'// script local anterior\n', (backups[0] / 'Assets/Scripts/PlayerScript.cs').read_bytes())

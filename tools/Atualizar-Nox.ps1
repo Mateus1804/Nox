@@ -22,16 +22,16 @@ $backup = $Projeto + '-Backup-Scripts-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff
 New-Item -ItemType Directory -Path $backup | Out-Null
 $written = @()
 try {
-    foreach ($folder in @('Assets/Scripts', 'Assets/Editor')) {
+    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox')) {
         $old = Join-Path $Projeto $folder
         if (Test-Path -LiteralPath $old) {
-            $backupParent = Join-Path $backup 'Assets'
+            $backupParent = Split-Path (Join-Path $backup $folder) -Parent
             New-Item -ItemType Directory -Path $backupParent -Force | Out-Null
             Copy-Item -LiteralPath $old -Destination $backupParent -Recurse
         }
     }
     # Assets e configurações locais permanecem no projeto; apenas o código é sobreposto.
-    foreach ($folder in @('Assets/Scripts', 'Assets/Editor')) {
+    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox')) {
         $source = Join-Path $repo $folder
         $target = Join-Path $Projeto $folder
         New-Item -ItemType Directory -Path $target -Force | Out-Null

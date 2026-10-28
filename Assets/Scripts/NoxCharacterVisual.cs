@@ -7,6 +7,9 @@ public sealed class NoxCharacterVisual : MonoBehaviour
     [SerializeField] private string speedParameter = "Speed";
     [SerializeField] private string groundedParameter = "Grounded";
     [SerializeField] private string attackParameter = "Attack";
+    [SerializeField, Min(0f)] private float turnSpeed = 720f;
+    private Transform visualRoot;
+    private Quaternion visualRotation;
     private Animator animator;
     private Rigidbody body;
     private PlayerScript player;
@@ -18,6 +21,8 @@ public sealed class NoxCharacterVisual : MonoBehaviour
 
     private void Start()
     {
+        visualRoot = transform.Find("NoxVisual");
+        if (visualRoot != null) visualRotation = visualRoot.rotation;
         body = GetComponent<Rigidbody>();
         player = GetComponent<PlayerScript>();
         alternate = GetComponent<PlayerTwo>();
@@ -41,9 +46,19 @@ public sealed class NoxCharacterVisual : MonoBehaviour
         if (animator == null || body == null) return;
         bool active = NoxSession.CanPlay;
         animator.speed = active ? 1 : 0;
-        if (hasSpeed) animator.SetFloat(speedParameter, player != null ? player.AnimationSpeed : alternate != null ? alternate.AnimationSpeed : 0);
+        if (hasSpeed) animator.SetFloat(speedParameter,
+            player != null ? player.AnimationSpeed : alternate != null ? alternate.AnimationSpeed : 0,
+            0.1f, Time.deltaTime);
         if (hasGrounded) animator.SetBool(groundedParameter,
             player != null ? player.grounded : alternate != null && alternate.grounded);
+    }
+
+    private void LateUpdate()
+    {
+        if (visualRoot == null || !NoxSession.CanPlay) return;
+        // Suaviza somente a apresentação; direção de movimento/mira e colisões são preservadas.
+        visualRotation = Quaternion.RotateTowards(visualRotation, transform.rotation, turnSpeed * Time.deltaTime);
+        visualRoot.rotation = visualRotation;
     }
 
     public void PlayAttack()

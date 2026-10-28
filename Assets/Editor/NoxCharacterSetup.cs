@@ -38,7 +38,7 @@ public static class NoxCharacterSetup
         Debug.Log("Modelo do Nox vinculado a " + changed + " jogador(es). Conferir orientação, materiais e animações no Play.");
     }
 
-    private static void Bind(GameObject player, GameObject model)
+    public static void Bind(GameObject player, GameObject model)
     {
         Collider body = player.GetComponent<Collider>();
         if (body == null) throw new InvalidOperationException("Jogador sem collider: " + player.name);

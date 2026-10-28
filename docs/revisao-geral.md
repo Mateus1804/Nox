@@ -1,3 +1,5 @@
+> Continuidade: o personagem antes pendente foi localizado. A integração e seus limites estão em [Personagem Nox](personagem-nox.md).
+
 # Revisão geral, refatoração e funcionalidades
 
 ## Escopo e referência
