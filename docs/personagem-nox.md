@@ -1,6 +1,6 @@
 # Personagem original Nox
 
-A revisão localizou `Nox.blend` na pasta de animações de personagens do projeto acadêmico. O GDD versão 2.0, atualizado em 31/01/2023, descreve Nox como espírito de panda-vermelho, protagonista com manto, duas machadinhas e três pontos de vida. A malha e o esqueleto acadêmicos foram reaproveitados; não foram substituídos por um personagem de terceiros.
+O arquivo `Nox.blend` foi localizado na pasta de animações de personagens do projeto acadêmico. O GDD versão 2.0, atualizado em 31/01/2023, descreve Nox como espírito de panda-vermelho, protagonista com manto, duas machadinhas e três pontos de vida. A malha e o esqueleto acadêmicos foram reaproveitados; não foram substituídos por um personagem de terceiros.
 
 ## Conteúdo recuperado e acrescentado
 
@@ -52,6 +52,6 @@ O resultado é FBX binário 7400. O registro `personagem-nox.json` contém hashe
 - Testes FBX conferem hash, versão, clips, malhas, materiais, skin e ausência de imagens empacotadas. Não substituem o importador do Unity.
 - Compilação isolada de 43 scripts de execução e seis de Editor com bibliotecas oficiais 2021.1.28f1 e avisos como erros: sem erros/avisos.
 - 87 verificações de regras, oito testes de preparação/atualização, quatro de contratos e quatro de asset aprovados localmente. O [CI Windows 40611671152](https://github.com/Mateus1804/Nox/actions/runs/40611671152), sobre o código a591bde64dab49451018df176197471defdd9e32, aprovou as mesmas suítes sem testes pulados; status e logs do job 122564423309 foram conferidos. O script de reprodução também foi executado com sucesso usando os argumentos documentados.
-- Não foram executados Unity Play, importação do FBX pelo Unity, geração dos assets Animator/Prefab no editor, build Windows ou percurso real nesta execução. A cena fonte não é publicada; a substituição é aplicada na cópia completa pelo preparador v4.
+- A validação registrada não inclui Unity Play, importação do FBX pelo Unity, geração dos assets Animator/Prefab no editor, build Windows ou percurso real. A cena fonte não é publicada; a substituição é aplicada na cópia completa pelo preparador v4.
 
 O GDD planeja fases e habilidades que a build original não implementa integralmente. Esta revisão não apresenta água, terra, escuridão ou sistema completo de habilidades como concluídos.

@@ -53,7 +53,7 @@ Progresso e configurações ficam em PlayerPrefs do aplicativo. Não há sincron
 | G26 | Explosões tinham cópias da mesma lógica | Organização | `NoxExplosion` aplica força uma vez por corpo e rejeita raio/força inválidos |
 | G27 | Métodos vazios, comentários que repetiam código e log informal de combate | Organização/manutenção | Remoção e comentários focados em decisões/compatibilidade |
 
-Alguns achados são falhas demonstráveis de ramificação; outros dependem da configuração da cena. A classificação acima não afirma que todos tenham ocorrido no teste manual já realizado.
+Alguns achados são falhas demonstráveis de ramificação; outros dependem da configuração da cena. A classificação acima não afirma que todos tenham ocorrido no teste manual inicial.
 
 ## Organização adotada
 
@@ -73,7 +73,7 @@ Os testes de contratos usam o histórico Git da revisão anterior e conferem GUI
 
 O resultado do CI Windows está registrado em `qualidade.md` após a execução efetiva. O novo botão, foco da janela, PlayerPrefs no Unity, navegação NavMesh, áudio real, animações, auditoria e reversão das cenas ainda precisam ser executados no editor. A compilação isolada confirma tipos/assinaturas, não esses comportamentos.
 
-O modelo original Nox continua pendente do asset correto. Nenhum personagem de um pacote externo foi apresentado como o personagem original.
+Na revisão descrita aqui, o modelo original Nox ainda estava pendente. A integração posterior está registrada em `personagem-nox.md`.
 
 ## Aceite no computador de desenvolvimento
 
@@ -85,5 +85,5 @@ O modelo original Nox continua pendente do asset correto. Nenhum personagem de u
 6. Alterar volume/silêncio, encerrar e abrir de novo. Conferir sons de cristais, chefe e menus.
 7. Concluir fases, encerrar e reabrir, conferir desbloqueios e **Continuar fase**. A retomada deve começar na entrada da fase salva.
 8. Alternar para outra janela durante a partida; confirmar pausa e retorno somente pelo comando Continuar.
-9. Conferir menu em diferentes resoluções, inclusive o novo botão. A posição foi escolhida pela estrutura original, sem inspeção visual nesta execução.
+9. Conferir menu em diferentes resoluções, inclusive o novo botão. A posição foi escolhida pela estrutura original, sem inspeção visual nessa etapa.
 10. Gerar a build e repetir os fluxos fora do editor antes de distribuir.

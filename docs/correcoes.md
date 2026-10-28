@@ -1,3 +1,5 @@
+> Histórico da recuperação inicial. O estado atual do personagem e da validação está registrado em [Personagem Nox](personagem-nox.md) e [Qualidade](qualidade.md).
+
 # Correções e validação da versão candidata
 
 ## Referência e escopo
@@ -49,6 +51,6 @@ O preparador Editor tem marca para evitar repetir a preparação em uma cópia j
 
 ## Revisão posterior ao primeiro Play
 
-A revisão de 26/10/2026 responde à deformação/aprisionamento nas plataformas informada no teste local. A hierarquia de `AirPhase1.4` confirma `Mobile Platforms` com escala `(6, 1, 8)`, herdada pelas plataformas individuais. O antigo `SetParent` submetia o jogador a essa escala ao girar. O transporte passa a compor velocidade física, sem modificar pai ou escala do jogador.
+A revisão de 26/10/2026 responde à deformação/aprisionamento nas plataformas identificada no teste inicial. A hierarquia de `AirPhase1.4` confirma `Mobile Platforms` com escala `(6, 1, 8)`, herdada pelas plataformas individuais. O antigo `SetParent` submetia o jogador a essa escala ao girar. O transporte passa a compor velocidade física, sem modificar pai ou escala do jogador.
 
 Dano agora possui proteção de 0,6 s e contato persistente com perigos causa dano novamente após esse intervalo. Cura de uma unidade é limitada a 3 e o item só é consumido quando houver recuperação. Isso é decisão explícita de comportamento, não uma alegação de cura excedente comprovada na versão anterior, que já possuía clamp.

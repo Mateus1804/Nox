@@ -13,9 +13,9 @@ Os registros anteriores abaixo são históricos; a antiga pendência de localiza
 - Execução local: mesmas 87 verificações e suítes de oito/quatro testes aprovadas. Os testes independentes usam .NET 8 e PowerShell 7.6.9; não executam Unity.
 - Compilação isolada dos **43 scripts próprios de execução e cinco de Editor** com bibliotecas da versão original 2021.1.28f1, C# 8 e avisos tratados como erros: sem erros e sem avisos.
 - A revisão anterior já aprovava 49 verificações e oito testes. Os novos casos cobrem volume, identidade de golpes, retomada elegível, trava de carregamento e escolha de ação dos chefes. A suíte de contratos confere nomes públicos/GUIDs e separação runtime/Editor; não substitui um compilador semântico ou a conferência dos UnityEvents.
-- O código de preparação v3, a transação/backup de cenas e a auditoria foram compilados, mas **não executados no Unity neste ambiente**. A suíte do preparador não é uma prova de restauração real das cenas por essas ferramentas de Editor.
+- O código de preparação v3, a transação/backup de cenas e a auditoria foram compilados, mas **não executados no Unity na execução registrada**. A suíte do preparador não é uma prova de restauração real das cenas por essas ferramentas de Editor.
 
-Ainda faltam Play e inspeção visual do novo botão, teste de áudio global, perda de foco, leitura/gravação de PlayerPrefs no Unity, NavMesh, animações, golpes e geração/execução da nova build. A retomada salva o índice da fase, não a posição ou o estado completo. O modelo original Nox permanece pendente. Nenhuma build nova é apresentada como validada.
+Ainda faltam Play e inspeção visual do novo botão, teste de áudio global, perda de foco, leitura/gravação de PlayerPrefs no Unity, NavMesh, animações, golpes e geração/execução da nova build. A retomada salva o índice da fase, não a posição ou o estado completo. Naquela etapa, o modelo original Nox ainda não havia sido localizado. Nenhuma build nova é apresentada como validada.
 
 O relatório `revisao-geral.md` diferencia bugs de lógica, riscos de configuração, mudanças de organização e funcionalidades acrescentadas. `evidencias/revisao-geral-verificada.json` registra o código e os hashes conferidos. Commits posteriores de documentação não alteram os scripts e ferramentas validados.
 
@@ -30,15 +30,15 @@ O relatório `revisao-geral.md` diferencia bugs de lógica, riscos de configura�
 
 A validação local foi feita pelo compilador Roslyn e pelo host .NET diretamente. Não se afirma que uma compilação integral do Unity foi executada. O [CI Windows 40265063605](https://github.com/Mateus1804/Nox/actions/runs/40265063605), com o código do commit `b1d42ff94800ec979e02f4483ae4b8fc0df459ac` no merge temporário da PR, aprovou as 49 verificações C# e os oito testes do preparador/atualizador, sem testes pulados. Foram consultados o resultado do job e suas mensagens de execução. Isso não inclui o motor Unity. A rodada de push 40265061435 também foi disparada; não é necessária outra matriz de plataformas para esta etapa.
 
-### Relato manual recebido
+### Teste manual inicial
 
-O responsável informou funcionamento no Play de áudio e silêncio, movimentação, salto, vida, pausa e fluxo de conclusão/avanço/retorno. Informou também aprisionamento e deformação do cubo em plataformas. Ataque e limite de cura permaneceram sem confirmação. Essa observação corresponde à revisão anterior e não aprova automaticamente o novo código.
+No primeiro teste no Play, confirmei áudio e silêncio, movimentação, salto, vida, pausa e conclusão, avanço e retorno ao menu. Encontrei aprisionamento e deformação do cubo nas plataformas. Ataque e limite de cura não foram conferidos nessa sessão. Esse registro corresponde à revisão anterior, sem validar automaticamente as alterações posteriores.
 
 ### Limites desta revisão
 
-O verificador de sete cenários físicos foi compilado, mas não executado no motor Unity neste ambiente. Os trajetos reais, caixas, combate, dano contínuo, visual do Nox e a nova build Windows permanecem pendentes de Play e execução do jogo. O modelo original do personagem não foi localizado no inventário do ZIP; o comando de vinculação está implementado, mas a substituição não foi apresentada como concluída. Pastas individuais dos colaboradores não foram usadas como fonte de assets.
+O verificador de sete cenários físicos foi compilado, mas não executado no motor Unity na execução registrada. Os trajetos reais, caixas, combate, dano contínuo, visual do Nox e a nova build Windows permanecem pendentes de Play e execução do jogo. Naquela etapa, o modelo original do personagem não havia sido localizado no inventário do ZIP; o comando de vinculação está implementado, mas a substituição não foi apresentada como concluída. Pastas individuais dos colaboradores não foram usadas como fonte de assets.
 
-Os testes do atualizador conferem dados e backups em fixtures. A janela de seleção de pasta e o PowerShell 5.1 do usuário não foram executados neste ambiente.
+Os testes do atualizador conferem dados e backups em fixtures. A janela de seleção de pasta e a execução com PowerShell 5.1 não fazem parte dessa validação.
 
 ## Histórico: primeira recuperação
 
@@ -53,7 +53,7 @@ Os testes do atualizador conferem dados e backups em fixtures. A janela de sele�
 - Seis testes do preparador executados em PowerShell 7.6.9 no Linux: aprovados, incluindo preservação do original, cópia dos assets, bloqueio de sobrescrita, hash alterado, travessia de diretórios, cena ausente e link simbólico.
 - Conferência de metadados e preservação dos GUIDs originais durante a preparação das alterações.
 
-O instalador portátil do SDK reportou erro ao aplicar proprietário de arquivos neste ambiente; o host .NET e o compilador Roslyn puderam ser executados diretamente. A CLI `dotnet` falhou ao consultar informações do processo. Os testes foram compilados e executados pelo host, sem alegar aprovação de comandos da CLI que não funcionaram.
+O instalador portátil do SDK reportou erro ao aplicar proprietário de arquivos na execução registrada; o host .NET e o compilador Roslyn puderam ser executados diretamente. A CLI `dotnet` falhou ao consultar informações do processo. Os testes foram compilados e executados pelo host, sem alegar aprovação de comandos da CLI que não funcionaram.
 
 ## CI
 
@@ -65,7 +65,7 @@ A [execução 40245039208](https://github.com/Mateus1804/Nox/actions/runs/402450
 
 Foi instalado temporariamente o editor oficial 2021.1.28f1 (f3f9dc10f3dd) e solicitada a execução em batchmode de `NoxBuild.Windows` sobre a cópia completa preparada. O processo encerrou com código **134**, após falhas de comunicação IPC com LicensingClient e `free(): double free detected in tcache 2`. A importação e o método de build não chegaram a ser confirmados.
 
-Não se concluiu que a licença pessoal do responsável está inválida: o erro pertence à execução do cliente de licenciamento neste ambiente. O resumo técnico está em [evidências](evidencias/unity-editor-resumo.log). Nenhuma credencial ou licença foi solicitada ou inserida.
+A falha de comunicação com o cliente de licenciamento não permite concluir que a licença do editor seja inválida. O resumo técnico está em [evidências](evidencias/unity-editor-resumo.log).
 
 ## Ainda não executado
 

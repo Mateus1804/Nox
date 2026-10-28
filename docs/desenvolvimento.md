@@ -4,7 +4,7 @@
 
 Windows com PowerShell 5.1 ou superior, o ZIP original `Nox_Project.zip` e Unity Editor instalado/licenciado pelo Hub, com suporte a build Windows. O arquivo de referência registra 2021.1.28f1. A primeira alternativa é 2021.3 LTS, em uma cópia de trabalho. Unity 6 não foi homologado nesta recuperação.
 
-## Recuperação assistida
+## Recuperação do projeto
 
 1. Baixar a branch de correções e extrair o repositório.
 2. Executar `Preparar-Nox.cmd`.
@@ -18,17 +18,17 @@ O processo não instala nem ativa o Unity. Falhas de instalação, licença, pac
 
 Com o Unity fechado, o ponto de entrada é `Atualizar-Nox.cmd`, executado por duplo clique a partir do ZIP de correções extraído. O arquivo CMD não deve ser colado linha a linha no PowerShell. A seleção aponta para a pasta raiz que contém `Assets` e `ProjectSettings`.
 
-Uma cópia dos diretórios anteriores `Assets/Scripts` e `Assets/Editor` é salva ao lado do projeto, em `<projeto>-Backup-Scripts-<data>`. Os arquivos da revisão são sobrepostos nesses dois diretórios; modelos, materiais, áudio, cenas e configurações permanecem intactos nessa etapa. Em caso de erro de cópia, o processo interrompe e informa onde estão os scripts anteriores; não há reversão automática anunciada.
+Os diretórios anteriores `Assets/Scripts`, `Assets/Editor` e `Assets/Characters/Nox`, quando existentes, são copiados para `<projeto>-Backup-Scripts-<data>`, ao lado do projeto. A atualização sobrepõe os arquivos desses três diretórios. Cenas, áudio, configurações e demais assets permanecem intactos nessa etapa. Em caso de erro de cópia, o processo interrompe e informa onde estão os scripts anteriores; não há reversão automática anunciada.
 
 A chamada equivalente no PowerShell, dentro da pasta de correções, é:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\Atualizar-Nox.ps1" -Projeto "C:\Users\mateu\Documents\Nox-Recuperado-20261025-224115"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\Atualizar-Nox.ps1" -Projeto "C:\Jogos\Nox-Recuperado"
 ```
 
 Após reabrir o Unity e concluir a compilação, **Nox → Preparar cenas recuperadas** aplica a preparação v4. As marcas v1/v2/v3 não bloqueiam essa revisão. As cenas são copiadas para `Backups/Preparacao-v4/` antes de alterações; falhas na operação acionam a tentativa de reversão. A ação altera e salva as cenas habilitadas na build, acrescentando a configuração física de plataformas e caixas. O código atualizado usa a pasta existente; não exige baixar ou extrair novamente o ZIP original.
 
-A restauração de scripts consiste em fechar o Unity e recuperar os dois diretórios do backup. Alterações de cena feitas depois pelo editor são separadas desse backup; antes da preparação v4, o backup criado pela preparação v4 preserva os arquivos anteriores das cenas. Uma cópia completa da pasta ainda é útil para cobrir configurações, recursos e alterações feitas fora dessas ferramentas.
+A restauração de scripts consiste em fechar o Unity e recuperar os diretórios correspondentes do backup. Alterações de cena feitas depois pelo editor são separadas desse backup; a preparação v4 cria um backup dos arquivos anteriores das cenas. Uma cópia completa da pasta ainda é útil para cobrir configurações, recursos e alterações feitas fora dessas ferramentas.
 
 ## Preparação sem gerar build
 
@@ -52,6 +52,7 @@ A preparação corrige os vínculos antigos conhecidos sem recriar cenas ou inve
 dotnet run --project Tests/Core/CoreTests.csproj --configuration Release
 python Tests/test_preparation.py
 python Tests/test_source_contracts.py
+python Tests/test_character_asset.py
 ```
 
 A segunda suíte usa PowerShell 7 (`pwsh`) e fixtures criadas com os arquivos originais obtidos do histórico Git. Os dados de cena dessas fixtures não são jogáveis. O checkout precisa conter o commit de referência, como no CI com histórico completo.
