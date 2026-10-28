@@ -68,3 +68,20 @@ A auditoria está em **Nox → Auditar cenas e referências**, com saída em `Lo
 ## Personagem original
 
 A atualização inclui `Assets/Characters/Nox`. A preparação v4 gera prefab/Animator a partir do FBX e aplica a substituição do cubo sem seleção manual. Os controles físicos são preservados; o modelo acompanha repouso, caminhada, salto e ataque. Procedência, reprodução da exportação e limites estão em `personagem-nox.md`.
+
+
+## Atualização de animação e ambientação v5
+
+A revisão v5 inclui o FBX atualizado e `Assets/Art/NoxSky.shader`. O atualizador copia essas pastas recursivamente, com backup do conteúdo anterior. A atualização é aplicada ao projeto completo recuperado, com o Unity fechado.
+
+Após a importação e a compilação, **Nox → Preparar cenas recuperadas** aplica a nova revisão mesmo quando a v4 já foi preparada. O marcador atual é `ProjectSettings/NoxScenesPrepared-v5.txt`; o marcador v4 permanece como histórico. As cenas anteriores ficam em `Backups/Preparacao-v5/`.
+
+**Nox → Verificar animações e cenário** confere clips, repetição, presença do novo Animator, shader e ausência de colisores nos detalhes visuais. É uma verificação estrutural do editor; o percurso das fases no Play continua necessário. O menu de build permanece **Nox → Gerar versão Windows**.
+
+A descrição e os limites estão em [Animação e cenários](animacao-e-cenarios.md). O exportador e o validador offline aceitam argumentos:
+
+```text
+blender -b --python tools/exportar_nox_blender.py -- --source Nox.blend --output exportacao
+blender -b --python tools/validar_animacao_blender.py -- --fbx Assets/Characters/Nox/Nox.fbx --output evidencias
+python Tests/test_animation_cycles.py
+```

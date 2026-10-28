@@ -1,5 +1,20 @@
 # Validação da integração do personagem
 
+## Revisão v5 — animação e ambientação
+
+- Base antes das alterações: 87 verificações C#, oito testes de preparação/atualização, quatro de contratos e quatro de FBX aprovados. A primeira tentativa Python não encontrou `pwsh`; após incluir o executável portátil no PATH, a base passou.
+- Revisão: **96 verificações C#** e **19 testes Python** aprovados localmente, sem testes pulados. Os testes Python incluem oito de preparação/atualização, quatro de contratos, quatro de FBX e três das curvas de animação.
+- **44 scripts de execução e oito de Editor** compilados com C# 8, referências oficiais Unity 2021.1.28f1 e avisos como erros: sem erros ou avisos. Essa é compilação isolada; não é compilação pelo Unity Editor.
+- Exportação pelo Blender 3.6.23, reimportação do FBX e amostragem avaliada dos pés: concluídas. Caminhada de 0,8 s com fechamento das curvas e alternância dos dois pés. Hash e estrutura em `personagem-nox.json`.
+- GIF do asset reimportado inspecionado: `caminhada-blender.gif`. É evidência do Blender, sem captura de gameplay.
+- O CI do PR executa as regras C#, as oito verificações de preparação, os quatro contratos, os quatro testes do FBX e os três testes dos ciclos exportados. Os resultados remotos ficam nos checks e na descrição do PR; os números acima são da execução local.
+
+A vinculação do personagem da revisão anterior foi confirmada no Play. A **v5 ainda não foi executada no Unity neste ambiente**: shader, preparação das cenas, iluminação, materiais, física, menus de diagnóstico, build Windows e percurso real permanecem sem homologação. O impedimento de execução do Unity registrado no histórico continua sendo uma limitação deste ambiente.
+
+A rotina de teste local compilou os scripts com Roslyn e executou as regras pelo host .NET; não foi informado sucesso da CLI `dotnet run` local. Os testes de preparação usam ZIP fictício, preservação de cenas e backup de scripts, FBX e shader. Não são testes de cenas jogáveis. Detalhes e critérios do Play em [Animação e cenários](animacao-e-cenarios.md).
+
+## Histórico anterior
+
 A integração atual está descrita em `personagem-nox.md`. O FBX foi reimportado no Blender com 52 ossos, quatro clips, cinco malhas e sete materiais, sem imagens externas. Localmente passaram 87 verificações C#, oito testes do preparador/atualizador, quatro de contratos e quatro do FBX. Os 43 scripts de execução e seis de Editor compilaram isoladamente contra as bibliotecas originais, com avisos como erros. O CI Windows 40611671152 aprovou as quatro suítes (87 verificações e 8/4/4 testes), sem pulos. Nenhuma importação/Play/build no Unity foi executada nesta rodada.
 
 Os registros anteriores abaixo são históricos; a antiga pendência de localizar o modelo foi resolvida nesta integração. A validação no Unity permanece pendente.
