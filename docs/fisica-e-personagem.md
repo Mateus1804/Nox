@@ -4,7 +4,7 @@
 
 ## Referência observada
 
-O responsável relatou funcionamento de áudio, movimentação, salto, vida, pausa e conclusão/avanço/retorno ao menu no Play do Unity. Relatou também jogador preso nas plataformas móveis e deformação do cubo. Ataque e limite de cura não foram confirmados nesse teste. O relato é uma evidência manual externa; não equivale a execução dos testes automatizados ou da build nova.
+No primeiro teste no Play, confirmei áudio, movimentação, salto, vida, pausa e conclusão, avanço e retorno ao menu. Também encontrei aprisionamento nas plataformas móveis e deformação do cubo. Ataque e limite de cura não foram conferidos nessa sessão. O registro não valida as revisões posteriores nem uma nova build.
 
 A inspeção da cena original `AirPhase1.4` identifica o grupo `Mobile Platforms` com escala `(6, 1, 8)`. O script `plataforma` tornava o jogador filho das plataformas desse grupo. Mesmo com `worldPositionStays`, girar sob uma escala não uniforme pode produzir cisalhamento. O movimento em Update também concorria com o Rigidbody do jogador em FixedUpdate.
 
@@ -21,13 +21,11 @@ A inspeção da cena original `AirPhase1.4` identifica o grupo `Mobile Platforms
 
 ## Modelo do Nox
 
-O inventário do ZIP original não contém um prefab ou modelo de personagem identificado como Nox. Os modelos encontrados nas pastas de packs têm nomes de monstros e objetos; não foram usados como substitutos por suposição. A busca não abrangeu o conteúdo das pastas individuais dos integrantes.
+O modelo original foi localizado no arquivo `Nox.blend` da pasta de animações do projeto acadêmico. A preparação v4 vincula o FBX exportado aos jogadores e desativa a apresentação do cubo, mantendo a física e as referências existentes.
 
-A troca efetiva permanece pendente do prefab/FBX original e seus recursos. O comando **Nox → Vincular modelo selecionado do Nox** está preparado para receber um asset visual no painel Project, sem scripts, Rigidbody ou colliders adicionais. A seleção explícita evita escolher um modelo com base apenas em um nome aproximado.
+A integração, os materiais, os clips originais e as poses acrescentadas estão descritos em [Personagem Nox](personagem-nox.md). A versão anterior permitia apenas vincular um modelo selecionado manualmente; essa limitação foi superada pela integração automática.
 
-A ação mantém o jogador físico e suas referências, instancia o visual no filho `NoxVisual`, ajusta altura/centro/pés ao collider existente e desativa somente o MeshRenderer do cubo. Esse ajuste conserva as dimensões físicas atuais; não redefine automaticamente a altura de gameplay. A orientação e os materiais precisam de inspeção.
-
-`NoxCharacterVisual` desativa root motion e utiliza parâmetros existentes `Speed` (float), `Grounded` (bool) e `Attack` (trigger), com nomes configuráveis no Inspector. Parâmetros ausentes não causam chamadas inválidas; um ataque sem gatilho configurado produz um aviso único. O componente não cria animações que não existam no modelo. Permanecem pendentes identificação de rig, clips, orientação e homologação visual do personagem original.
+A orientação, os materiais e as animações ainda precisam de conferência no Unity. A renderização de apresentação foi feita no Blender.
 
 ## Critérios de aceite no Unity
 
@@ -37,8 +35,8 @@ A ação mantém o jogador físico e suas referências, instancia o visual no fi
 4. Receber impactos simultâneos e persistentes, respeitando a janela de dano e a pausa.
 5. Curar com vida 1, 2 e 3; verificar teto 3, item preservado quando cheio e ausência de ressurreição.
 6. Atacar com os três golpes, confirmar dano de inimigos/chefes e conferir mira/efeitos.
-7. Repetir navegação e áudio já relatados após aplicar esta revisão.
-8. Após fornecer o modelo, conferir material, escala, pés, orientação, animação e câmera em todas as fases.
+7. Repetir navegação e áudio do teste inicial após aplicar esta revisão.
+8. Conferir material, escala, pés, orientação, animação e câmera em todas as fases.
 
 O menu **Nox → Verificar física em cena isolada** executa sete verificações no PhysX do editor sem salvar ou editar fases: transporte horizontal, hierarquia, escala após giro, saída do apoio ao saltar, subida do salto, elevador e descida. Esse verificador foi acrescentado, mas sua execução requer editor funcional. Não substitui o percurso real nem testa animações ou caixas.
 
