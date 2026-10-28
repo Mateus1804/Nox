@@ -25,7 +25,7 @@ bpy.context.view_layer.update()
 base={b.name:b.matrix_basis.copy() for b in rig.pose.bones}
 for a in list(keep):bpy.data.actions.remove(a)
 keep=[]
-# Rig local Y is vertical; rotate limbs around their local X axes.
+# Rig local Y is vertical; each bone axis is converted from rig space.
 for name,duration in [('Nox_Idle',72),('Nox_Walk',24)]:
  a=bpy.data.actions.new(name);a.use_fake_user=True;rig.animation_data.action=a
  for frame in range(duration+1):
@@ -80,17 +80,34 @@ for p in mesh.data.polygons:
  elif c.z>8.1 and c.y< -1.3:idx=1
  else:idx=0
  p.material_index=idx
-# Supplementary poses: original mesh and skeleton remain unchanged.
-for name,frames in [('Nox_Jump',[(0,0),(8,1),(24,1),(32,0)]),('Nox_Attack',[(0,0),(5,-.45),(10,1),(18,0)])]:
+# Supplementary actions use the same evaluated rig-space axes as locomotion.
+poses=[('Nox_Jump',[(0,0),(6,1),(18,1)]),
+ ('Nox_Fall',[(0,1),(18,1)]),('Nox_Land',[(0,1),(8,0)]),
+ ('Nox_Death',[(0,0),(10,.65),(24,1)]),
+ ('Nox_Attack',[(0,0),(4,-.35),(7,1),(18,0)])]
+for name,frames in poses:
  a=bpy.data.actions.new(name);a.use_fake_user=True;rig.animation_data.action=a
  for frame,factor in frames:
   for b in rig.pose.bones:
    b.matrix_basis=base[b.name];b.rotation_mode='QUATERNION'
-   q=b.rotation_quaternion.copy()
    if name=='Nox_Jump':
-    amount={'coxa.L':.3,'coxa.R':.3,'braço1.L':-.35,'braço1.R':-.35}.get(b.name,0)*factor;axis=(1,0,0)
-   else:amount={'peito':.45,'barriga':.15,'braço1.L':-.9,'braço1.R':-.7,'braço2.L':-.4,'braço2.R':-.4}.get(b.name,0)*factor;axis=(0,1,0) if b.name in ['peito','barriga'] else (1,0,0)
-   b.rotation_quaternion=q@Quaternion(axis,amount)
+    amount={'coxa.L':.24,'coxa.R':.24,'canela.L':-.35,'canela.R':-.35,
+     'braço1.L':-.25,'braço1.R':-.25}.get(b.name,0)*factor
+   elif name=='Nox_Fall':
+    amount={'coxa.L':.10,'coxa.R':.10,'canela.L':-.18,'canela.R':-.18,
+     'braço1.L':.24,'braço1.R':.24,'peito':.08}.get(b.name,0)*factor
+   elif name=='Nox_Land':
+    amount={'coxa.L':.18,'coxa.R':.18,'canela.L':-.3,'canela.R':-.3,'peito':.1}.get(b.name,0)*factor
+   elif name=='Nox_Death':
+    amount={'master':-1.3,'canela.L':-.3,'canela.R':-.3,'braço1.L':-.35,'braço1.R':-.35}.get(b.name,0)*factor
+   else:
+    amount={'peito':.35,'barriga':.12,'braço1.L':-.8,'braço1.R':-.65,'braço2.L':-.3,'braço2.R':-.3}.get(b.name,0)*factor
+   world_axis=(0,1,0) if name=='Nox_Attack' and b.name in ['peito','barriga'] else (1,0,0)
+   axis=pose[b.name].to_3x3().inverted()@Vector(world_axis)
+   b.rotation_quaternion=b.rotation_quaternion@Quaternion(axis,amount)
+   if b.name=='master' and name in ['Nox_Land','Nox_Death']:
+    amount=-.10*factor if name=='Nox_Land' else -.18*factor
+    b.location+=b.bone.matrix_local.to_3x3().inverted()@Vector((0,amount,0))
    b.keyframe_insert('rotation_quaternion',frame=frame);b.keyframe_insert('location',frame=frame);b.keyframe_insert('scale',frame=frame)
  keep.append(a)
 rig.animation_data.action=next(a for a in keep if a.name=='Nox_Idle');bpy.context.scene.frame_set(1)

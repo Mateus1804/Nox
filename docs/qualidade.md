@@ -1,4 +1,22 @@
-# Validação da integração do personagem
+# Qualidade e validação
+
+## Revisão v6 — acabamento
+
+A referência inicial é o PR #6, commit `e70c6c2ca59ef397ff1a1e07197d4f18477d5d36`, ainda não integrado na conferência inicial. A base passou por **96 verificações C# e 19 testes Python**, sem falhas.
+
+- **139 verificações C# aprovadas**, incluindo preparação/impacto/recuperação, combo, expiração de entrada, cancelamento, antecipação inimiga, perda de visão, recuperação e cadência.
+- **20 testes Python aprovados**, sem pulos: nove de preparação/atualização, quatro de contratos, quatro do FBX e três de curvas de animação. O novo teste confere preservação de marcador, Animator e material personalizado da v5, além do backup.
+- **55 scripts de execução e 10 de Editor compilados isoladamente**, C# 8, referências oficiais Unity 2021.1.28f1, avisos como erros: zero erros e avisos. Foi corrigido durante a revisão o uso de um getter de UnityEvent indisponível nessa versão; o estado passou a ser lido pela representação serializada.
+- Testes de arquivos conferem sete ações no FBX, assinatura/hash, skin, materiais, ausência de imagens e curvas fechadas de repouso/caminhada.
+- Exportação e reimportação do personagem no Blender 3.6.23 foram executadas. O validador conferiu os dois pés em um ciclo fechado, as sete ações e a estrutura do rig; a prancha de poses foi inspecionada. Evidências em `evidencias/animacoes-v6.json` e `animacoes-v6.png`.
+
+O CI do novo PR executa as mesmas regras e testes Python; o resultado remoto é registrado na descrição do PR após a execução. Os números desta seção são da validação local. As ferramentas isoladas do Unity, o percurso das fases, as capturas de gameplay, o Profiler e a build Windows **não foram executados nesta revisão**.
+
+Os binários temporários de validação precisaram ser recuperados após a retomada do ambiente. A execução das regras usou Roslyn/host .NET; não é apresentada como execução da CLI local ou do Unity. A validação do Editor continua sendo compilação de tipos e assinaturas, sem homologação dos fluxos visuais.
+
+Hashes dos arquivos conferidos e resumo de execução em `evidencias/acabamento-v6.json`.
+
+Detalhes, alterações de balanceamento, riscos restantes e roteiro de aceite em [Acabamento v6](acabamento-v6.md).
 
 ## Revisão v5 — animação e ambientação
 

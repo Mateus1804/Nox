@@ -13,9 +13,11 @@ Os controles atuais são WASD para movimentação, Espaço para salto, E para in
 ## Recursos implementados
 
 - Movimento com aceleração e frenagem, salto com tolerância de borda e buffer de entrada, plataformas móveis, caixas e alavancas.
-- Combate com registro de acertos por golpe e alvo, limites de vida e cura e proteção entre impactos.
-- Estados de menu, partida, pausa, vitória e derrota.
-- Volume e silêncio persistentes, desbloqueios salvos e retomada pelo início da última fase.
+- Combate com preparação, impacto, recuperação e combo por cliques; inimigos com aviso de ataque e percepção de obstáculos.
+- Registro de acertos por golpe e alvo, limites de vida e cura e proteção entre impactos.
+- Estados de menu, partida, pausa, vitória e derrota, com conclusão da jornada e retomada de fase.
+- Menus em português, navegação por teclado, vida numérica, objetivos e dicas contextuais.
+- Volume, silêncio, sombras e preferências de apresentação persistentes; desbloqueios salvos e retomada pelo início da última fase.
 - Pausa automática ao perder o foco da janela.
 - Ferramentas de preparação das cenas, backup e auditoria de referências.
 - Ambientação das fases de ar e fogo com céu próprio, névoa, iluminação, ilhas distantes e detalhes de plataformas.
@@ -24,15 +26,15 @@ A retomada não salva posição, vida ou estado dos objetos. A existência desse
 
 ## Personagem
 
-O personagem original foi recuperado de `Nox.blend`, com malha de 1.994 vértices e esqueleto de 52 ossos. Os ciclos de repouso e caminhada foram reconstruídos na revisão v5, com repetição explícita e cadência ligada à velocidade do jogador. O modelo inclui materiais, duas machadinhas visuais e poses de salto e ataque.
+O personagem original foi recuperado de `Nox.blend`, com malha de 1.994 vértices e esqueleto de 52 ossos. Os ciclos de repouso e caminhada possuem repetição explícita e cadência ligada à velocidade do jogador. A revisão v6 acrescenta estados próprios de queda, pouso e morte. O modelo inclui materiais, duas machadinhas visuais e poses de salto e ataque.
 
-A preparação v5 gera o prefab e o controlador de animação e vincula o Nox no lugar do cubo, preservando os componentes físicos e as referências das fases. A imagem e a procedência do asset estão em [Personagem Nox](docs/personagem-nox.md).
+A preparação v6 gera o prefab e o controlador de animação e vincula o Nox no lugar do cubo, preservando os componentes físicos e as referências das fases. A imagem e a procedência do asset estão em [Personagem Nox](docs/personagem-nox.md).
 
 ## Estado do projeto
 
 No primeiro teste no Play do Unity, confirmei áudio, movimentação, salto, vida, pausa e navegação entre fases. Também encontrei aprisionamento e deformação do cubo nas plataformas móveis, que motivaram a revisão da física.
 
-As revisões posteriores passaram pelas verificações registradas em [Qualidade](docs/qualidade.md). A substituição do cubo pelo personagem foi confirmada no Play após preparar as cenas. A revisão v5 de animação e ambientação ainda precisa de validação no Play e fora do editor; não há uma nova build Windows homologada disponível neste repositório.
+As revisões posteriores passaram pelas verificações registradas em [Qualidade](docs/qualidade.md). A substituição do cubo pelo personagem foi confirmada no Play após preparar as cenas. A revisão v6 de combate, animação, interface e ambientação ainda precisa de validação no Play e fora do editor; não há uma nova build Windows homologada disponível neste repositório.
 
 ## Estrutura
 
@@ -58,7 +60,8 @@ O CI verifica regras C#, recuperação e atualização, contratos dos componente
 - [Desenvolvimento e recuperação](docs/desenvolvimento.md)
 - [Revisão geral](docs/revisao-geral.md)
 - [Física e personagem](docs/fisica-e-personagem.md)
-- [Animação e ambientação v5](docs/animacao-e-cenarios.md)
+- [Acabamento de jogabilidade e apresentação v6](docs/acabamento-v6.md)
+- [Animação e ambientação v5 — histórico](docs/animacao-e-cenarios.md)
 - [Personagem original e integração](docs/personagem-nox.md)
 - [Resultados e limites da validação](docs/qualidade.md)
 

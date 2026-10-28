@@ -14,6 +14,9 @@
     <Compile Include="../../Assets/Scripts/NoxProgressRules.cs" Link="NoxProgressRules.cs" />
     <Compile Include="../../Assets/Scripts/NoxSceneLoadGate.cs" Link="NoxSceneLoadGate.cs" />
     <Compile Include="../../Assets/Scripts/NoxJumpAssist.cs" Link="NoxJumpAssist.cs" />
+    <Compile Include="../../Assets/Scripts/NoxAttackCycle.cs" Link="NoxAttackCycle.cs" />
+    <Compile Include="../../Assets/Scripts/NoxEnemyCycle.cs" Link="NoxEnemyCycle.cs" />
+    <Compile Include="../../Assets/Scripts/NoxMotionRules.cs" Link="NoxMotionRules.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

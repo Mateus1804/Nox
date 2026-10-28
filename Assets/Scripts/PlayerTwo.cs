@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class PlayerTwo : MonoBehaviour
 {
@@ -14,6 +13,7 @@ public class PlayerTwo : MonoBehaviour
     [SerializeField, Min(0.1f)] private float jumpHeight = 3.5f;
     private Vector3 desiredMovement;
     private NoxPlayerMotor motor;
+    private NoxPlayerCombat combat;
     private readonly NoxDamageWindow damageWindow = new NoxDamageWindow();
     [SerializeField, Min(0f)] private float damageProtectionSeconds = 0.6f;
     private bool jumpRequested;
@@ -74,7 +74,7 @@ public class PlayerTwo : MonoBehaviour
         desiredMovement = Vector3.ClampMagnitude(new Vector3(
             Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")), 1f);
         movementSpeed = normalSpeed;
-        if (desiredMovement.sqrMagnitude > 0.001f)
+        if (desiredMovement.sqrMagnitude > 0.001f && (combat == null || !combat.LocksFacing))
             transform.forward = desiredMovement;
     }
     #endregion
@@ -88,23 +88,13 @@ public class PlayerTwo : MonoBehaviour
     #endregion
 
     #region Ataque
-    public void CharacterSlash() { TrySlash(firstSlash, 0.3f, 0); }
-    public void CharacterSlash2() { TrySlash(secondSlash, 0.3f, 1); }
-    public void CharacterSlash3() { TrySlash(thirdSlash, 0.5f, 2); }
-    private void TrySlash(GameObject prefab, float cooldown, int stage)
+    public void CharacterSlash() { RequestAttack(); }
+    public void CharacterSlash2() { RequestAttack(); }
+    public void CharacterSlash3() { RequestAttack(); }
+    private void RequestAttack()
     {
-        currentTime = Time.time - startTime;
-        if (!NoxSession.CanPlay || !IsAlive || isPushing || !Input.GetKey(KeyCode.Mouse0)
-            || currentTime < cooldown || prefab == null || crosshair == null) return;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-        GameObject effect = Instantiate(prefab, crosshair.transform.position, crosshair.transform.rotation);
-        if (effect.GetComponent<NoxAttackHitbox>() == null) effect.AddComponent<NoxAttackHitbox>();
-        startTime = Time.time;
-        currentTime = 0;
-        shootTime = false;
-        slashCount = (stage + 1) % 3;
-        NoxCharacterVisual visual = GetComponent<NoxCharacterVisual>();
-        if (visual != null) visual.PlayAttack();
+        // Métodos preservados para UnityEvents; o mesmo clique não entra duas vezes na fila.
+        if (NoxSession.CanPlay && IsAlive && !isPushing) combat?.Request();
     }
     #endregion
 
@@ -132,6 +122,7 @@ public class PlayerTwo : MonoBehaviour
         if (!NoxSession.CanPlay || !IsAlive) return false;
         if (!damageWindow.TryApply(hp, amount, maxHealth, Time.time, damageProtectionSeconds, out float next)) return false;
         hp = next;
+        combat?.Cancel();
         NoxCharacterVisual visual = GetComponent<NoxCharacterVisual>();
         if (visual != null) visual.PulseDamage();
         ChangeColor();
@@ -148,19 +139,26 @@ public class PlayerTwo : MonoBehaviour
         return true;
     }
 
-    private void ApplyContactDamage(GameObject source)
+    private void ApplyContactDamage(Collider source)
     {
+        if (source == null) return;
+        NoxEnemyStrike strike = source.GetComponentInParent<NoxEnemyStrike>();
+        if (strike != null)
+        {
+            if (strike.TryDamage(source, GetInstanceID())) TakeDamage(1f);
+            return;
+        }
         if (source.CompareTag("Fogo") || source.CompareTag("Enemy") || source.CompareTag("Boss")) TakeDamage(1f);
     }
 
-    private void OnCollisionStay(Collision collision) { ApplyContactDamage(collision.gameObject); }
-    private void OnTriggerStay(Collider other) { ApplyContactDamage(other.gameObject); }
+    private void OnCollisionStay(Collision collision) { ApplyContactDamage(collision.collider); }
+    private void OnTriggerStay(Collider other) { ApplyContactDamage(other); }
 
     #region Colliders
     private void OnCollisionEnter(Collision collision)
     {
         if (!NoxSession.CanPlay || !IsAlive) return;
-        ApplyContactDamage(collision.gameObject);
+        ApplyContactDamage(collision.collider);
         if (collision.gameObject.CompareTag("Impulse") && rigid != null)
             rigid.AddForce(Vector3.up * 1700);
     }
@@ -181,7 +179,7 @@ public class PlayerTwo : MonoBehaviour
             other.gameObject.SetActive(false);
             Destroy(other.gameObject);
         }
-        ApplyContactDamage(other.gameObject);
+        ApplyContactDamage(other);
 
         // A coleta e seu áudio pertencem ao componente Cristais.
         if (other.gameObject.tag == "AreaWin")
@@ -222,6 +220,8 @@ public class PlayerTwo : MonoBehaviour
             return;
         }
         motor = new NoxPlayerMotor(rigid, GetComponent<Collider>());
+        combat = new NoxPlayerCombat(transform, crosshair != null ? crosshair.transform : null,
+            new[] { firstSlash, secondSlash, thirdSlash });
         healthBarOBj = GameObject.FindGameObjectWithTag("HealthBar");
         if (healthBarOBj != null) healthBar = healthBarOBj.GetComponent<Image>();
         hp = NoxRules.AdjustHealth(hp > 0 ? hp : maxHealth, 0, maxHealth);
@@ -237,6 +237,7 @@ public class PlayerTwo : MonoBehaviour
         {
             desiredMovement = Vector3.zero;
             jumpRequested = false;
+            combat?.Cancel();
             if (PlaceHolderPanel.PHP != null)
                 PlaceHolderPanel.PHP.PanelWinOrLose("Game Over");
             return;
@@ -245,18 +246,13 @@ public class PlayerTwo : MonoBehaviour
         {
             desiredMovement = Vector3.zero;
             jumpRequested = false;
+            combat?.Cancel();
             motor?.ResetInput();
             return;
         }
         if (isPushing) CharacterPushing(); else CharacterMove();
-        switch ((int)slashCount)
-        {
-            case 0: CharacterSlash(); break;
-            case 1: CharacterSlash2(); break;
-            case 2: CharacterSlash3(); break;
-            default: slashCount = 0; break;
-        }
-        if (currentTime > 2f) slashCount = 0;
+        combat.Update(IsAlive && !isPushing);
+        slashCount = combat.Stage;
         CharacterJump();
         ChangeColor();
     }

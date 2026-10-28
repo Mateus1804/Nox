@@ -23,11 +23,11 @@ public static class NoxBuild
     private static bool TryPrepareScenes()
     {
         if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes de preparar as cenas.");
-        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v5.txt");
+        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v6.txt");
         if (File.Exists(marker)) return true;
         if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return false;
         GameObject nox = NoxCharacterAssets.Prepare();
-        using (var transaction = new NoxSceneTransaction("Preparacao-v5"))
+        using (var transaction = new NoxSceneTransaction("Preparacao-v6"))
         {
             foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes.Where(item => item.enabled))
             {
@@ -59,10 +59,11 @@ public static class NoxBuild
                     }
                 }
                 NoxSceneArt.Apply(opened);
+                NoxScenePolish.Apply(opened);
                 EditorSceneManager.MarkSceneDirty(opened);
                 if (!EditorSceneManager.SaveScene(opened)) throw new IOException("A cena não pôde ser salva: " + scene.path);
             }
-            File.WriteAllText(marker + ".tmp", "Preparação v5 aplicada com backup das cenas.\n");
+            File.WriteAllText(marker + ".tmp", "Preparação v6 aplicada com backup das cenas.\n");
             File.Move(marker + ".tmp", marker);
             transaction.Commit();
         }

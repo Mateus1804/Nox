@@ -8,8 +8,8 @@ using UnityEngine;
 public static class NoxCharacterAssets
 {
     public const string ModelPath = "Assets/Characters/Nox/Nox.fbx";
-    private const string ControllerPath = "Assets/Characters/Nox/Nox-v5.controller";
-    private const string PrefabPath = "Assets/Characters/Nox/NoxPlayable-v5.prefab";
+    private const string ControllerPath = "Assets/Characters/Nox/Nox-v6.controller";
+    private const string PrefabPath = "Assets/Characters/Nox/NoxPlayable-v6.prefab";
 
     public static GameObject Prepare()
     {
@@ -22,9 +22,9 @@ public static class NoxCharacterAssets
         GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath);
         if (model == null) throw new InvalidOperationException("Modelo original Nox não importado: " + ModelPath);
         AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(ModelPath).OfType<AnimationClip>().ToArray();
-        string[] names = { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack" };
+        string[] names = { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack", "Nox_Fall", "Nox_Land", "Nox_Death" };
         AnimationClip[] motions = names.Select(name => clips.FirstOrDefault(c => c.name.EndsWith(name, StringComparison.Ordinal))).ToArray();
-        if (motions.Any(c => c == null)) throw new InvalidOperationException("Um dos quatro clips do Nox não foi importado. Conferir a aba Animation do FBX.");
+        if (motions.Any(c => c == null)) throw new InvalidOperationException("Um dos sete clips do Nox não foi importado. Conferir a aba Animation do FBX.");
         if (!motions[0].isLooping || !motions[1].isLooping)
             throw new InvalidOperationException("Repouso e caminhada precisam de Loop Time. Reimportar o FBX antes de preparar as cenas.");
         if (existing != null) return existing;
@@ -34,25 +34,47 @@ public static class NoxCharacterAssets
             controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
             controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
             controller.AddParameter("Cadence", AnimatorControllerParameterType.Float);
+            controller.AddParameter("VerticalSpeed", AnimatorControllerParameterType.Float);
             controller.AddParameter("Grounded", AnimatorControllerParameterType.Bool);
+            controller.AddParameter("Alive", AnimatorControllerParameterType.Bool);
             controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
+            AnimatorControllerParameter[] defaults = controller.parameters;
+            foreach (AnimatorControllerParameter parameter in defaults)
+                if (parameter.name == "Alive") parameter.defaultBool = true;
+            controller.parameters = defaults;
             AnimatorStateMachine machine = controller.layers[0].stateMachine;
             AnimatorState idle = machine.AddState("Repouso"); idle.motion = motions[0];
-            AnimatorState walk = machine.AddState("Caminhada"); walk.motion = motions[1]; walk.speed = 1f;
+            AnimatorState walk = machine.AddState("Caminhada"); walk.motion = motions[1];
             walk.speedParameter = "Cadence"; walk.speedParameterActive = true;
-            AnimatorState jump = machine.AddState("Salto"); jump.motion = motions[2];
+            AnimatorState jump = machine.AddState("Subida"); jump.motion = motions[2];
             AnimatorState attack = machine.AddState("Ataque"); attack.motion = motions[3];
+            AnimatorState fall = machine.AddState("Queda"); fall.motion = motions[4];
+            AnimatorState land = machine.AddState("Pouso"); land.motion = motions[5];
+            AnimatorState death = machine.AddState("Morte"); death.motion = motions[6];
             machine.defaultState = idle;
             Transition(idle, walk, AnimatorConditionMode.Greater, 0.1f, "Speed");
             Transition(walk, idle, AnimatorConditionMode.Less, 0.1f, "Speed");
-            Transition(idle, jump, AnimatorConditionMode.IfNot, 0, "Grounded");
-            Transition(walk, jump, AnimatorConditionMode.IfNot, 0, "Grounded");
-            Transition(jump, idle, AnimatorConditionMode.If, 0, "Grounded");
+            foreach (AnimatorState state in new[] { idle, walk })
+            {
+                Transition(state, jump, AnimatorConditionMode.IfNot, 0, "Grounded")
+                    .AddCondition(AnimatorConditionMode.Greater, 0.1f, "VerticalSpeed");
+                Transition(state, fall, AnimatorConditionMode.IfNot, 0, "Grounded")
+                    .AddCondition(AnimatorConditionMode.Less, 0.1f, "VerticalSpeed");
+            }
+            Transition(jump, fall, AnimatorConditionMode.Less, 0.1f, "VerticalSpeed");
+            Transition(jump, land, AnimatorConditionMode.If, 0, "Grounded");
+            Transition(fall, land, AnimatorConditionMode.If, 0, "Grounded");
+            Exit(land, idle);
+            AnimatorStateTransition die = machine.AddAnyStateTransition(death);
+            die.hasExitTime = false; die.duration = 0.06f; die.canTransitionToSelf = false;
+            die.AddCondition(AnimatorConditionMode.IfNot, 0, "Alive");
             AnimatorStateTransition strike = machine.AddAnyStateTransition(attack);
-            strike.hasExitTime = false; strike.duration = 0.06f; strike.canTransitionToSelf = false;
+            strike.hasExitTime = false; strike.duration = 0.03f; strike.canTransitionToSelf = false;
             strike.AddCondition(AnimatorConditionMode.If, 0, "Attack");
-            AnimatorStateTransition finish = attack.AddTransition(idle);
-            finish.hasExitTime = true; finish.exitTime = 0.95f; finish.duration = 0.08f;
+            strike.AddCondition(AnimatorConditionMode.If, 0, "Alive");
+            Exit(attack, idle).AddCondition(AnimatorConditionMode.If, 0, "Grounded");
+            Exit(attack, fall).AddCondition(AnimatorConditionMode.IfNot, 0, "Grounded");
+
         }
         GameObject instance = PrefabUtility.InstantiatePrefab(model) as GameObject;
         if (instance == null) throw new InvalidOperationException("Não foi possível preparar o prefab Nox.");
@@ -70,11 +92,18 @@ public static class NoxCharacterAssets
         }
         finally { UnityEngine.Object.DestroyImmediate(instance); }
     }
-    private static void Transition(AnimatorState from, AnimatorState to, AnimatorConditionMode mode, float value, string parameter)
+    private static AnimatorStateTransition Transition(AnimatorState from, AnimatorState to, AnimatorConditionMode mode, float value, string parameter)
     {
         AnimatorStateTransition transition = from.AddTransition(to);
         transition.hasExitTime = false; transition.duration = 0.1f;
         transition.AddCondition(mode, value, parameter);
+        return transition;
+    }
+    private static AnimatorStateTransition Exit(AnimatorState from, AnimatorState to)
+    {
+        AnimatorStateTransition transition = from.AddTransition(to);
+        transition.hasExitTime = true; transition.exitTime = 0.95f; transition.duration = 0.02f;
+        return transition;
     }
 }
 

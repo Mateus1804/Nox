@@ -14,7 +14,7 @@
     "versao_documento": "2.0",
     "atualizacao_documento": "31/01/2023"
   },
-  "fbx_sha256": "9755027318913a9ebc59f1da046ae83191a7bb5418851bf6418fe9cd80a08341",
+  "fbx_sha256": "15f1dfd3fab09afb788f4a3186a29b96544cc43c7964f65df9edada908b5153e",
   "exportador": "Blender 3.6.23 / FBX 7400",
   "originais_preservados": true,
   "clips_acrescentados": [
@@ -26,7 +26,37 @@
     "duas machadinhas nas costas (quatro malhas adicionais)"
   ],
   "imagens_referencia_exportadas": false,
-  "reimportacao_blender": {
+  "unity_play_executado": false,
+  "clips_originais_recuperados_na_revisao_v4": {
+    "Nox_Idle": "vaijogarnaodoido? 150f",
+    "Nox_Walk": "ursorapperboladocaminhando 70f"
+  },
+  "clips_reconstruidos_v5": {
+    "Nox_Idle": "ciclo de respiração fechado de 72 quadros, baseado na pose original avaliada",
+    "Nox_Walk": "ciclo FK fechado de 24 quadros a 30 fps, esqueleto original preservado"
+  },
+  "ci_windows_revisao_v4": {
+    "run": 40611671152,
+    "job": 122564423309,
+    "commit": "a591bde64dab49451018df176197471defdd9e32",
+    "resultado": "success",
+    "verificacoes_csharp": 87,
+    "preparacao_atualizacao": 8,
+    "contratos": 4,
+    "asset_fbx": 4,
+    "pulados": 0
+  },
+  "clips_acrescentados_v6": [
+    "Nox_Fall",
+    "Nox_Land",
+    "Nox_Death"
+  ],
+  "unity_play_revisao_v6_executado_neste_ambiente": false,
+  "clips_revisados_v6": [
+    "Nox_Jump",
+    "Nox_Attack"
+  ],
+  "reimportacao_blender_v5": {
     "meshes": [
       [
         "MachadinhaCabo-1",
@@ -96,24 +126,40 @@
     ],
     "images": []
   },
-  "unity_play_executado": false,
-  "clips_originais_recuperados_na_revisao_v4": {
-    "Nox_Idle": "vaijogarnaodoido? 150f",
-    "Nox_Walk": "ursorapperboladocaminhando 70f"
-  },
-  "clips_reconstruidos_v5": {
-    "Nox_Idle": "ciclo de respiração fechado de 72 quadros, baseado na pose original avaliada",
-    "Nox_Walk": "ciclo FK fechado de 24 quadros a 30 fps, esqueleto original preservado"
-  },
-  "ci_windows_revisao_v4": {
-    "run": 40611671152,
-    "job": 122564423309,
-    "commit": "a591bde64dab49451018df176197471defdd9e32",
-    "resultado": "success",
-    "verificacoes_csharp": 87,
-    "preparacao_atualizacao": 8,
-    "contratos": 4,
-    "asset_fbx": 4,
-    "pulados": 0
+  "reimportacao_blender_v6": {
+    "ossos": 52,
+    "vertices_personagem": 1994,
+    "acoes": {
+      "Nox_Idle": [
+        1.0,
+        73.0
+      ],
+      "Nox_Walk": [
+        1.0,
+        25.0
+      ],
+      "Nox_Jump": [
+        1.0,
+        19.0
+      ],
+      "Nox_Attack": [
+        1.0,
+        19.0
+      ],
+      "Nox_Fall": [
+        1.0,
+        19.0
+      ],
+      "Nox_Land": [
+        1.0,
+        9.0
+      ],
+      "Nox_Death": [
+        1.0,
+        25.0
+      ]
+    },
+    "resultado": "aprovado",
+    "ambiente": "Blender, sem execução no Unity"
   }
 }

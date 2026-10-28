@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine;
@@ -37,8 +38,9 @@ public class PlaceHolderPanel : MonoBehaviour
         bool won = text == "Stage Completed";
         resultShown = true;
         NoxSession.SetState(won ? NoxGameState.Won : NoxGameState.Lost);
-        if (placeHolderText != null) placeHolderText.text = won ? "Fase concluída" : "Fim de jogo";
-        if (placeHolderPanel != null) placeHolderPanel.SetActive(true);
+        if (placeHolderText != null) placeHolderText.text = won ?
+            (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCountInBuildSettings - 1 ? "Jornada concluída" : "Fase concluída") : "Fim de jogo";
+        if (won) ShowResult(); else StartCoroutine(ShowDefeat());
         if (PlayerScript.PT != null && PlayerScript.PT.healthBar_Canvas != null)
             PlayerScript.PT.healthBar_Canvas.SetActive(false);
         bool hasNext = SceneManager.GetActiveScene().buildIndex + 1 < SceneManager.sceneCountInBuildSettings;
@@ -67,6 +69,14 @@ public class PlaceHolderPanel : MonoBehaviour
     }
 
 
+    private IEnumerator ShowDefeat()
+    {
+        // A morte visual usa tempo não escalado; o mundo já fica bloqueado.
+        yield return new WaitForSecondsRealtime(0.65f);
+        ShowResult();
+    }
+    private void ShowResult() { if (placeHolderPanel != null) placeHolderPanel.SetActive(true); }
+
     private void OnEnable() { SceneManager.sceneLoaded += SceneLoaded; }
     private void OnDisable() { SceneManager.sceneLoaded -= SceneLoaded; }
     private void SceneLoaded(Scene scene, LoadSceneMode mode)
@@ -75,6 +85,7 @@ public class PlaceHolderPanel : MonoBehaviour
     }
     private void ResetPanel()
     {
+        StopAllCoroutines();
         resultShown = false;
         if (placeHolderPanel != null) placeHolderPanel.SetActive(false);
     }

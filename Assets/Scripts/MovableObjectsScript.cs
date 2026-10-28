@@ -9,6 +9,17 @@ public class MovableObjectsScript : MonoBehaviour
     private Rigidbody heldBody;
     private FixedJoint grip;
     private bool originalKinematic;
+    public bool Holding => heldBody != null;
+    public bool HasCandidate
+    {
+        get
+        {
+            foreach (Collider item in candidates)
+                if (item != null && item.enabled && item.gameObject.activeInHierarchy && item.attachedRigidbody != null &&
+                    item.attachedRigidbody.CompareTag("Box")) return true;
+            return false;
+        }
+    }
 
     private void Awake()
     {
