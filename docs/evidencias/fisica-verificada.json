@@ -1,0 +1,186 @@
+{
+  "revisao": "Física e interação — 2026-10-26",
+  "codigo_validado": "b1d42ff94800ec979e02f4483ae4b8fc0df459ac",
+  "ci_windows": {
+    "run": 40265063605,
+    "job": 121385546091,
+    "url": "https://github.com/Mateus1804/Nox/actions/runs/40265063605",
+    "resultado": "success",
+    "verificacoes_csharp": 49,
+    "testes_preparacao_atualizacao": 8,
+    "pulados": 0
+  },
+  "compilacao_isolada": {
+    "linguagem": "C# 8",
+    "bibliotecas": "Build.zip original e Unity Editor 2021.1.28f1",
+    "scripts_execucao": 35,
+    "scripts_editor": 3,
+    "erros": 0,
+    "avisos": 0
+  },
+  "integracao_local": {
+    "ambiente": "Linux / PowerShell 7.6.9",
+    "testes": 8,
+    "resultado": "aprovado"
+  },
+  "nao_executados": [
+    "Verificador de sete cenários no PhysX do editor",
+    "Play desta revisão",
+    "Build Windows desta revisão",
+    "Vinculação e animações do modelo original Nox"
+  ],
+  "arquivos": [
+    {
+      "arquivo": "Assets/Scripts/AimEnemy.cs",
+      "sha256": "43c19b7f27f137e221d7233c6d4bf76ef1db3fb65ab3219d80c12d4649269130"
+    },
+    {
+      "arquivo": "Assets/Scripts/Billboard.cs",
+      "sha256": "5df5b4342a10133af22455a22f98eabae2a6539b468ce143b5f3c156dd44a5d3"
+    },
+    {
+      "arquivo": "Assets/Scripts/Boss.cs",
+      "sha256": "aabb2b1f0ff638db86a7b58dc04ba0daa94146907ab4d8529f90d822444ec24f"
+    },
+    {
+      "arquivo": "Assets/Scripts/BossScript.cs",
+      "sha256": "dec463b98d1a09a39b2d864ce87cee49fd770303ac9e01a028be43809ca3fcce"
+    },
+    {
+      "arquivo": "Assets/Scripts/Bullet.cs",
+      "sha256": "0bbc2c2c1f04ef7cd98790c88dc6fdb7e043a58d1bf72aa787cba05b362859bf"
+    },
+    {
+      "arquivo": "Assets/Scripts/BulletEnemy.cs",
+      "sha256": "1ea5e4a6aefeeb16455bf3856cfac2085050ff5d0671714ba09b016bc4c46077"
+    },
+    {
+      "arquivo": "Assets/Scripts/CameraFollow.cs",
+      "sha256": "26720fe15f304bf638199a17f6577a2531af587c8c2709a91e314de72523d745"
+    },
+    {
+      "arquivo": "Assets/Scripts/ChangeTextColor.cs",
+      "sha256": "4196bf13a05d2bb6e6265c879b7062c26037e9847e8f3ec8bf7bdb2ee613016e"
+    },
+    {
+      "arquivo": "Assets/Scripts/Cristais.cs",
+      "sha256": "a20f032a2f7b81422943ecf5581e173237f0389f59e66db738f89dfec6cdf852"
+    },
+    {
+      "arquivo": "Assets/Scripts/EnemiesWaypoint.cs",
+      "sha256": "11f979ca7c5fd7af6d69178517568038ac2b9dd71d36920adce95db6baafdf80"
+    },
+    {
+      "arquivo": "Assets/Scripts/EnemyAir.cs",
+      "sha256": "9852cb8266f80e05c4c60821685163257cd3c9b8640c554588c5b4d2a323dd42"
+    },
+    {
+      "arquivo": "Assets/Scripts/EnemyPatrol.cs",
+      "sha256": "cd09ce81e1e764b7d0722daaf32c9ab7520286ae73a36b07dbd1f9c9f66ca997"
+    },
+    {
+      "arquivo": "Assets/Scripts/HUDAndSounds.cs",
+      "sha256": "75db99b892a4a7efdce720794aa0a6446e0e84233c18307ee575e44da21d1f79"
+    },
+    {
+      "arquivo": "Assets/Scripts/Lever.cs",
+      "sha256": "ccd3f6fcc43364a39d1070f53f44e7632bd4e95e58dcaf3b5338f1067de22d9c"
+    },
+    {
+      "arquivo": "Assets/Scripts/LoadLevels.cs",
+      "sha256": "8b79aa9f692e7bfdc373f2ae420eeceb44b56d7023e9bc0b5b17a3f019e10e30"
+    },
+    {
+      "arquivo": "Assets/Scripts/MovableObjectsScript.cs",
+      "sha256": "9faaf529df65b979e0f195fa2c30dd770c225ef66337266153078b19a1428de7"
+    },
+    {
+      "arquivo": "Assets/Scripts/NoxBootstrap.cs",
+      "sha256": "1967b282f5728c351e6ee98996b715dd6811ce2541c34d580fe24a7900a95fa9"
+    },
+    {
+      "arquivo": "Assets/Scripts/NoxCharacterVisual.cs",
+      "sha256": "56ab0b8445f6006cd9b4a3f1d15d71fa3c2dba12797fd8fd9b3b899881b064c9"
+    },
+    {
+      "arquivo": "Assets/Scripts/NoxDamageWindow.cs",
+      "sha256": "4ca5462ff11dd5b1792d65a920c0f3063d978dd1a76acfaa4bee050ba7b02578"
+    },
+    {
+      "arquivo": "Assets/Scripts/NoxPlayerMotor.cs",
+      "sha256": "5824375aa70aae3c456700b3aed8b4eceb2ad202aca8c29e23d50a02b1e32a74"
+    },
+    {
+      "arquivo": "Assets/Scripts/NoxRules.cs",
+      "sha256": "956f01495567ca5a6c1fda6b64a02798da41ccf7dea375000122814e5c7a5ace"
+    },
+    {
+      "arquivo": "Assets/Scripts/NoxSceneActions.cs",
+      "sha256": "7a52468e92d892260d1b53e5638c3f8e66f5c15aa5a27645610cee68652a42aa"
+    },
+    {
+      "arquivo": "Assets/Scripts/NoxSession.cs",
+      "sha256": "b79b3f40f54646599c329064dad2d0865a16acb51d5c9f5776a5e72fea5c0c05"
+    },
+    {
+      "arquivo": "Assets/Scripts/PlaceHolderPanel.cs",
+      "sha256": "c4a298ff67ceda652ad6768206d6a33ed060e9dac1768e4277fac87c866c08f8"
+    },
+    {
+      "arquivo": "Assets/Scripts/PlayerScript.cs",
+      "sha256": "c5d9a3cc17358723af69f1902d5e34702b2bf5f333920bcfb780c151a715d062"
+    },
+    {
+      "arquivo": "Assets/Scripts/PlayerTwo.cs",
+      "sha256": "0975f73e8d889f6d7336c352a721865aab4e0253ec0cabc0538ebe532d3aa841"
+    },
+    {
+      "arquivo": "Assets/Scripts/RotateSky.cs",
+      "sha256": "d9c73e1951e67e77afa4466da0fbe19dd8cb6b2d82f7251d1463e994360077f8"
+    },
+    {
+      "arquivo": "Assets/Scripts/SlashScript.cs",
+      "sha256": "8abf515ab036dfd7abdbb1daa6abb54e2a7f888806dd6054a5c69f4ddcfde82a"
+    },
+    {
+      "arquivo": "Assets/Scripts/ThirdSlash.cs",
+      "sha256": "0aabb4e43e5a1f19800b78648c4b73166923e8ba0ef6a00e93ed4bf2f1ce5834"
+    },
+    {
+      "arquivo": "Assets/Scripts/TutorialList.cs",
+      "sha256": "305e7918558cd5f73eba9c514eb601fd5ebe2df34f28025eb84c39bb62f58349"
+    },
+    {
+      "arquivo": "Assets/Scripts/TutorialMethod.cs",
+      "sha256": "3c0dfb523178d58013977a0edad350c49f65ff10679687c0fc4180d95a0bbd7b"
+    },
+    {
+      "arquivo": "Assets/Scripts/WaypointsAirPhase.cs",
+      "sha256": "95f579ec5e0e5715f47164efa023882f75ab7f5162ce354d109caa7af0951d77"
+    },
+    {
+      "arquivo": "Assets/Scripts/plataforma.cs",
+      "sha256": "8a843f9196c6afb08f1d0e05ef97057cdbf1da5c232c6c82f0740a30ac688b1a"
+    },
+    {
+      "arquivo": "Assets/Scripts/portalR.cs",
+      "sha256": "a87569adc73419249e8beb32e3bdb9c4e98f4e9c7181f3ec74f1608e38773e56"
+    },
+    {
+      "arquivo": "Assets/Scripts/portaldentro.cs",
+      "sha256": "c55820ee97ee4f78a28b4a4f6aca1baa485aa39836d4327d70a75614016ffd6e"
+    },
+    {
+      "arquivo": "Assets/Editor/NoxBuild.cs",
+      "sha256": "810e8d46ee65852b546bf0e7ea24e3483dae3ec4f245c577c0b97c023b1cd5d7"
+    },
+    {
+      "arquivo": "Assets/Editor/NoxCharacterSetup.cs",
+      "sha256": "95396f695ed16801543c7b7770d43b4d1b6ee2d3d8df3bf9330f2f962189928c"
+    },
+    {
+      "arquivo": "Assets/Editor/NoxPhysicsChecks.cs",
+      "sha256": "a27e4fe837de0c0dbda04c9c67d9ea16854cf4b09c7ccdb36361301130f5008a"
+    }
+  ]
+}

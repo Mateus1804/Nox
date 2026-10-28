@@ -1,23 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class portaldentro : MonoBehaviour
 {
-    float speed = 5f;
-
-    public void InRotation()
-    {
-        gameObject.transform.Rotate(0.00f, -2f * speed * Time.deltaTime, 0.0f, Space.Self);
-    }
-
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-        InRotation();
-    }
+    private const float Speed = 5f;
+    public void InRotation() { transform.Rotate(0, -2f * Speed * Time.deltaTime, 0, Space.Self); }
+    private void Update() { InRotation(); }
 }

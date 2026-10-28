@@ -1,5 +1,7 @@
 using System;
 
+public enum NoxEnemyAction { Idle, Chase, Attack }
+
 // Regras independentes da cena, utilizadas também pelos testes de regressão.
 public static class NoxRules
 {
@@ -16,6 +18,28 @@ public static class NoxRules
     public static float HealthRatio(float current, float maximum)
     {
         return AdjustHealth(current, 0, maximum) / maximum;
+    }
+
+    public static NoxEnemyAction ChooseEnemyAction(float distance, float attackRange, float followRange)
+    {
+        if (!IsFinite(distance) || !IsFinite(attackRange) || !IsFinite(followRange) || distance < 0)
+            return NoxEnemyAction.Idle;
+        attackRange = Math.Max(0, attackRange);
+        followRange = Math.Max(attackRange, followRange);
+        return distance <= attackRange ? NoxEnemyAction.Attack :
+            distance <= followRange ? NoxEnemyAction.Chase : NoxEnemyAction.Idle;
+    }
+
+    public static bool IsFinite(float value) { return !float.IsNaN(value) && !float.IsInfinity(value); }
+
+    public static float EffectiveVolume(float value, bool muted)
+    {
+        return muted || !IsFinite(value) ? 0 : Math.Max(0, Math.Min(1, value));
+    }
+
+    public static bool IsSupport(float normalY, float relativeVerticalSpeed)
+    {
+        return normalY >= 0.65f && relativeVerticalSpeed <= 0.15f;
     }
 
     public static int NextScene(int current, int sceneCount)

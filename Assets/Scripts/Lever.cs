@@ -53,6 +53,10 @@ public class Lever : MonoBehaviour
         door.transform.position = Vector3.MoveTowards(door.transform.position,
             waypoints[currentWaypointIndex].transform.position, speed * (occupied ? 1 : 5) * Time.deltaTime);
     }
-    private void OnDisable() { occupants.Clear(); }
+    private void OnDisable()
+    {
+        occupants.Clear(); playerCheck = false; boxCheck = false; wasOccupied = false;
+        if (indicatorMaterial != null) indicatorMaterial.color = Color.red;
+    }
     private void OnDestroy() { if (indicatorMaterial != null) Destroy(indicatorMaterial); }
 }

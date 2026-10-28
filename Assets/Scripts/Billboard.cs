@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
     public Transform cam;
-    void Update()
+    private void Start() { if (cam == null && Camera.main != null) cam = Camera.main.transform; }
+    private void LateUpdate()
     {
-        if (cam == null) return;
-        transform.LookAt(transform.position + cam.forward);
+        if (cam != null) transform.rotation = Quaternion.LookRotation(cam.forward, cam.up);
     }
 }

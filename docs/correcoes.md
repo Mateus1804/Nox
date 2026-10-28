@@ -17,7 +17,7 @@ Os scripts alterados foram normalizados para UTF-8. Os arquivos de metadata orig
 | Navegação | Índices validados e retorno ao menu após a última cena; atalho L restrito a editor/development |
 | Física | Movimento por velocidade de Rigidbody, preservação de Y, entrada combinada com velocidade limitada, consulta de chão junto da física |
 | Salto | Pedido por GetKeyDown consumido em FixedUpdate, altura configurável e bloqueio ao empurrar |
-| Caixas | Candidatos por collider, saída limpa o alcance, referência segurada independente, restauração de pai e estado cinemático |
+| Caixas | Candidatos por collider, saída limpa o alcance, referência segurada independente, junta física, sem parentesco com o jogador e com restauração do estado cinemático |
 | Identidade e dano | A tag permanece Player; controlador principal trata BulletTurret e Fogo |
 | Tutorial | Condições corrigidas; índice de cada Collider1…5 definido na preparação de cenas |
 | Alavanca | HashSet de ocupantes, validação de dois extremos e material sob responsabilidade do componente |
@@ -32,7 +32,7 @@ Os scripts alterados foram normalizados para UTF-8. Os arquivos de metadata orig
 - O deslocamento aceita diagonais sem velocidade adicional. O Rigidbody passa a coordenar o movimento, em vez de disputar posição com Transform.
 - O salto passa a ter altura explícita, inicialmente 3,5 unidades. `jumpForce` é mantido como campo legado para compatibilidade de serialização, mas a nova rotina usa `jumpHeight`. A altura deve ser calibrada nas fases antes de aprovar jogabilidade; não foi afirmada equivalência com a força antiga aplicada por quadro.
 - Cura não ultrapassa a vida máxima, inicialmente 3; derrota/vitória interrompem a partida por estado explícito.
-- Pegar uma caixa torna temporariamente seu Rigidbody cinemático e restaura sua configuração ao soltar. Interações entre transporte de caixa e plataformas exigem validação no editor.
+- Pegar uma caixa usa FixedJoint com corpo dinâmico, sem torná-la filha do jogador. A configuração cinemática anterior é restaurada ao soltar. A revisão física e os limites estão em `fisica-e-personagem.md`.
 - Controles de água, terra e dificuldade não ganham implementações fictícias: ficam indisponíveis porque essas funcionalidades não estão completas na referência.
 - Ao iniciar diretamente uma fase sem o GameADM do menu, o bootstrap retorna ao menu para montar o contexto previsto.
 - A patrulha experimental passa a executar a rotina que antes não era chamada. Seu uso em fases precisa ser confirmado antes da aprovação.
@@ -43,6 +43,12 @@ Esta versão não foi declarada pronta para distribuição. Falta executar o edi
 
 O prefab legado Enemy contém GUIDs de scripts não resolvidos pelo catálogo dos 28 componentes. Não foi removido ou reassociado por suposição. A conferência adicional do catálogo completo de Assets não encontrou esses dois GUIDs, nem DLLs em Assets ou referências serializadas ao prefab legado. A apresentação como Missing Script e o descarte definitivo ainda exigem a conferência no Inspector. Sons de cristais, licenças, referências de animação e gráficos de Visual Scripting também precisam da conferência completa; a emissão compartilhada de áudio não foi alterada sem evidência de falha.
 
-O PlayerTwo ainda conserva uma implementação paralela para preservar as referências e diferenças originais. A consolidação estrutural poderá ocorrer depois da referência jogável. Não houve migração geral para Unity 6, conversão de pipeline gráfico, calibração de NavMesh ou teste de desempenho.
+O PlayerTwo preserva campos e diferenças originais, mas compartilha o motor físico e a regra de proteção de dano com PlayerScript. A consolidação estrutural poderá ocorrer depois da referência jogável. Não houve migração geral para Unity 6, conversão de pipeline gráfico, calibração de NavMesh ou teste de desempenho.
 
 O preparador Editor tem marca para evitar repetir a preparação em uma cópia já preparada. Alterações posteriores em cenas exigem nova avaliação; não se deve apagar essa marca como substituição da revisão de alterações manuais.
+
+## Revisão posterior ao primeiro Play
+
+A revisão de 26/10/2026 responde à deformação/aprisionamento nas plataformas informada no teste local. A hierarquia de `AirPhase1.4` confirma `Mobile Platforms` com escala `(6, 1, 8)`, herdada pelas plataformas individuais. O antigo `SetParent` submetia o jogador a essa escala ao girar. O transporte passa a compor velocidade física, sem modificar pai ou escala do jogador.
+
+Dano agora possui proteção de 0,6 s e contato persistente com perigos causa dano novamente após esse intervalo. Cura de uma unidade é limitada a 3 e o item só é consumido quando houver recuperação. Isso é decisão explícita de comportamento, não uma alegação de cura excedente comprovada na versão anterior, que já possuía clamp.

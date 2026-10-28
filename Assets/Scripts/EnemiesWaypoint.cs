@@ -1,47 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemiesWaypoint : MonoBehaviour
 {
     public EnemyAir turtle;
     public GameObject[] waypoints;
-
-    int currentWaypointIndex = 0;
-
+    private int currentWaypointIndex;
     public float speed = 1f;
-
     public float distance;
 
-    void Update()
+    private void Update()
     {
-        if (!NoxSession.CanPlay || waypoints == null || waypoints.Length == 0) return;
+        if (!NoxSession.CanPlay || turtle == null || turtle.hpTurtle <= 0 || waypoints == null || waypoints.Length == 0) return;
         if (!NoxRules.IsValidIndex(currentWaypointIndex, waypoints.Length)) currentWaypointIndex = 0;
-        if (waypoints[currentWaypointIndex] == null) return;
-        #region Turtle
-        if (turtle != null && this.turtle.hpTurtle > 0)
+        GameObject target = waypoints[currentWaypointIndex];
+        if (target == null) return;
+        distance = Vector3.Distance(transform.position, target.transform.position);
+        if (distance <= 1)
         {
-            distance = Vector3.Distance(transform.position, waypoints[currentWaypointIndex].transform.position);
-
-
-            if (Vector3.Distance(transform.position, waypoints[currentWaypointIndex].transform.position) <= 1)
-            {
-
-                currentWaypointIndex++;
-                this.transform.Rotate(Vector3.up * 180f);
-
-                if (currentWaypointIndex >= waypoints.Length)
-                {
-
-                    currentWaypointIndex = 0;
-                }
-            }
-            transform.position = Vector3.MoveTowards(transform.position, waypoints[currentWaypointIndex].transform.position, speed * Time.deltaTime);
+            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+            target = waypoints[currentWaypointIndex];
+            if (target == null) return;
+            transform.Rotate(Vector3.up * 180f);
         }
-
-        #endregion
-
-
-
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position,
+            Mathf.Max(0, speed) * Time.deltaTime);
     }
 }

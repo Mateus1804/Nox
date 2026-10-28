@@ -1,38 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlayerScript : MonoBehaviour
 {
-    // Variável que corresponde ao script "PlayerTwo", serve como "singleton"
+    // Referência legada preservada para os componentes das cenas.
     public static PlayerScript PT;
 
-    // Variável que corresponde ao componente "Rigidbody" do Player
     public Rigidbody rigid;
 
     public AudioSource soundBossWater;
-
+    private bool bossEncounterStarted;
 
     [SerializeField, Min(1f)] private float maxHealth = 3f;
     [SerializeField, Min(0.1f)] private float jumpHeight = 3.5f;
     private Vector3 desiredMovement;
-    private Collider bodyCollider;
+    private NoxPlayerMotor motor;
+    private readonly NoxDamageWindow damageWindow = new NoxDamageWindow();
+    [SerializeField, Min(0f)] private float damageProtectionSeconds = 0.6f;
     private bool jumpRequested;
     private bool isPushing;
     private float movementSpeed;
     public bool IsAlive => hp > 0;
+    public float AnimationSpeed => NoxSession.CanPlay ? desiredMovement.magnitude * movementSpeed : 0;
     public void SetPushing(bool value) { isPushing = value; }
 
-    #region Variáveis para a mudança do offset da camera, e a ativação do canvas da vida do Boss, e a parede invisivel
-    // A câmera que segue o Player fica associada a essa variável
+    #region Encontro com o chefe
     public GameObject mainCameraObj;
 
-    // Esse é o novo offset da camera, dá pra mudar o valor no Inspector do Player
     public Vector3 newOffset;
 
-    // O canvas do Boss fica associado a essa variável
     public GameObject bossCanvas;
 
     public GameObject invisibleWall;
@@ -49,47 +46,36 @@ public class PlayerScript : MonoBehaviour
     public bool shootTime = false;
     #endregion
 
-    #region Variáveis relacionadas ao pulo e raycast
+    #region Apoio e salto
 
-    // Variável que corresponde a layer dentro da Unity
     public LayerMask WhatIsGround;
 
-    // Variável que corresponde a força do pulo do jogador
-    public float jumpForce;
+    public float jumpForce; // Mantido para compatibilidade; o motor usa jumpHeight.
 
-    // Variável que informa se o jogador está no chão ou não
     public bool grounded = false;
-
-
-
 
     #endregion
 
     #region Variáveis relacionadas a velocidade
 
-    // Variável que corresponde a velocidade ao empurrar objetos
     float pushingSpeed = 3f;
 
-    // Variável que corresponde a velocidade normal do jogador
     float normalSpeed = 6f;
 
     #endregion
 
     #region Variáveis relacionadas ao HP
 
-    // Variável que corresponde ao HP
     public float hp;
 
-    // Variável que corresponde a "imagem" da barra de vida, a quantidade de vida
     public Image healthBar;
 
-    // Variável que corresponde a barra de vida dentro da Unity
     public GameObject healthBarObj;
 
     public GameObject healthBar_Canvas;
     #endregion
 
-    #region Metódos de movimentação: normal e empurrando
+    #region Movimento
     public void CharacterPushing()
     {
         desiredMovement = Vector3.ClampMagnitude(new Vector3(
@@ -108,68 +94,32 @@ public class PlayerScript : MonoBehaviour
     #endregion
 
     #region Metódo de pulo
-   public void CharacterJump()
+    public void CharacterJump()
     {
         if (!isPushing && Input.GetKeyDown(KeyCode.Space))
             jumpRequested = true;
     }
     #endregion
 
-    #region Metódo de ataque
-    // Metódo que invoca o primeiro Slash
-    public void CharacterSlash1()
+    #region Ataque
+    public void CharacterSlash1() { TrySlash(slash1, 0.4f, 0); }
+    public void CharacterSlash2() { TrySlash(slash2, 0.2f, 1); }
+    public void CharacterSlash3() { TrySlash(slash3, 0.4f, 2); }
+    private void TrySlash(GameObject prefab, float cooldown, int stage)
     {
-        if (Input.GetKey(KeyCode.Mouse0) && currentTime >= 0.4f && Time.timeScale == 1)
-        {
-            Instantiate(slash1, crosshair.transform.position, crosshair.transform.rotation);
-
-            startTime = Time.time;
-            shootTime = false;
-            slashCount++;
-        }
-
-        if (!shootTime)
-        {
-            currentTime = Time.time - startTime;
-        }
+        currentTime = Time.time - startTime;
+        if (!NoxSession.CanPlay || !IsAlive || isPushing || !Input.GetKey(KeyCode.Mouse0)
+            || currentTime < cooldown || prefab == null || crosshair == null) return;
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        GameObject effect = Instantiate(prefab, crosshair.transform.position, crosshair.transform.rotation);
+        if (effect.GetComponent<NoxAttackHitbox>() == null) effect.AddComponent<NoxAttackHitbox>();
+        startTime = Time.time;
+        currentTime = 0;
+        shootTime = false;
+        slashCount = (stage + 1) % 3;
+        NoxCharacterVisual visual = GetComponent<NoxCharacterVisual>();
+        if (visual != null) visual.PlayAttack();
     }
-
-    // Metódo que invoca o segundo Slash
-    public void CharacterSlash2()
-    {
-        if (Input.GetKey(KeyCode.Mouse0) && currentTime >= 0.2f && Time.timeScale == 1)
-        {
-            Instantiate(slash2, crosshair.transform.position, crosshair.transform.rotation);
-
-            startTime = Time.time;
-            shootTime = false;
-            slashCount++;
-        }
-
-        if (!shootTime)
-        {
-            currentTime = Time.time - startTime;
-        }
-    }
-
-    // Metódo que invoca o terceiro Slash
-    public void CharacterSlash3()
-    {
-        if (Input.GetKey(KeyCode.Mouse0) && currentTime >= 0.4f && Time.timeScale == 1)
-        {
-            Instantiate(slash3, crosshair.transform.position, crosshair.transform.rotation);
-
-            startTime = Time.time;
-            shootTime = false;
-            slashCount = 0;
-        }
-
-        if (!shootTime)
-        {
-            currentTime = Time.time - startTime;
-        }
-    }
-
     #endregion
 
     #region Metódo das barras
@@ -198,16 +148,40 @@ public class PlayerScript : MonoBehaviour
     }
     #endregion
 
+    public bool TakeDamage(float amount)
+    {
+        if (!NoxSession.CanPlay || !IsAlive) return false;
+        if (!damageWindow.TryApply(hp, amount, maxHealth, Time.time, damageProtectionSeconds, out float next)) return false;
+        hp = next;
+        ChangeColor();
+        return true;
+    }
+
+    public bool Heal(float amount)
+    {
+        if (!NoxSession.CanPlay || !IsAlive || amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount)) return false;
+        float next = NoxRules.AdjustHealth(hp, amount, maxHealth);
+        if (next <= hp) return false;
+        hp = next;
+        ChangeColor();
+        return true;
+    }
+
+    private void ApplyContactDamage(GameObject source)
+    {
+        if (source.CompareTag("Fogo") || source.CompareTag("Enemy") || source.CompareTag("Boss")) TakeDamage(1f);
+    }
+
+    private void OnCollisionStay(Collision collision) { ApplyContactDamage(collision.gameObject); }
+    private void OnTriggerStay(Collider other) { ApplyContactDamage(other.gameObject); }
 
     #region Colliders
     private void OnCollisionEnter(Collision collision)
     {
         if (!NoxSession.CanPlay || !IsAlive) return;
-        if (collision.gameObject.CompareTag("Fogo")) hp = BarCount(hp, 1, 0, healthBar);
-        if (collision.gameObject.tag == "Impulse")
-        {
+        ApplyContactDamage(collision.gameObject);
+        if (collision.gameObject.CompareTag("Impulse") && rigid != null)
             rigid.AddForce(Vector3.up * 1700);
-        }
     }
 
     public void OnTriggerEnter(Collider other)
@@ -215,62 +189,54 @@ public class PlayerScript : MonoBehaviour
         if (!NoxSession.CanPlay || !IsAlive) return;
         if (other.CompareTag("BulletTurret"))
         {
-            hp = BarCount(hp, 1, 0, healthBar);
+            BulletEnemy projectile = other.GetComponentInParent<BulletEnemy>();
+            if (projectile != null) projectile.Hit(other: GetComponent<Collider>());
+            else { other.enabled = false; TakeDamage(1f); Destroy(other.gameObject); }
+        }
+        if (other.CompareTag("Heal") && other.enabled && Heal(1f))
+        {
+            // Desabilitar antes de Destroy evita coleta duplicada no mesmo frame.
+            other.enabled = false;
+            other.gameObject.SetActive(false);
             Destroy(other.gameObject);
         }
-        if (other.gameObject.tag == "Heal")
-        {
-            hp = BarCount(hp, -1, -0.25f, healthBar);
-            Destroy(other.gameObject);
-        }
-
-        if (other.gameObject.tag == "Enemy")
-        {
-            hp = BarCount(hp, 1, 0.25f, healthBar);
-            // O feedback visual é apresentado pela barra de vida.
-        }
+        ApplyContactDamage(other.gameObject);
 
         if (other.gameObject.tag == "AreaWin")
         {
             NoxSession.LoadNextScene();
+            return;
         }
 
         if (other.gameObject.tag == "Limbo")
         {
             hp = 0;
             NoxSession.SetState(NoxGameState.Lost);
+            return;
         }
 
-        if (other.gameObject.tag == "LifeCamera")
+        if (other.gameObject.tag == "LifeCamera" && !bossEncounterStarted)
         {
+            bossEncounterStarted = true;
             CameraFollow follow = mainCameraObj != null ? mainCameraObj.GetComponent<CameraFollow>() : null;
             if (follow != null) follow.offset = newOffset;
             if (bossCanvas != null) bossCanvas.SetActive(true);
-            Invoke("InvisibleWall", 2);
+            Invoke(nameof(InvisibleWall), 2);
 
             SoundBossWater();
         }
 
-        if (other.gameObject.tag == "Boss")
-        {
-            hp = BarCount(hp, 1, 0.25f, healthBar);
-
-        }
     }
 
-
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.tag == "Enemy")
-        {
-            // Não sobrescrever a cor original do material do personagem.
-        }
-    }
     #endregion
 
     public void SoundBossWater()
     {
-        if (soundBossWater != null) soundBossWater.Play();
+        if (soundBossWater != null)
+        {
+            if (HUDAndSounds.Singleton != null) HUDAndSounds.Singleton.StopMusic();
+            soundBossWater.Play();
+        }
     }
 
     void Awake()
@@ -295,9 +261,7 @@ public class PlayerScript : MonoBehaviour
             enabled = false;
             return;
         }
-        bodyCollider = GetComponent<Collider>();
-        rigid.interpolation = RigidbodyInterpolation.Interpolate;
-        rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        motor = new NoxPlayerMotor(rigid, GetComponent<Collider>());
         healthBarObj = GameObject.FindGameObjectWithTag("HealthBar");
         if (healthBarObj != null) healthBar = healthBarObj.GetComponent<Image>();
         hp = NoxRules.AdjustHealth(hp > 0 ? hp : maxHealth, 0, maxHealth);
@@ -306,9 +270,9 @@ public class PlayerScript : MonoBehaviour
         ChangeColor();
     }
 
-
     void Update()
     {
+        hp = NoxRules.AdjustHealth(hp, 0, maxHealth);
         if (!IsAlive)
         {
             desiredMovement = Vector3.zero;
@@ -338,26 +302,15 @@ public class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rigid == null || !IsAlive || !NoxSession.CanPlay) return;
-        // A consulta usa os pés do collider, em vez de um deslocamento global fixo.
-        Vector3 origin = bodyCollider != null
-            ? bodyCollider.bounds.center : transform.position + Vector3.up * 0.5f;
-        float length = bodyCollider != null ? bodyCollider.bounds.extents.y + 0.12f : 0.7f;
-        grounded = rigid.velocity.y <= 0.1f && Physics.Raycast(origin, Vector3.down,
-            length, WhatIsGround, QueryTriggerInteraction.Ignore);
-        Vector3 velocity = desiredMovement * movementSpeed;
-        velocity.y = rigid.velocity.y;
-        if (jumpRequested && grounded && !isPushing)
-        {
-            velocity.y = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
-            grounded = false;
-        }
+        if (rigid == null || motor == null || !IsAlive || !NoxSession.CanPlay) return;
+        motor.Step(desiredMovement, movementSpeed, jumpRequested && !isPushing, jumpHeight, WhatIsGround);
+        grounded = motor.Grounded;
         jumpRequested = false;
-        rigid.velocity = velocity;
     }
 
     private void OnDestroy()
     {
+        motor?.Dispose();
         if (PT == this) PT = null;
     }
 }

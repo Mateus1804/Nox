@@ -1,51 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AimEnemy : MonoBehaviour
 {
-    #region Variaveis > Balas
-    //Declarando a variável das balas
     public GameObject bullet;
     public GameObject mira;
-    #endregion
-
-    #region Variaveis > FireRate
-    //Declarando as variáveis do fire rate
     public float startTime;
     public float currentTime;
     public bool shootTime;
-    #endregion
+    private bool initialized;
 
-    #region Shoot()
     public void Shoot()
     {
-        if (currentTime >= 1)
-        {
-            Instantiate(bullet, mira.transform.position, mira.transform.rotation);
-
-            startTime = Time.time;
-            shootTime = false;
-        }
-
-
-        if (!shootTime)
-        {
-            currentTime = Time.time - startTime;
-        }
+        if (!NoxSession.CanPlay || bullet == null || mira == null) return;
+        currentTime = Time.time - startTime;
+        if (currentTime < 1) return;
+        Instantiate(bullet, mira.transform.position, mira.transform.rotation);
+        startTime = Time.time;
+        currentTime = 0;
+        shootTime = false;
     }
-    #endregion
-
-    // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
-        currentTime = 1;
-        startTime = currentTime;
+        // Primeiro disparo imediato, independentemente do tempo gasto no menu.
+        startTime = Time.time - 1;
+        initialized = true;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (NoxSession.CanPlay && bullet != null && mira != null) Shoot();
-    }
+    private void Update() { if (initialized) Shoot(); }
 }

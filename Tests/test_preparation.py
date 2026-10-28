@@ -43,6 +43,35 @@ class PreparationTests(unittest.TestCase):
             '-OriginalZip', str(self.archive), '-Destino', str(self.destination)
         ], text=True, capture_output=True)
 
+    def test_updates_existing_project_preserving_scenes_and_backing_up_scripts(self):
+        self.write_zip()
+        result = self.prepare()
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        player = self.destination / 'Assets/Scripts/PlayerScript.cs'
+        player.write_bytes(b'// script local anterior\n')
+        scene = self.destination / 'Assets/Scenes/Menu1.2.unity'
+        before_scene = scene.read_bytes()
+        result = subprocess.run([
+            'pwsh', '-NoProfile', '-File', str(ROOT / 'tools/Atualizar-Nox.ps1'),
+            '-Projeto', str(self.destination)
+        ], text=True, capture_output=True)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual((ROOT / 'Assets/Scripts/PlayerScript.cs').read_bytes(), player.read_bytes())
+        self.assertEqual(before_scene, scene.read_bytes())
+        backups = list(self.base.glob('projeto com espaços-Backup-Scripts-*'))
+        self.assertEqual(1, len(backups))
+        self.assertEqual(b'// script local anterior\n', (backups[0] / 'Assets/Scripts/PlayerScript.cs').read_bytes())
+        self.assertTrue((backups[0] / 'arquivos-atualizados.json').exists())
+
+    def test_updater_rejects_folder_without_unity_project(self):
+        self.destination.mkdir()
+        result = subprocess.run([
+            'pwsh', '-NoProfile', '-File', str(ROOT / 'tools/Atualizar-Nox.ps1'),
+            '-Projeto', str(self.destination)
+        ], text=True, capture_output=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertFalse(list(self.base.glob('*-Backup-Scripts-*')))
+
     def test_prepares_separate_copy_preserves_assets_and_ignores_cache(self):
         self.write_zip()
         before = hashlib.sha256(self.archive.read_bytes()).hexdigest()

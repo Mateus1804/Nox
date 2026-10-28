@@ -20,3 +20,5 @@ jobs:
         run: dotnet run --project Tests/Core/CoreTests.csproj --configuration Release
       - name: Recuperação em pasta isolada
         run: python Tests/test_preparation.py
+      - name: Contratos dos componentes e metadados
+        run: python Tests/test_source_contracts.py
