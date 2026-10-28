@@ -48,10 +48,10 @@ class CharacterAssetTests(unittest.TestCase):
         manifest=json.loads((ROOT/'docs/personagem-nox.json').read_text())
         self.assertEqual(manifest['fbx_sha256'], hashlib.sha256(self.raw).hexdigest())
 
-    def test_four_animation_stacks(self):
+    def test_seven_animation_stacks(self):
         clips=[n[1][0].split('\x00')[0] for n in self.objects if n[0]=='AnimationStack']
-        self.assertEqual(4, len(clips))
-        for name in ['Nox_Idle','Nox_Walk','Nox_Jump','Nox_Attack']:
+        self.assertEqual(7, len(clips))
+        for name in ['Nox_Idle','Nox_Walk','Nox_Jump','Nox_Attack','Nox_Fall','Nox_Land','Nox_Death']:
             self.assertTrue(any(name in clip for clip in clips), name)
 
     def test_meshes_materials_and_skin_are_present(self):

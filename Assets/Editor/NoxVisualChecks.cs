@@ -14,7 +14,7 @@ public static class NoxVisualChecks
         if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes da verificação.");
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(NoxCharacterAssets.ModelPath).OfType<AnimationClip>().ToArray();
-        foreach (string name in new[] { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack" })
+        foreach (string name in new[] { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack", "Nox_Fall", "Nox_Land", "Nox_Death" })
         {
             AnimationClip clip = clips.FirstOrDefault(c => c.name.EndsWith(name, StringComparison.Ordinal));
             Require(clip != null, "Clip ausente: " + name);
@@ -31,8 +31,8 @@ public static class NoxVisualChecks
             {
                 Scene scene = EditorSceneManager.OpenScene(entry.path, OpenSceneMode.Single);
                 GameObject[] roots = scene.GetRootGameObjects();
-                GameObject art = roots.FirstOrDefault(r => r.name == "NoxArt-v5");
-                Require(art != null, "Cena sem ambientação v5: " + entry.path);
+                GameObject art = roots.FirstOrDefault(r => r.name == "NoxArt-v6");
+                Require(art != null, "Cena sem ambientação v6: " + entry.path);
                 Require(art.GetComponentsInChildren<Collider>(true).Length == 0, "Cenografia com collider: " + entry.path);
                 foreach (NoxCharacterVisual visual in roots.SelectMany(r => r.GetComponentsInChildren<NoxCharacterVisual>(true)))
                 {
@@ -42,8 +42,9 @@ public static class NoxVisualChecks
                     Animator animator = child.GetComponentInChildren<Animator>();
                     Require(animator != null && animator.runtimeAnimatorController != null && !animator.applyRootMotion,
                         "Animator inválido: " + entry.path);
-                    Require(animator.parameters.Any(p => p.name == "Cadence"), "Controller anterior à revisão v5: " + entry.path);
-                    foreach (Transform surface in roots.SelectMany(r => r.GetComponentsInChildren<Transform>(true)).Where(t => t.name == "NoxSurface-v5"))
+                    Require(animator.parameters.Any(p => p.name == "Cadence") &&
+                        animator.parameters.Any(p => p.name == "Alive") && animator.parameters.Any(p => p.name == "VerticalSpeed"), "Controller anterior à revisão v6: " + entry.path);
+                    foreach (Transform surface in roots.SelectMany(r => r.GetComponentsInChildren<Transform>(true)).Where(t => t.name == "NoxSurface-v6"))
                         Require(surface.GetComponentsInChildren<Collider>(true).Length == 0, "Detalhe visual com collider.");
                 }
             }

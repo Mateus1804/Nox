@@ -69,6 +69,30 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual((ROOT/'Assets/Art/NoxSky.shader').read_bytes(), sky.read_bytes())
         self.assertTrue((backups[0] / 'arquivos-atualizados.json').exists())
 
+    def test_updater_preserves_previous_version_and_custom_generated_assets(self):
+        self.write_zip()
+        self.assertEqual(0, self.prepare().returncode)
+        files = {
+            'ProjectSettings/NoxScenesPrepared-v5.txt': b'preparacao anterior',
+            'Assets/Characters/Nox/Nox-v5.controller': b'animator personalizado',
+            'Assets/Art/Generated-v5/personalizado.mat': b'material personalizado',
+        }
+        for name, content in files.items():
+            path = self.destination/name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(content)
+        result = subprocess.run([
+            'pwsh', '-NoProfile', '-File', str(ROOT/'tools/Atualizar-Nox.ps1'),
+            '-Projeto', str(self.destination)
+        ], text=True, capture_output=True)
+        self.assertEqual(0, result.returncode, result.stdout+result.stderr)
+        for name, content in files.items():
+            self.assertEqual(content, (self.destination/name).read_bytes())
+        backup = next(self.base.glob('projeto com espaços-Backup-Scripts-*'))
+        self.assertEqual(b'material personalizado', (backup/'Assets/Art/Generated-v5/personalizado.mat').read_bytes())
+        self.assertEqual((ROOT/'Assets/Editor/NoxScenePolish.cs').read_bytes(),
+                         (self.destination/'Assets/Editor/NoxScenePolish.cs').read_bytes())
+
     def test_updater_rejects_folder_without_unity_project(self):
         self.destination.mkdir()
         result = subprocess.run([

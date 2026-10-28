@@ -31,3 +31,17 @@ os.makedirs(args.output, exist_ok=True)
 with open(os.path.join(args.output, 'animacao-amostras.json'), 'w') as handle:
     json.dump({'quadros': [start, end], 'pes_avaliados': samples, 'resultado': 'aprovado'}, handle, indent=2)
 print('Ciclo fechado e alternância dos dois pés conferidos no FBX reimportado.')
+
+# Sete ações e o rig completo são conferidos na reimportação real.
+expected = ['Nox_Idle', 'Nox_Walk', 'Nox_Jump', 'Nox_Attack', 'Nox_Fall', 'Nox_Land', 'Nox_Death']
+assert len(rig.data.bones) == 52
+assert len(bpy.data.objects['panda'].data.vertices) == 1994
+actions = {}
+for name in expected:
+    action = next(action for action in bpy.data.actions if action.name.endswith(name))
+    assert action.frame_range[1] > action.frame_range[0], name
+    actions[name] = list(action.frame_range)
+with open(os.path.join(args.output, 'animacoes-estrutura.json'), 'w') as handle:
+    json.dump({'ossos': 52, 'vertices_personagem': 1994, 'acoes': actions,
+               'resultado': 'aprovado', 'ambiente': 'Blender, sem execução no Unity'}, handle, indent=2)
+print('Sete ações, rig de 52 ossos e malha de 1.994 vértices conferidos.')

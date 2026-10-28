@@ -53,7 +53,9 @@ public static class NoxSession
     {
         int current = SceneManager.GetActiveScene().buildIndex;
         int count = SceneManager.sceneCountInBuildSettings;
-        if (count > 0 && current >= 0 && current < count)
-            LoadScene(NoxRules.NextScene(current, count));
+        if (count <= 0 || current < 0 || current >= count) return;
+        if (current == count - 1 && PlaceHolderPanel.PHP != null)
+            PlaceHolderPanel.PHP.PanelWinOrLose("Stage Completed");
+        else LoadScene(NoxRules.NextScene(current, count));
     }
 }

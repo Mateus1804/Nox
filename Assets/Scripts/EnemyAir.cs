@@ -12,6 +12,8 @@ public class EnemyAir : MonoBehaviour
     {
         if (deathHandled || hpTurtle > 0) return;
         deathHandled = true;
+        NoxEnemyStrike strike = GetComponent<NoxEnemyStrike>();
+        if (strike != null) strike.Interrupt();
         CancelInvoke(nameof(ClearHit));
         if (animin != null && hasDeathParameter) animin.SetBool("IsDie", true);
         foreach (Collider hitbox in GetComponentsInChildren<Collider>()) hitbox.enabled = false;

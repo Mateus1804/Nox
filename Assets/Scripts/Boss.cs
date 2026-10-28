@@ -6,6 +6,7 @@ public class Boss : MonoBehaviour
 {
     private readonly NoxChaseController chase = new NoxChaseController();
     private bool deathHandled;
+    private NoxEnemyStrike strike;
     private float maximumHealth;
     public GameObject player;
     public NavMeshAgent agent;
@@ -70,6 +71,7 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
+        strike = GetComponent<NoxEnemyStrike>();
         maximumHealth = Mathf.Max(1, hpBoss);
         if (player == null) player = GameObject.FindGameObjectWithTag("Player");
 
@@ -85,10 +87,12 @@ public class Boss : MonoBehaviour
         if (deathHandled) return;
         Morte();
         if (deathHandled) return;
-        attack = chase.Update(agent, player != null ? player.transform : null,
+        if (strike != null && strike.Committed) NoxChaseController.Stop(agent);
+        else attack = chase.Update(agent, player != null ? player.transform : null,
             rangeAttack, maxDistance, Time.time, out currentDistance);
-        if (areaAttack != null) areaAttack.enabled = attack;
-        if (!NoxSession.CanPlay || player == null) return;
+        if (strike != null) attack = strike.Active;
+        else if (areaAttack != null) areaAttack.enabled = attack;
+        if (!NoxSession.CanPlay || player == null || (strike != null && strike.Committed)) return;
         Vector3 facing = player.transform.position - transform.position;
         facing.y = 0;
         if (facing.sqrMagnitude > 0.001f) transform.rotation = Quaternion.LookRotation(facing);

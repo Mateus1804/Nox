@@ -44,6 +44,10 @@ public class HUDAndSounds : MonoBehaviour
             volume_slider.SetValueWithoutNotify(NoxRules.EffectiveVolume(saved, false));
             volume_slider.onValueChanged.AddListener(VolumeChanged);
         }
+        if (shadowQuality != null) shadowQuality.SetValueWithoutNotify(Mathf.Clamp(
+            PlayerPrefs.GetInt("Nox.v1.Graphics.ShadowQuality", shadowQuality.value), 0, 2));
+        if (shadowLevel != null) shadowLevel.SetValueWithoutNotify(Mathf.Clamp01(
+            PlayerPrefs.GetFloat("Nox.v1.Graphics.ShadowStrength", shadowLevel.value)));
         initialized = true;
         ApplyVolume();
         SceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
@@ -104,8 +108,9 @@ public class HUDAndSounds : MonoBehaviour
         sunBeaming.shadowResolution = value == 0 ? LightShadowResolution.Low :
             value == 1 ? LightShadowResolution.Medium : LightShadowResolution.VeryHigh;
         appliedQuality = value;
+        PlayerPrefs.SetInt("Nox.v1.Graphics.ShadowQuality", value);
     }
-    private static void Play(AudioSource source) { if (source != null && source.isActiveAndEnabled) source.Play(); }
+    private static void Play(AudioSource source) { if (source != null && source.isActiveAndEnabled && !source.isPlaying) source.Play(); }
     public void Click() { Play(clickSound); }
     public void Back() { Play(backSound); }
     public void PopMenu() { Play(popSound); }
@@ -116,7 +121,13 @@ public class HUDAndSounds : MonoBehaviour
         if (in_GameMusic2 != null) in_GameMusic2.Stop();
         if (PlayerScript.PT != null && PlayerScript.PT.soundBossWater != null) PlayerScript.PT.soundBossWater.Stop();
     }
-    private void PlayMusic(AudioSource source) { StopMusic(); Play(source); }
+    private void PlayMusic(AudioSource source)
+    {
+        if (source != null && source.isPlaying) return;
+        StopMusic();
+        if (source != null) source.loop = true;
+        Play(source);
+    }
     public void MenuMusic() { PlayMusic(mainMenuMusic); }
     public void InGameSound() { PlayMusic(in_GameMusic); }
     public void InGameSound2() { PlayMusic(in_GameMusic2); }
@@ -147,7 +158,7 @@ public class HUDAndSounds : MonoBehaviour
     {
         if (Singleton != this || !initialized || mode == LoadSceneMode.Additive) return;
         CloseOptions(); SetPanel(pause_panel, false);
-        SetPanel(main_menu, scene.buildIndex == 0); SetPanel(levels_menu, scene.buildIndex == 0);
+        SetPanel(main_menu, scene.buildIndex == 0); SetPanel(levels_menu, false);
         sunBeaming = null;
         foreach (GameObject root in scene.GetRootGameObjects())
             foreach (Light light in root.GetComponentsInChildren<Light>(true))
@@ -164,7 +175,10 @@ public class HUDAndSounds : MonoBehaviour
         Pause_Keycode(); ApplyVolume();
         if (shadowQuality != null && shadowQuality.value != appliedQuality) ShadowsQuality();
         if (sunBeaming != null && shadowLevel != null && shadowLevel.value != appliedStrength)
-        { sunBeaming.shadowStrength = shadowLevel.value; appliedStrength = shadowLevel.value; }
+        {
+            sunBeaming.shadowStrength = shadowLevel.value; appliedStrength = shadowLevel.value;
+            PlayerPrefs.SetFloat("Nox.v1.Graphics.ShadowStrength", shadowLevel.value);
+        }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (NoxSession.CanPlay && Input.GetKeyDown(KeyCode.L)) NoxSession.LoadNextScene();
 #endif

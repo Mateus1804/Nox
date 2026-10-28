@@ -4,12 +4,15 @@ public class EnemiesWaypoint : MonoBehaviour
 {
     public EnemyAir turtle;
     public GameObject[] waypoints;
+    private NoxEnemyStrike strike;
+    private void Start() { strike = GetComponent<NoxEnemyStrike>(); }
     private int currentWaypointIndex;
     public float speed = 1f;
     public float distance;
 
     private void Update()
     {
+        if (strike != null && strike.Committed) return;
         if (!NoxSession.CanPlay || turtle == null || turtle.hpTurtle <= 0 || waypoints == null || waypoints.Length == 0) return;
         if (!NoxRules.IsValidIndex(currentWaypointIndex, waypoints.Length)) currentWaypointIndex = 0;
         GameObject target = waypoints[currentWaypointIndex];

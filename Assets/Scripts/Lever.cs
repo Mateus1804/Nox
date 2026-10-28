@@ -10,6 +10,7 @@ public class Lever : MonoBehaviour
     public float speed = 1f;
     public float distance;
     public GameObject door;
+    public TextMesh stateLabel;
     private readonly HashSet<Collider> occupants = new HashSet<Collider>();
     private Renderer indicator;
     private Material indicatorMaterial;
@@ -23,6 +24,7 @@ public class Lever : MonoBehaviour
             indicatorMaterial = indicator.material;
             indicatorMaterial.color = Color.red;
         }
+        if (stateLabel != null) stateLabel.text = "Aguardando peso";
         if (door == null || waypoints == null || waypoints.Length < 2 || waypoints[0] == null || waypoints[1] == null)
         {
             Debug.LogError("A alavanca exige uma porta e dois pontos válidos.", this);
@@ -48,6 +50,7 @@ public class Lever : MonoBehaviour
         bool occupied = playerCheck || boxCheck;
         if (indicatorMaterial != null && occupied != wasOccupied)
             indicatorMaterial.color = occupied ? Color.green : Color.red;
+        if (stateLabel != null && occupied != wasOccupied) stateLabel.text = occupied ? "Ativada" : "Aguardando peso";
         wasOccupied = occupied;
         currentWaypointIndex = occupied ? 1 : 0;
         door.transform.position = Vector3.MoveTowards(door.transform.position,
@@ -56,6 +59,7 @@ public class Lever : MonoBehaviour
     private void OnDisable()
     {
         occupants.Clear(); playerCheck = false; boxCheck = false; wasOccupied = false;
+        if (stateLabel != null) stateLabel.text = "Aguardando peso";
         if (indicatorMaterial != null) indicatorMaterial.color = Color.red;
     }
     private void OnDestroy() { if (indicatorMaterial != null) Destroy(indicatorMaterial); }

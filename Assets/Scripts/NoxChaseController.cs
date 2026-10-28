@@ -20,16 +20,19 @@ public sealed class NoxChaseController
         distance = target != null ? Vector3.Distance(agent != null ? agent.transform.position : target.position, target.position) : float.PositiveInfinity;
         if (!Ready(agent) || target == null || !NoxSession.CanPlay)
         { Stop(agent); return false; }
+        if (!NoxPerception.CanSee(agent.transform, target)) { Stop(agent); return false; }
         NoxEnemyAction action = NoxRules.ChooseEnemyAction(distance, attackRange, followRange);
         if (action != NoxEnemyAction.Chase)
         { Stop(agent); return action == NoxEnemyAction.Attack; }
         bool resuming = agent.isStopped;
+        if (resuming && now < nextRepath) return false;
         agent.isStopped = false;
         if (resuming || now >= nextRepath)
         {
             nextRepath = now + RepathInterval;
-            agent.SetDestination(target.position);
+            if (!agent.SetDestination(target.position)) { Stop(agent); return false; }
         }
+        if (!agent.pathPending && agent.hasPath && agent.pathStatus != NavMeshPathStatus.PathComplete) Stop(agent);
         return false;
     }
 }
