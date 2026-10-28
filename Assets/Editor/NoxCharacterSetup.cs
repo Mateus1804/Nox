@@ -56,7 +56,7 @@ public static class NoxCharacterSetup
         // O pivô acompanha a direção física; a correção do modelo fica em um filho.
         // Assim LateUpdate não apaga o alinhamento calculado a partir do rosto.
         AnimationClip idle = AssetDatabase.LoadAllAssetsAtPath(NoxCharacterAssets.ModelPath)
-            .OfType<AnimationClip>().Single(c => c.name.EndsWith("Nox_Idle", StringComparison.Ordinal));
+            .OfType<AnimationClip>().Where(c => !c.name.StartsWith("__preview__", StringComparison.Ordinal)).Single(c => c.name.EndsWith("Nox_Idle", StringComparison.Ordinal));
         idle.SampleAnimation(visual, 0);
         Vector3 face = FaceDirection(visual);
         Vector3 heading = Vector3.ProjectOnPlane(player.transform.forward, Vector3.up).normalized;

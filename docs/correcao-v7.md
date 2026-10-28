@@ -32,6 +32,8 @@ Não houve aumento global do salto ou aproximação automática de todas as plat
 
 A identificação das primitivas de chão passa a considerar a máscara de apoio dos jogadores e suas dimensões, além dos nomes existentes. Isso inclui pisos com nomes genéricos, sem substituir indiscriminadamente personagens, perigos ou modelos artísticos. O limite anterior de 100 superfícies foi removido da geração no Editor.
 
+As malhas do primeiro plano projetam e recebem sombras; as peças distantes mantêm a projeção desligada. Clips internos de prévia do importador são excluídos da seleção dos estados.
+
 O acabamento inclui variação mineral procedural em coordenadas de mundo, sem texturas externas. O shader mantém iluminação e sombras do pipeline original. O céu recebeu transição abaixo do horizonte para evitar uma área inferior inteiramente uniforme no enquadramento inclinado.
 
 O fundo passa a usar duas faixas atrás do percurso, orientadas pela câmera principal. A altura das ilhas acompanha as superfícies próximas. A disposição anterior usava as extremidades da extensão total do nível, podendo deixar a cenografia distante do enquadramento. As novas peças não têm collider. Os recursos v5 e v6 ficam preservados e desativados; a revisão gera `NoxArt-v7`, `NoxSurface-v7` e `Assets/Art/Generated-v7`.

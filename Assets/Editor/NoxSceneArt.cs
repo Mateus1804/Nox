@@ -264,7 +264,9 @@ public static class NoxSceneArt
         item.AddComponent<MeshFilter>().sharedMesh = mesh;
         MeshRenderer renderer = item.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = material;
-        renderer.shadowCastingMode = ShadowCastingMode.Off;
+        renderer.shadowCastingMode = parent != null && parent.name == "NoxSurface-v7"
+            ? ShadowCastingMode.On : ShadowCastingMode.Off;
+        renderer.receiveShadows = true;
     }
 
     private static Mesh IslandMesh(Vector3 center, Vector3 size)

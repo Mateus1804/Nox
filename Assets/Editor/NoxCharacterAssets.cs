@@ -22,7 +22,8 @@ public static class NoxCharacterAssets
         GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
         GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath);
         if (model == null) throw new InvalidOperationException("Modelo original Nox não importado: " + ModelPath);
-        AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(ModelPath).OfType<AnimationClip>().ToArray();
+        AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(ModelPath).OfType<AnimationClip>()
+            .Where(c => !c.name.StartsWith("__preview__", StringComparison.Ordinal)).ToArray();
         string[] names = { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack", "Nox_Fall", "Nox_Land", "Nox_Death" };
         AnimationClip[] motions = names.Select(name => clips.FirstOrDefault(c => c.name.EndsWith(name, StringComparison.Ordinal))).ToArray();
         if (motions.Any(c => c == null)) throw new InvalidOperationException("Um dos sete clips do Nox não foi importado. Conferir a aba Animation do FBX.");

@@ -13,7 +13,8 @@ public static class NoxVisualChecks
     {
         if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes da verificação.");
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-        AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(NoxCharacterAssets.ModelPath).OfType<AnimationClip>().ToArray();
+        AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(NoxCharacterAssets.ModelPath).OfType<AnimationClip>()
+            .Where(c => !c.name.StartsWith("__preview__", StringComparison.Ordinal)).ToArray();
         foreach (string name in new[] { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack", "Nox_Fall", "Nox_Land", "Nox_Death" })
         {
             AnimationClip clip = clips.FirstOrDefault(c => c.name.EndsWith(name, StringComparison.Ordinal));
