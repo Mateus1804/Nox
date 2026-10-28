@@ -13,6 +13,7 @@
     <Compile Include="../../Assets/Scripts/NoxHitRegistry.cs" Link="NoxHitRegistry.cs" />
     <Compile Include="../../Assets/Scripts/NoxProgressRules.cs" Link="NoxProgressRules.cs" />
     <Compile Include="../../Assets/Scripts/NoxSceneLoadGate.cs" Link="NoxSceneLoadGate.cs" />
+    <Compile Include="../../Assets/Scripts/NoxJumpAssist.cs" Link="NoxJumpAssist.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

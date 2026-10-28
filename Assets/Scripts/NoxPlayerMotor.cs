@@ -11,6 +11,19 @@ public sealed class NoxPlayerMotor
     private readonly RaycastHit[] hits = new RaycastHit[16];
     private readonly PhysicMaterial originalMaterial;
     private readonly PhysicMaterial movementMaterial;
+    private readonly NoxJumpAssist jumpAssist = new NoxJumpAssist();
+    private Vector3 supportVelocity;
+    // A plataforma não contribui para a cadência dos passos.
+    public float LocomotionSpeed
+    {
+        get
+        {
+            Vector3 relative = body.velocity - supportVelocity;
+            relative.y = 0;
+            return relative.magnitude;
+        }
+    }
+    public void ResetInput() { jumpAssist.Reset(); }
     private Collider lastSupport;
     private float lastSupportVerticalSpeed;
     public bool Grounded { get; private set; }
@@ -38,11 +51,16 @@ public sealed class NoxPlayerMotor
     public void Step(Vector3 direction, float speed, bool jump, float jumpHeight, LayerMask groundMask)
     {
         Vector3 support = FindSupport(groundMask);
-        Vector3 velocity = Vector3.ClampMagnitude(direction, 1f) * speed;
-        velocity.x += support.x;
-        velocity.z += support.z;
+        supportVelocity = support;
+        if (jump) jumpAssist.Request(Time.time);
+        Vector3 target = Vector3.ClampMagnitude(direction, 1f) * speed;
+        Vector3 current = body.velocity - support;
+        current.y = 0;
+        float acceleration = Grounded ? (target.sqrMagnitude < 0.001f ? 64f : 48f) : 22f;
+        Vector3 velocity = Vector3.MoveTowards(current, target, acceleration * Time.fixedDeltaTime);
+        velocity += support;
         velocity.y = Grounded ? support.y : body.velocity.y;
-        if (jump && Grounded)
+        if (jumpAssist.TryConsume(Time.time, Grounded))
         {
             velocity.y = support.y + Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
             Grounded = false;

@@ -20,7 +20,7 @@ public class PlayerTwo : MonoBehaviour
     private bool isPushing;
     private float movementSpeed;
     public bool IsAlive => hp > 0;
-    public float AnimationSpeed => NoxSession.CanPlay ? desiredMovement.magnitude * movementSpeed : 0;
+    public float AnimationSpeed => NoxSession.CanPlay && motor != null ? motor.LocomotionSpeed : 0;
     public void SetPushing(bool value) { isPushing = value; }
 
     #region Variáveis relacionadas a atirar
@@ -132,6 +132,8 @@ public class PlayerTwo : MonoBehaviour
         if (!NoxSession.CanPlay || !IsAlive) return false;
         if (!damageWindow.TryApply(hp, amount, maxHealth, Time.time, damageProtectionSeconds, out float next)) return false;
         hp = next;
+        NoxCharacterVisual visual = GetComponent<NoxCharacterVisual>();
+        if (visual != null) visual.PulseDamage();
         ChangeColor();
         return true;
     }
@@ -243,6 +245,7 @@ public class PlayerTwo : MonoBehaviour
         {
             desiredMovement = Vector3.zero;
             jumpRequested = false;
+            motor?.ResetInput();
             return;
         }
         if (isPushing) CharacterPushing(); else CharacterMove();
