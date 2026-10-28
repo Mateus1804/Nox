@@ -1,3 +1,5 @@
+> Revisão atual: a v6 mantém a malha e o rig acadêmicos e acrescenta queda, pouso e morte, totalizando sete ações. Animator, atualização e limites atuais estão em [Acabamento v6](acabamento-v6.md). A integração v5 descrita abaixo permanece como histórico.
+
 # Personagem original Nox
 
 O arquivo `Nox.blend` foi localizado na pasta de animações de personagens do projeto acadêmico. O GDD versão 2.0, atualizado em 31/01/2023, descreve Nox como espírito de panda-vermelho, protagonista com manto, duas machadinhas e três pontos de vida. A malha e o esqueleto acadêmicos foram reaproveitados; não foram substituídos por um personagem de terceiros.
