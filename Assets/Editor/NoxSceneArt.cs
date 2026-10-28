@@ -183,7 +183,7 @@ public static class NoxSceneArt
         RenderSettings.fogColor = fire ? Hex("725160") : Hex("718F9F");
         RenderSettings.fogDensity = 0.0028f;
         Light[] lights = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Light>(true))
-            .Where(light => light.type == LightType.Directional).ToArray();
+            .Where(light => light.type == LightType.Directional && light.isActiveAndEnabled).ToArray();
         Light sun;
         if (lights.Length == 0)
         {

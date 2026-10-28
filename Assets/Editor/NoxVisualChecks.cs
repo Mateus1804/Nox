@@ -34,6 +34,8 @@ public static class NoxVisualChecks
                 GameObject art = roots.FirstOrDefault(r => r.name == "NoxArt-v6");
                 Require(art != null, "Cena sem ambientação v6: " + entry.path);
                 Require(art.GetComponentsInChildren<Collider>(true).Length == 0, "Cenografia com collider: " + entry.path);
+                Require(RenderSettings.sun != null && RenderSettings.sun.isActiveAndEnabled,
+                    "Luz principal ausente ou herdada de uma ambientação desativada: " + entry.path);
                 foreach (NoxCharacterVisual visual in roots.SelectMany(r => r.GetComponentsInChildren<NoxCharacterVisual>(true)))
                 {
                     players++;

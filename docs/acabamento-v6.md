@@ -67,7 +67,7 @@ A morte bloqueia o mundo imediatamente, mas a animação usa tempo não escalado
 
 A v6 mantém céu, atmosfera e paletas de ar e fogo da v5. Plataformas e caixas primitivas recebem malhas visuais próprias; as plataformas mantêm o topo retangular do apoio original. Rochas inferiores, frisos e vegetação de borda usam materiais compartilhados e não acrescentam colisores.
 
-A ambientação v5 é preservada, mas fica desativada quando substituída pela v6. O novo conteúdo fica em `Assets/Art/Generated-v6/`. Personagens e modelos personalizados não recebem substituição indiscriminada. Os dados físicos e o NavMesh original não são reconstruídos automaticamente.
+A ambientação v5 é preservada, mas fica desativada quando substituída pela v6. A seleção da luz principal considera apenas luzes ativas, evitando reutilizar a luz de um grupo v5 desativado. O novo conteúdo fica em `Assets/Art/Generated-v6/`. Personagens e modelos personalizados não recebem substituição indiscriminada. Os dados físicos e o NavMesh original não são reconstruídos automaticamente.
 
 `NoxScenesPrepared-v6.txt`, `Backups/Preparacao-v6/`, `Nox-v6.controller` e `NoxPlayable-v6.prefab` distinguem esta revisão. As cópias e os assets antigos permanecem disponíveis. Falhas durante a preparação acionam a restauração das cenas; recursos novos já gerados podem permanecer no projeto para inspeção.
 
