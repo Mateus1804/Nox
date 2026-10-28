@@ -49,6 +49,8 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         player = self.destination / 'Assets/Scripts/PlayerScript.cs'
         player.write_bytes(b'// script local anterior\n')
+        sky = self.destination / 'Assets/Art/NoxSky.shader'
+        sky.write_bytes(b'// shader local anterior\n')
         scene = self.destination / 'Assets/Scenes/Menu1.2.unity'
         before_scene = scene.read_bytes()
         result = subprocess.run([
@@ -63,6 +65,8 @@ class PreparationTests(unittest.TestCase):
         backups = list(self.base.glob('projeto com espaços-Backup-Scripts-*'))
         self.assertEqual(1, len(backups))
         self.assertEqual(b'// script local anterior\n', (backups[0] / 'Assets/Scripts/PlayerScript.cs').read_bytes())
+        self.assertEqual(b'// shader local anterior\n', (backups[0]/'Assets/Art/NoxSky.shader').read_bytes())
+        self.assertEqual((ROOT/'Assets/Art/NoxSky.shader').read_bytes(), sky.read_bytes())
         self.assertTrue((backups[0] / 'arquivos-atualizados.json').exists())
 
     def test_updater_rejects_folder_without_unity_project(self):

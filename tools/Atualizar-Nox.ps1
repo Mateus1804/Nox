@@ -22,7 +22,7 @@ $backup = $Projeto + '-Backup-Scripts-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff
 New-Item -ItemType Directory -Path $backup | Out-Null
 $written = @()
 try {
-    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox')) {
+    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox', 'Assets/Art')) {
         $old = Join-Path $Projeto $folder
         if (Test-Path -LiteralPath $old) {
             $backupParent = Split-Path (Join-Path $backup $folder) -Parent
@@ -30,14 +30,17 @@ try {
             Copy-Item -LiteralPath $old -Destination $backupParent -Recurse
         }
     }
-    # Assets e configurações locais permanecem no projeto; apenas o código é sobreposto.
-    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox')) {
+    # Assets e configurações locais permanecem no projeto; o código, o personagem e os recursos visuais desta revisão são sobrepostos.
+    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox', 'Assets/Art')) {
         $source = Join-Path $repo $folder
         $target = Join-Path $Projeto $folder
         New-Item -ItemType Directory -Path $target -Force | Out-Null
-        foreach ($file in Get-ChildItem -LiteralPath $source -File) {
-            Copy-Item -LiteralPath $file.FullName -Destination (Join-Path $target $file.Name) -Force
-            $written += $folder + '/' + $file.Name
+        foreach ($file in Get-ChildItem -LiteralPath $source -File -Recurse) {
+            $relative = $file.FullName.Substring($source.Length).TrimStart([char[]]"\/")
+            $destination = Join-Path $target $relative
+            New-Item -ItemType Directory -Path (Split-Path $destination -Parent) -Force | Out-Null
+            Copy-Item -LiteralPath $file.FullName -Destination $destination -Force
+            $written += $folder + '/' + $relative
         }
     }
     $written | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $backup 'arquivos-atualizados.json') -Encoding UTF8

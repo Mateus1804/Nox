@@ -8,29 +8,38 @@ using UnityEngine;
 public static class NoxCharacterAssets
 {
     public const string ModelPath = "Assets/Characters/Nox/Nox.fbx";
-    private const string ControllerPath = "Assets/Characters/Nox/Nox.controller";
-    private const string PrefabPath = "Assets/Characters/Nox/NoxPlayable.prefab";
+    private const string ControllerPath = "Assets/Characters/Nox/Nox-v5.controller";
+    private const string PrefabPath = "Assets/Characters/Nox/NoxPlayable-v5.prefab";
 
     public static GameObject Prepare()
     {
+        // Reimportação explícita também corrige projetos já preparados na revisão anterior.
+        ModelImporter importer = AssetImporter.GetAtPath(ModelPath) as ModelImporter;
+        if (importer == null) throw new InvalidOperationException("FBX do Nox ausente.");
+        NoxModelImporter.ConfigureClips(importer);
+        importer.SaveAndReimport();
         GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
-        if (existing != null) return existing;
         GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath);
         if (model == null) throw new InvalidOperationException("Modelo original Nox não importado: " + ModelPath);
         AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(ModelPath).OfType<AnimationClip>().ToArray();
         string[] names = { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack" };
         AnimationClip[] motions = names.Select(name => clips.FirstOrDefault(c => c.name.EndsWith(name, StringComparison.Ordinal))).ToArray();
         if (motions.Any(c => c == null)) throw new InvalidOperationException("Um dos quatro clips do Nox não foi importado. Conferir a aba Animation do FBX.");
+        if (!motions[0].isLooping || !motions[1].isLooping)
+            throw new InvalidOperationException("Repouso e caminhada precisam de Loop Time. Reimportar o FBX antes de preparar as cenas.");
+        if (existing != null) return existing;
         AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
         if (controller == null)
         {
             controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
             controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
+            controller.AddParameter("Cadence", AnimatorControllerParameterType.Float);
             controller.AddParameter("Grounded", AnimatorControllerParameterType.Bool);
             controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
             AnimatorStateMachine machine = controller.layers[0].stateMachine;
             AnimatorState idle = machine.AddState("Repouso"); idle.motion = motions[0];
-            AnimatorState walk = machine.AddState("Caminhada"); walk.motion = motions[1]; walk.speed = 1.8f;
+            AnimatorState walk = machine.AddState("Caminhada"); walk.motion = motions[1]; walk.speed = 1f;
+            walk.speedParameter = "Cadence"; walk.speedParameterActive = true;
             AnimatorState jump = machine.AddState("Salto"); jump.motion = motions[2];
             AnimatorState attack = machine.AddState("Ataque"); attack.motion = motions[3];
             machine.defaultState = idle;
@@ -40,7 +49,7 @@ public static class NoxCharacterAssets
             Transition(walk, jump, AnimatorConditionMode.IfNot, 0, "Grounded");
             Transition(jump, idle, AnimatorConditionMode.If, 0, "Grounded");
             AnimatorStateTransition strike = machine.AddAnyStateTransition(attack);
-            strike.hasExitTime = false; strike.duration = 0.06f; strike.canTransitionToSelf = true;
+            strike.hasExitTime = false; strike.duration = 0.06f; strike.canTransitionToSelf = false;
             strike.AddCondition(AnimatorConditionMode.If, 0, "Attack");
             AnimatorStateTransition finish = attack.AddTransition(idle);
             finish.hasExitTime = true; finish.exitTime = 0.95f; finish.duration = 0.08f;
@@ -84,10 +93,21 @@ public class NoxModelImporter : AssetPostprocessor
     {
         if (assetPath != NoxCharacterAssets.ModelPath) return;
         ModelImporter importer = (ModelImporter)assetImporter;
+        ConfigureClips(importer);
+    }
+
+    public static void ConfigureClips(ModelImporter importer)
+    {
+        importer.animationType = ModelImporterAnimationType.Generic;
+        importer.importAnimation = true;
         ModelImporterClipAnimation[] clips = importer.defaultClipAnimations;
         foreach (ModelImporterClipAnimation clip in clips)
         {
-            clip.loopTime = !clip.name.EndsWith("Nox_Attack", StringComparison.Ordinal);
+            bool loop = clip.name.EndsWith("Nox_Idle", StringComparison.Ordinal) ||
+                clip.name.EndsWith("Nox_Walk", StringComparison.Ordinal);
+            clip.loopTime = loop;
+            clip.loopPose = loop;
+            clip.wrapMode = loop ? WrapMode.Loop : WrapMode.ClampForever;
             clip.lockRootRotation = true; clip.lockRootHeightY = true; clip.lockRootPositionXZ = true;
         }
         importer.clipAnimations = clips;

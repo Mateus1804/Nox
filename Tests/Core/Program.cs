@@ -15,6 +15,29 @@ public static class Program
     }
     public static void Main()
     {
+        var jump = new NoxJumpAssist();
+        Equal(0, jump.TryConsume(0, false) ? 1 : 0);
+        jump.Request(1);
+        Equal(0, jump.TryConsume(1, false) ? 1 : 0);
+        Equal(1, jump.TryConsume(1.08, true) ? 1 : 0);
+        Equal(0, jump.TryConsume(1.09, false) ? 1 : 0);
+        jump.Reset();
+        jump.TryConsume(2, true);
+        jump.Request(2.08);
+        Equal(1, jump.TryConsume(2.08, false) ? 1 : 0);
+        jump.Request(2.09);
+        Equal(0, jump.TryConsume(2.09, false) ? 1 : 0);
+        jump.Reset();
+        jump.Request(3);
+        Equal(0, jump.TryConsume(3.13, true) ? 1 : 0);
+        jump.Reset();
+        jump.TryConsume(4, true);
+        jump.Request(4.11);
+        Equal(0, jump.TryConsume(4.11, false) ? 1 : 0);
+        jump.Reset();
+        jump.Request(5);
+        jump.Reset();
+        Equal(0, jump.TryConsume(5, true) ? 1 : 0);
         Equal(2, NoxRules.AdjustHealth(3, -1, 3));
         Equal(0, NoxRules.AdjustHealth(1, -5, 3));
         Equal(3, NoxRules.AdjustHealth(3, 1, 3));

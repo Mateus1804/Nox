@@ -13,6 +13,46 @@ for a in list(bpy.data.actions):
  if '70f' in a.name:a.name='Nox_Walk';keep.append(a)
  elif '150f' in a.name:a.name='Nox_Idle';keep.append(a)
  else:bpy.data.actions.remove(a)
+# Bake the evaluated original idle pose before removing IK on the working copy.
+# Original files remain untouched. The new cycle uses FK keys on all 52 bones.
+rig.animation_data.action=next(a for a in keep if a.name=='Nox_Idle')
+bpy.context.scene.frame_set(1);bpy.context.view_layer.update()
+pose={b.name:b.matrix.copy() for b in rig.pose.bones}
+for b in rig.pose.bones:
+ for constraint in list(b.constraints):b.constraints.remove(constraint)
+for b in rig.pose.bones:b.matrix=pose[b.name]
+bpy.context.view_layer.update()
+base={b.name:b.matrix_basis.copy() for b in rig.pose.bones}
+for a in list(keep):bpy.data.actions.remove(a)
+keep=[]
+# Rig local Y is vertical; rotate limbs around their local X axes.
+for name,duration in [('Nox_Idle',72),('Nox_Walk',24)]:
+ a=bpy.data.actions.new(name);a.use_fake_user=True;rig.animation_data.action=a
+ for frame in range(duration+1):
+  phase=2*math.pi*frame/duration
+  for b in rig.pose.bones:
+   b.matrix_basis=base[b.name];b.rotation_mode='QUATERNION'
+   amount=0
+   if name=='Nox_Walk':
+    swing=math.sin(phase)
+    amount={'coxa.L':.36*swing,'coxa.R':-.36*swing,
+      'canela.L':-.55*max(0,swing),'canela.R':-.55*max(0,-swing),
+      'braço1.L':-.24*swing,'braço1.R':.24*swing,
+      'braço2.L':-.10-.07*swing,'braço2.R':-.10+.07*swing,
+      'peito':.035*math.sin(phase*2)}.get(b.name,0)
+   elif b.name=='peito':amount=.018*math.sin(phase)
+   axis=pose[b.name].to_3x3().inverted()@Vector((1,0,0))
+   b.rotation_quaternion=b.rotation_quaternion@Quaternion(axis,amount)
+   if b.name=='master':
+    # Convert a small vertical bob from rig space into the root bone basis.
+    bob=(.035*(1-math.cos(phase*2))) if name=='Nox_Walk' else .015*math.sin(phase)
+    b.location+=b.bone.matrix_local.to_3x3().inverted()@Vector((0,bob,0))
+   b.keyframe_insert('rotation_quaternion',frame=frame)
+   b.keyframe_insert('location',frame=frame);b.keyframe_insert('scale',frame=frame)
+ for curve in a.fcurves:
+  for key in curve.keyframe_points:key.interpolation='LINEAR'
+ keep.append(a)
+bpy.context.scene.render.fps=30
 # Materials are new colors, not reference images packed in the original blend.
 colors=[('Nox_Fur',(0.62,.20,.075,1)),('Nox_Cream',(.88,.78,.58,1)),('Nox_Cloak',(.055,.13,.16,1)),('Nox_Dark',(.045,.028,.022,1)),('Nox_Eyes',(.045,.32,.30,1))]
 mesh.data.materials.clear()

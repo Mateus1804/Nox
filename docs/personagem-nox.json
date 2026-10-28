@@ -14,13 +14,9 @@
     "versao_documento": "2.0",
     "atualizacao_documento": "31/01/2023"
   },
-  "fbx_sha256": "08e9b038f9d8d8fa8c05f42db140f77dac1b2421f2a9d2ef54ddb516434040d2",
+  "fbx_sha256": "9755027318913a9ebc59f1da046ae83191a7bb5418851bf6418fe9cd80a08341",
   "exportador": "Blender 3.6.23 / FBX 7400",
   "originais_preservados": true,
-  "clips_originais": {
-    "Nox_Idle": "vaijogarnaodoido? 150f",
-    "Nox_Walk": "ursorapperboladocaminhando 70f"
-  },
   "clips_acrescentados": [
     "Nox_Jump",
     "Nox_Attack"
@@ -71,7 +67,7 @@
         "NoxRig|NoxRig|Nox_Idle",
         [
           1.0,
-          151.0
+          73.0
         ]
       ],
       [
@@ -85,7 +81,7 @@
         "NoxRig|NoxRig|Nox_Walk",
         [
           1.0,
-          71.0
+          25.0
         ]
       ]
     ],
@@ -101,7 +97,15 @@
     "images": []
   },
   "unity_play_executado": false,
-  "ci_windows": {
+  "clips_originais_recuperados_na_revisao_v4": {
+    "Nox_Idle": "vaijogarnaodoido? 150f",
+    "Nox_Walk": "ursorapperboladocaminhando 70f"
+  },
+  "clips_reconstruidos_v5": {
+    "Nox_Idle": "ciclo de respiração fechado de 72 quadros, baseado na pose original avaliada",
+    "Nox_Walk": "ciclo FK fechado de 24 quadros a 30 fps, esqueleto original preservado"
+  },
+  "ci_windows_revisao_v4": {
     "run": 40611671152,
     "job": 122564423309,
     "commit": "a591bde64dab49451018df176197471defdd9e32",

@@ -44,3 +44,7 @@ Thumbs.db
 
 # Cópias locais de cenas; contêm recursos do projeto original.
 /Backups/
+
+# Cache local dos testes Python.
+**/__pycache__/
+*.pyc
