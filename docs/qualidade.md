@@ -1,6 +1,6 @@
 # Validação da integração do personagem
 
-A integração atual está descrita em `personagem-nox.md`. O FBX foi reimportado no Blender com 52 ossos, quatro clips, cinco malhas e sete materiais, sem imagens externas. Localmente passaram 87 verificações C#, oito testes do preparador/atualizador, quatro de contratos e quatro do FBX. Os 43 scripts de execução e seis de Editor compilaram isoladamente contra as bibliotecas originais, com avisos como erros. Nenhuma importação/Play/build no Unity foi executada nesta rodada.
+A integração atual está descrita em `personagem-nox.md`. O FBX foi reimportado no Blender com 52 ossos, quatro clips, cinco malhas e sete materiais, sem imagens externas. Localmente passaram 87 verificações C#, oito testes do preparador/atualizador, quatro de contratos e quatro do FBX. Os 43 scripts de execução e seis de Editor compilaram isoladamente contra as bibliotecas originais, com avisos como erros. O CI Windows 40611671152 aprovou as quatro suítes (87 verificações e 8/4/4 testes), sem pulos. Nenhuma importação/Play/build no Unity foi executada nesta rodada.
 
 Os registros anteriores abaixo são históricos; a antiga pendência de localizar o modelo foi resolvida nesta integração. A validação no Unity permanece pendente.
 

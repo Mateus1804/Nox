@@ -100,5 +100,16 @@
     ],
     "images": []
   },
-  "unity_play_executado": false
+  "unity_play_executado": false,
+  "ci_windows": {
+    "run": 40611671152,
+    "job": 122564423309,
+    "commit": "a591bde64dab49451018df176197471defdd9e32",
+    "resultado": "success",
+    "verificacoes_csharp": 87,
+    "preparacao_atualizacao": 8,
+    "contratos": 4,
+    "asset_fbx": 4,
+    "pulados": 0
+  }
 }
