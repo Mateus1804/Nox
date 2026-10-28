@@ -30,7 +30,10 @@ Shader "Nox/Ceu espiritual"
                 float3 ray = normalize(i.ray);
                 float elevation = saturate(ray.y);
                 float3 sky = lerp(_Horizon.rgb, _Top.rgb, pow(elevation, 0.65));
-                sky = lerp(sky, _Bottom.rgb, saturate(-ray.y * 3));
+                // O enquadramento inclinado também precisa de profundidade abaixo do horizonte.
+                sky = lerp(sky, _Bottom.rgb, smoothstep(-0.05, 0.85, -ray.y));
+                float haze = pow(saturate(1 - abs(ray.y) * 1.8), 4);
+                sky += _Horizon.rgb * haze * 0.08;
                 float sun = dot(ray, normalize(_SunDirection.xyz));
                 sky += _SunColor.rgb * (smoothstep(0.9984, 0.9993, sun) * 0.8 + pow(saturate(sun), 48) * 0.09);
                 return fixed4(sky, 1);

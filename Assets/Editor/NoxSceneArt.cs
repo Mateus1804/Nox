@@ -11,19 +11,23 @@ using UnityEngine.SceneManagement;
 // Direção visual aplicada no Editor: nenhuma busca ou geração de cenário a cada frame.
 public static class NoxSceneArt
 {
-    private const string Folder = "Assets/Art/Generated-v6";
-    private const string RootName = "NoxArt-v6";
+    private const string Folder = "Assets/Art/Generated-v7";
+    private const string RootName = "NoxArt-v7";
     private static Material stone, top, trim, wood, metal, crystal, distant, cloud;
     private static int meshNumber;
+    private static int groundMask;
     private static string sceneFolder;
 
     public static void Apply(Scene scene)
     {
-        if (scene.GetRootGameObjects().Any(root => root.name == RootName)) return;
-        // V5 permanece como cópia visual desativada, inclusive possíveis ajustes locais.
-        foreach (GameObject previous in scene.GetRootGameObjects().Where(root => root.name == "NoxArt-v5")) previous.SetActive(false);
+        foreach (GameObject previous in scene.GetRootGameObjects().Where(root => root.name == RootName))
+            UnityEngine.Object.DestroyImmediate(previous);
         foreach (Transform previous in scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true))
-            .Where(item => item.name == "NoxSurface-v5")) previous.gameObject.SetActive(false);
+            .Where(item => item.name == "NoxSurface-v7").ToArray()) UnityEngine.Object.DestroyImmediate(previous.gameObject);
+        // V5 permanece como cópia visual desativada, inclusive possíveis ajustes locais.
+        foreach (GameObject previous in scene.GetRootGameObjects().Where(root => (root.name == "NoxArt-v5" || root.name == "NoxArt-v6"))) previous.SetActive(false);
+        foreach (Transform previous in scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true))
+            .Where(item => (item.name == "NoxSurface-v5" || item.name == "NoxSurface-v6"))) previous.gameObject.SetActive(false);
         bool fire = scene.name.StartsWith("Fire", StringComparison.OrdinalIgnoreCase);
         bool menu = scene.name.StartsWith("Menu", StringComparison.OrdinalIgnoreCase);
         Directory.CreateDirectory(Folder);
@@ -43,6 +47,12 @@ public static class NoxSceneArt
         cloud = Surface(theme + "-Nuvem", fire ? Hex("826879") : Hex("C3D9D4"));
         GameObject art = new GameObject(RootName);
         SceneManager.MoveGameObjectToScene(art, scene);
+        groundMask = 0;
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            foreach (PlayerScript player in root.GetComponentsInChildren<PlayerScript>(true)) groundMask |= player.WhatIsGround.value;
+            foreach (PlayerTwo player in root.GetComponentsInChildren<PlayerTwo>(true)) groundMask |= player.WhatIsGround.value;
+        }
         Renderer[] renderers = scene.GetRootGameObjects()
             .SelectMany(root => root.GetComponentsInChildren<Renderer>(true)).ToArray();
         Bounds extent = new Bounds(Vector3.zero, Vector3.one * 30);
@@ -56,15 +66,15 @@ public static class NoxSceneArt
             renderer.sharedMaterial = renderer.CompareTag("Box") ? wood : top;
             renderer.shadowCastingMode = ShadowCastingMode.On;
             renderer.receiveShadows = true;
-            if (decorated++ < 100) DressSurface(renderer, fire);
+            decorated++; DressSurface(renderer, fire);
         }
-        if (!menu) AddBackdrop(art.transform, extent, fire);
+        if (!menu) AddBackdrop(art.transform, extent, fire, renderers.Where(IsPrimitiveSurface).Select(r => r.bounds.center).ToArray());
         SetAtmosphere(scene, art, fire);
         AssetDatabase.SaveAssets();
         Debug.Log("Direção visual aplicada: " + scene.name + "; superfícies: " + decorated + ". Colisões e trajetos preservados.");
     }
 
-    private static bool IsPrimitiveSurface(Renderer renderer)
+    public static bool IsPrimitiveSurface(Renderer renderer)
     {
         if (renderer.tag == "Enemy" || renderer.tag == "Boss" || renderer.tag == "Fogo" ||
             renderer.tag == "Heal" || renderer.tag == "Player") return false;
@@ -82,12 +92,16 @@ public static class NoxSceneArt
             string name = item.name.ToLowerInvariant();
             if (name.Contains("platform") || name.Contains("plataform") || name.Contains("plataforma")) return true;
         }
-        return false;
+        // O piso não depende do nome do objeto. A máscara de chão é a mesma dos jogadores.
+        Bounds b = renderer.bounds;
+        return (groundMask & (1 << renderer.gameObject.layer)) != 0 &&
+            Vector3.Dot(renderer.transform.up, Vector3.up) > 0.95f &&
+            Mathf.Min(b.size.x, b.size.z) >= 1.5f && b.size.y <= Mathf.Min(b.size.x, b.size.z) * 0.8f;
     }
 
     private static void DressSurface(Renderer renderer, bool fire)
     {
-        GameObject group = new GameObject("NoxSurface-v6");
+        GameObject group = new GameObject("NoxSurface-v7");
         group.transform.SetParent(renderer.transform, false);
         Bounds b = renderer.GetComponent<MeshFilter>().sharedMesh.bounds;
         if (renderer.CompareTag("Box"))
@@ -131,15 +145,22 @@ public static class NoxSceneArt
         }
     }
 
-    private static void AddBackdrop(Transform parent, Bounds bounds, bool fire)
+    private static void AddBackdrop(Transform parent, Bounds bounds, bool fire, Vector3[] surfaces)
     {
         // Duas faixas fora do volume jogável; nenhuma geometria cenográfica tem collider.
         float span = Mathf.Clamp(Mathf.Max(bounds.size.x, bounds.size.z), 60, 600);
-        for (int i = 0; i < 18; i++)
+        Camera camera = parent.gameObject.scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<Camera>(true)).FirstOrDefault(c => c.CompareTag("MainCamera"));
+        Vector3 behind = camera != null ? Vector3.ProjectOnPlane(camera.transform.forward, Vector3.up).normalized : Vector3.forward;
+        if (behind.sqrMagnitude < 0.5f) behind = Vector3.forward;
+        Vector3 across = Vector3.Cross(Vector3.up, behind).normalized;
+        float depth = Mathf.Abs(behind.x) * bounds.extents.x + Mathf.Abs(behind.z) * bounds.extents.z;
+        for (int i = 0; i < 36; i++)
         {
-            float along = (i / 17f - 0.5f) * span;
-            float side = i % 2 == 0 ? -1 : 1;
-            Vector3 position = bounds.center + new Vector3(side * (bounds.extents.x + 28 + i % 3 * 8), -12 - i % 4 * 4, along);
+            float along = (i % 18 / 17f - 0.5f) * span;
+            Vector3 position = bounds.center + across * along + behind * (depth + 22 + i / 18 * 30);
+            Vector3 nearest = surfaces.Length == 0 ? bounds.center : surfaces.OrderBy(p => Mathf.Abs(Vector3.Dot(p - position, across))).First();
+            position.y = nearest.y - 6 - i / 18 * 5 - i % 3 * 2;
             MeshObject("Ilha distante " + i, parent,
                 IslandMesh(position, new Vector3(14 + i % 4 * 5, 18 + i % 3 * 7, 12 + i % 5 * 4)), distant);
             if (i % 3 == 0)
@@ -212,7 +233,7 @@ public static class NoxSceneArt
         string path = Folder + "/" + name + ".mat";
         Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (material != null) return material;
-        Shader shader = Shader.Find("Standard");
+        Shader shader = Shader.Find("Nox/Superficie mineral");
         if (shader == null) throw new InvalidOperationException("Render pipeline Standard não disponível.");
         material = new Material(shader) { color = color };
         material.SetFloat("_Glossiness", 0.12f);

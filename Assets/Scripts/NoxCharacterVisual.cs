@@ -30,7 +30,7 @@ public sealed class NoxCharacterVisual : MonoBehaviour
     private void Start()
     {
         visualRoot = transform.Find("NoxVisual");
-        if (visualRoot != null) visualRotation = visualRoot.rotation;
+        if (visualRoot != null) visualRotation = UprightRotation(transform.forward);
         if (visualRoot != null) modelRenderers = visualRoot.GetComponentsInChildren<Renderer>();
         savedBlocks = new MaterialPropertyBlock[modelRenderers.Length];
         for (int i = 0; i < savedBlocks.Length; i++) savedBlocks[i] = new MaterialPropertyBlock();
@@ -66,7 +66,7 @@ public sealed class NoxCharacterVisual : MonoBehaviour
         bool dying = !alive && NoxSession.State == NoxGameState.Lost;
         animator.updateMode = dying ? AnimatorUpdateMode.UnscaledTime : AnimatorUpdateMode.Normal;
         animator.speed = active || dying ? 1 : 0;
-        if (hasAlive) animator.SetBool("Alive", alive);
+        if (hasAlive) animator.SetBool("Alive", !dying);
         if (hasVertical) animator.SetFloat("VerticalSpeed", body.velocity.y);
         float speed = player != null ? player.AnimationSpeed : alternate != null ? alternate.AnimationSpeed : 0;
         if (hasSpeed) animator.SetFloat(speedParameter, speed, 0.08f, Time.deltaTime);
@@ -79,8 +79,14 @@ public sealed class NoxCharacterVisual : MonoBehaviour
     {
         if (visualRoot == null || !NoxSession.CanPlay) return;
         // Suaviza somente a apresentação; direção de movimento/mira e colisões são preservadas.
-        visualRotation = Quaternion.RotateTowards(visualRotation, transform.rotation, (NoxPresentation.ReducedMotion ? 1800f : turnSpeed) * Time.deltaTime);
+        visualRotation = Quaternion.RotateTowards(visualRotation, UprightRotation(transform.forward), (NoxPresentation.ReducedMotion ? 1800f : turnSpeed) * Time.deltaTime);
         visualRoot.rotation = visualRotation;
+    }
+
+    private static Quaternion UprightRotation(Vector3 forward)
+    {
+        Vector3 direction = Vector3.ProjectOnPlane(forward, Vector3.up);
+        return Quaternion.LookRotation(direction.sqrMagnitude > 0.0001f ? direction : Vector3.forward, Vector3.up);
     }
 
     public void PulseDamage()
