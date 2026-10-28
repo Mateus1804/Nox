@@ -57,7 +57,7 @@ As animações e os áudios de inimigos dos pacotes originais não foram substit
 
 Os menus recebem paleta escura com destaque suave, foco de seleção, navegação automática e textos de sistema em português. As áreas de clique independem dos rótulos; os controles gráficos aceitam ativação por teclado. Créditos e nomes próprios são preservados.
 
-A interface de gameplay apresenta vida numérica, objetivo da fase e orientação contextual para caixas. O painel inteiro é ocultado durante pausa e resultados. Placas de pressão recebem texto de estado para complementar a cor.
+A interface de gameplay apresenta vida numérica, objetivo da fase e orientação contextual para caixas. O painel inteiro é ocultado durante pausa e resultados. A faixa inferior fica acima da barra de chefe original, posicionada perto de Y=35 no rodapé da cena AirPhase3.5; essa separação foi conferida nos RectTransforms, sem alegar inspeção visual no Unity. Placas de pressão recebem texto de estado para complementar a cor.
 
 As opções gráficas incluem **Realce ao receber dano** e **Reduzir movimentos de câmera e avisos**. São preferências locais sob `Nox.v1.Presentation.*`. Qualidade e intensidade das sombras usam `Nox.v1.Graphics.*`; as chaves de áudio e progresso anteriores permanecem válidas.
 

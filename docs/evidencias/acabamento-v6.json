@@ -74,7 +74,7 @@
     "Assets/Scripts/NoxMenuFocus.cs": "cc68809457813a7f750eda439e15dd95651c4f3055a6635fd6afc3f2e2623d33",
     "Assets/Editor/NoxVisualChecks.cs": "a0c288cf30e888e6cda7e81fc3b4937c035e3632fe1ab581ab038275731982cd",
     "Assets/Editor/NoxSceneTransaction.cs": "2d3a971729451b72a55b5af5ac87ad8725d689816b2a91e945126dba6ae1a8b9",
-    "Assets/Editor/NoxScenePolish.cs": "149df419cbabfe35012859b1dbbac87e3012718f9ec92bd05ae89680f8ca683d",
+    "Assets/Editor/NoxScenePolish.cs": "a41aae396081f66b9306b943555cb2a1f2399cbbfa4e3b7e4711753ea82a4b1a",
     "Assets/Editor/NoxPhysicsChecks.cs": "a27e4fe837de0c0dbda04c9c67d9ea16854cf4b09c7ccdb36361301130f5008a",
     "Assets/Editor/NoxProjectAudit.cs": "da4ab365a8c163fa78bf95df73fe932c5d16579e0857be507feeb17aa91c6d8e",
     "Assets/Editor/NoxBuild.cs": "4612fd8cc244adb15176ff54a22952f681026d608c51f332198595e5aee4be5a",

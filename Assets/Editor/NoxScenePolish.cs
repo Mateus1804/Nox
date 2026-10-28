@@ -235,11 +235,11 @@ public static class NoxScenePolish
         Canvas canvas = owner.AddComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 0;
         CanvasScaler scaler = owner.AddComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = 0.5f;
-        RectTransform ribbon = Rect("Informações", owner.transform, new Vector2(0, 44), new Vector2(1680, 70));
+        RectTransform ribbon = Rect("Informações", owner.transform, new Vector2(0, 110), new Vector2(1680, 54));
         ribbon.anchorMin = ribbon.anchorMax = new Vector2(0.5f, 0);
         Image surface = ribbon.gameObject.AddComponent<Image>(); surface.color = new Color(0.035f, 0.075f, 0.1f, 0.9f); surface.raycastTarget = false;
         NoxPlayHud hud = owner.AddComponent<NoxPlayHud>();
-        hud.status = Label(ribbon, "", Vector2.zero, new Vector2(1620, 60), 27);
+        hud.status = Label(ribbon, "", Vector2.zero, new Vector2(1620, 50), 27);
         RectTransform top = Rect("Objetivo", owner.transform, new Vector2(0, -50), new Vector2(1300, 60));
         top.anchorMin = top.anchorMax = new Vector2(0.5f, 1);
         hud.objective = Label(top, "", Vector2.zero, new Vector2(1300, 60), 30);
