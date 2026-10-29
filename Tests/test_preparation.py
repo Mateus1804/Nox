@@ -128,7 +128,10 @@ class PreparationTests(unittest.TestCase):
         backup, report = self.recovery_report()
         self.assertEqual("restaurado", report["status"])
         self.assertEqual([], report["falhasDeRecuperacao"])
-        self.assertIn("Assets/Scripts/Player/NoxPlayerController.cs", report["arquivosTentados"])
+        self.assertIn(
+            "Assets/Scripts/Player/NoxPlayerController.cs",
+            {path.replace("\\", "/") for path in report["arquivosTentados"]},
+        )
         self.assertEqual(
             b"// previous player\n",
             (backup / "Assets/Scripts/Compatibility/PlayerScript.cs").read_bytes(),
