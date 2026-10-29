@@ -1,0 +1,7 @@
+# Código verificado com o mesmo final de linha no Linux e no checkout Windows.
+# Cenas, prefabs, materiais e demais assets Unity mantêm seu tratamento anterior.
+*.cs text eol=lf
+*.csproj text eol=lf
+*.py text eol=lf
+*.ps1 text eol=lf
+*.yml text eol=lf

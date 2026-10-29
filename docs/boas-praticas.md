@@ -18,7 +18,7 @@ O jogo permanece em Unity 2021.1.28f1 e C# 8. O SDK .NET 8 serve somente aos tes
 
 ## Formatação e comentários
 
-C# segue `.editorconfig`: quatro espaços, chaves em linha própria, espaçamento consistente e linhas LF. A verificação é feita por `dotnet format whitespace --folder --verify-no-changes`. Python usa `ruff check` e `ruff format --check`, com a configuração em `pyproject.toml`. PowerShell mantém UTF-8 com BOM para leitura correta também pelo Windows PowerShell 5.1.
+C# segue `.editorconfig`: quatro espaços, chaves em linha própria, espaçamento consistente e linhas LF. A verificação é feita por `dotnet format whitespace --folder --verify-no-changes`. Os tipos de código verificados possuem checkout LF definido em `.gitattributes`, inclusive no Windows. Python usa `ruff check` e `ruff format --check`, com a configuração em `pyproject.toml`. PowerShell mantém UTF-8 com BOM para leitura correta também pelo Windows PowerShell 5.1.
 
 Comentários devem explicar restrições, decisões e compatibilidade. Evitar regiões que apenas repetem o nome de uma função, comentários contraditórios e grandes blocos de código antigo comentado. O histórico pertence ao Git e à documentação de revisão.
 
