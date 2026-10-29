@@ -19,7 +19,7 @@ Os controles atuais são WASD para movimentação, Espaço para salto, E para in
 - Menus em português, navegação por teclado, vida numérica, objetivos e dicas contextuais.
 - Volume, silêncio, sombras e preferências de apresentação persistentes; desbloqueios salvos e retomada pelo início da última fase.
 - Pausa automática ao perder o foco da janela.
-- Ferramentas de preparação das cenas, backup e auditoria de referências.
+- Ferramentas de preparação das cenas, backup, auditoria de referências, conferência das cópias e recuperação após falhas detectadas de atualização.
 - Ambientação das fases de ar e fogo com céu próprio, névoa, iluminação, ilhas distantes e detalhes de plataformas.
 
 A retomada não salva posição, vida ou estado dos objetos. A existência desses recursos no código não substitui a validação da revisão atual no Play e na build.
@@ -59,6 +59,7 @@ O CI verifica formatação e sintaxe C#, lint e formatação Python, sintaxe Pow
 
 - [Boas práticas de manutenção](docs/boas-praticas.md)
 - [Revisão de código e limpeza](docs/revisao-clean-code.md)
+- [Recuperação verificada do atualizador](docs/revisao-atualizador.md)
 
 - [Desenvolvimento e recuperação](docs/desenvolvimento.md)
 - [Revisão geral](docs/revisao-geral.md)

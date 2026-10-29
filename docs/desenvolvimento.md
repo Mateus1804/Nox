@@ -108,3 +108,12 @@ Para aplicar somente formatação, executar `dotnet format whitespace --folder` 
 No Windows, `powershell -NoProfile -File tools/Verificar-Sintaxe.ps1` confere também a gramática do Windows PowerShell 5.1. O CI usa os dois parsers. O teste de C# analisa sintaxe nos três perfis, mas não substitui compilar os scripts no Unity. O repositório não distribui DLLs do Editor nem stubs simulando suas APIs.
 
 As convenções estão em [Boas práticas](boas-praticas.md) e os achados em [Revisão de código e limpeza](revisao-clean-code.md). O SDK .NET 8 e o Ruff pertencem às ferramentas de manutenção; a versão do jogo continua Unity 2021.1.28f1/C# 8.
+
+
+## Recuperação de uma atualização com falha
+
+O atualizador confere o conteúdo copiado e tenta desfazer as escritas quando uma exceção é capturada. A mensagem informa o backup e o resultado. Consultar `recuperacao.json` na pasta de backup: `restaurado` indica verificação concluída; `recuperacao-parcial` lista arquivos que ainda exigem recuperação manual; `sem-alteracoes` indica falha anterior às escritas. Manter o Unity fechado até resolver uma recuperação parcial.
+
+Esse mecanismo não cobre interrupção de energia ou encerramento forçado. O backup continua necessário. O funcionamento e os testes estão em [Revisão do atualizador](revisao-atualizador.md).
+
+Os testes usam `pwsh` por padrão. Para executar os cinco cenários de recuperação no Windows PowerShell 5.1, definir `$env:NOX_TEST_POWERSHELL = "powershell"` no terminal dos testes. Essa variável é exclusiva da suíte; o atualizador continua sendo usado da mesma forma.

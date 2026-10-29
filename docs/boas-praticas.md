@@ -37,7 +37,7 @@ Nomes antigos preservados por compatibilidade são exceções explícitas à nom
 
 ## Preparação, arquivos e falhas
 
-O atualizador monta e valida o plano antes de copiar arquivos. Uma pasta com nome de arquivo, ou um arquivo no caminho de uma pasta, deve interromper a atualização antes das sobrescritas. O backup permanece obrigatório. Falhas de entrada e saída durante a cópia ainda exigem consultar a cópia preservada; não há garantia de transação atômica entre todos os arquivos.
+O atualizador monta e valida o plano antes de copiar arquivos. Uma pasta com nome de arquivo, ou um arquivo no caminho de uma pasta, deve interromper a atualização antes das sobrescritas. O backup permanece obrigatório. Em exceções tratadas durante as cópias, restaurar os arquivos anteriores, remover os novos da tentativa e conferir o conteúdo por hash. Se a recuperação ficar incompleta, informar arquivos pendentes e preservar o backup. Queda de energia e encerramento forçado não equivalem a uma exceção tratada; não há garantia de transação atômica entre todos os arquivos. O fluxo e as regressões estão em [Revisão do atualizador](revisao-atualizador.md).
 
 A preparação das cenas conserva o backup e o marcador v7. Alterações em scripts não exigem uma nova versão do marcador por si só. Mudanças na geração de geometria, prefab ou controller exigem planejar como projetos já preparados receberão a atualização.
 
