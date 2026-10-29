@@ -1,3 +1,5 @@
+> Revisão atual: v7. Após atualizar os scripts com o Unity fechado, a abertura do projeto avisa quando as cenas ainda não receberam a revisão. O comando **Nox → Preparar cenas recuperadas** aplica a atualização. Para reaplicar a v7 já marcada, há **Nox → Reaplicar preparação v7 (com backup)**. Os diretórios gerados v5 e v6 permanecem preservados e desativados.
+
 # Desenvolvimento e recuperação
 
 ## Ambiente de referência
@@ -23,7 +25,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\Atualizar-Nox.p
 
 O atualizador copia recursivamente scripts, Editor, personagem e Art, preservando o conteúdo anterior em `<projeto>-Backup-Scripts-<data>`. Não altera cenas nessa etapa e não exclui assets gerados ou personalizados ausentes da origem. Falhas interrompem a cópia e informam o backup; não há reversão automática anunciada para uma cópia parcial.
 
-A preparação do Unity usa `ProjectSettings/NoxScenesPrepared-v6.txt`, backup em `Backups/Preparacao-v6/` e Animator/prefab com sufixo v6. As cenas habilitadas na build são regravadas dentro da transação de backup. Os assets gerados v5 permanecem preservados, com a ambientação anterior desativada quando substituída pela v6.
+A preparação do Unity usa `ProjectSettings/NoxScenesPrepared-v7.txt`, backup em `Backups/Preparacao-v7/` e Animator/prefab com sufixo v6. As cenas habilitadas na build são regravadas dentro da transação de backup. Os assets gerados v5 permanecem preservados, com a ambientação anterior desativada quando substituída pela v6.
 
 ## Recuperação a partir do ZIP original
 

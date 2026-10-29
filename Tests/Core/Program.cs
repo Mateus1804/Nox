@@ -188,6 +188,16 @@ public static class Program
         Equal(1, NoxMotionRules.Cadence(3, 0)); Equal(1, NoxMotionRules.Cadence(float.NaN, 1));
         Equal(1, NoxMotionRules.Cadence(3, float.PositiveInfinity));
         hits.Clear(); Equal(1, hits.TryHit(42) ? 1 : 0); Equal(0, hits.TryHit(42) ? 1 : 0);
+        Equal(8.19756f, (float)NoxJumpEnvelope.Range(6, 3.5, 15, 0));
+        Equal(0, (float)NoxJumpEnvelope.Range(6, 3.5, 15, 3.6));
+        Equal(0, (float)NoxJumpEnvelope.Range(6, 3.5, 0, 0));
+        Equal(0, (float)NoxJumpEnvelope.Range(double.NaN, 3.5, 15, 0));
+        Equal(0, (float)NoxJumpEnvelope.Range(6, double.PositiveInfinity, 15, 0));
+        Equal(0, (float)NoxJumpEnvelope.Range(-6, 3.5, 15, 0));
+        Equal(0, (float)NoxJumpEnvelope.Range(6, 0, 15, 0));
+        Equal(1, NoxJumpEnvelope.Range(6, 3.5, 15, -1) < 10.09 ? 1 : 0);
+        Equal(1, NoxJumpEnvelope.Range(6, 3.5, 15, -0.5) > 3.30 + 1 ? 1 : 0);
+        Equal(1, NoxJumpEnvelope.Range(6, 3.5, 15, 1) < NoxJumpEnvelope.Range(6, 3.5, 15, 0) ? 1 : 0);
         Console.WriteLine($"{passed} verificações de regressão aprovadas.");
     }
 }

@@ -1,0 +1,217 @@
+{
+  "ambiente": "Blender 3.6.23, sem execu\u00e7\u00e3o do Unity",
+  "amostras": [
+    {
+      "acao": "Nox_Idle",
+      "fracao": 0,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Idle",
+      "fracao": 0.25,
+      "altura_malha": 1.70031145401299,
+      "desvio_maximo": 2.2149748474475928e-05
+    },
+    {
+      "acao": "Nox_Idle",
+      "fracao": 0.5,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Idle",
+      "fracao": 0.75,
+      "altura_malha": 1.7013081032782793,
+      "desvio_maximo": 2.2105374227976426e-05
+    },
+    {
+      "acao": "Nox_Idle",
+      "fracao": 1,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Walk",
+      "fracao": 0,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Walk",
+      "fracao": 0.25,
+      "altura_malha": 1.7234379518922651,
+      "desvio_maximo": 2.2519485355587676e-05
+    },
+    {
+      "acao": "Nox_Walk",
+      "fracao": 0.5,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Walk",
+      "fracao": 0.75,
+      "altura_malha": 1.7346888640895486,
+      "desvio_maximo": 2.155681067961268e-05
+    },
+    {
+      "acao": "Nox_Walk",
+      "fracao": 1,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Jump",
+      "fracao": 0,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Jump",
+      "fracao": 0.25,
+      "altura_malha": 1.7133901873603463,
+      "desvio_maximo": 2.2118409106042236e-05
+    },
+    {
+      "acao": "Nox_Jump",
+      "fracao": 0.5,
+      "altura_malha": 1.7165035866200924,
+      "desvio_maximo": 2.1973033653921448e-05
+    },
+    {
+      "acao": "Nox_Jump",
+      "fracao": 0.75,
+      "altura_malha": 1.7165035866200924,
+      "desvio_maximo": 2.1973033653921448e-05
+    },
+    {
+      "acao": "Nox_Jump",
+      "fracao": 1,
+      "altura_malha": 1.7165035866200924,
+      "desvio_maximo": 2.1973033653921448e-05
+    },
+    {
+      "acao": "Nox_Attack",
+      "fracao": 0,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Attack",
+      "fracao": 0.25,
+      "altura_malha": 1.7001364549214486,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Attack",
+      "fracao": 0.5,
+      "altura_malha": 1.7002712806279305,
+      "desvio_maximo": 5.0849539547925815e-05
+    },
+    {
+      "acao": "Nox_Attack",
+      "fracao": 0.75,
+      "altura_malha": 1.7001200040394906,
+      "desvio_maximo": 3.051187377423048e-05
+    },
+    {
+      "acao": "Nox_Attack",
+      "fracao": 1,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Fall",
+      "fracao": 0,
+      "altura_malha": 1.714006109163165,
+      "desvio_maximo": 2.2165866539580747e-05
+    },
+    {
+      "acao": "Nox_Fall",
+      "fracao": 0.25,
+      "altura_malha": 1.714006109163165,
+      "desvio_maximo": 2.2165866539580747e-05
+    },
+    {
+      "acao": "Nox_Fall",
+      "fracao": 0.5,
+      "altura_malha": 1.714006109163165,
+      "desvio_maximo": 2.2165866539580747e-05
+    },
+    {
+      "acao": "Nox_Fall",
+      "fracao": 0.75,
+      "altura_malha": 1.714006109163165,
+      "desvio_maximo": 2.2165866539580747e-05
+    },
+    {
+      "acao": "Nox_Fall",
+      "fracao": 1,
+      "altura_malha": 1.714006109163165,
+      "desvio_maximo": 2.2165866539580747e-05
+    },
+    {
+      "acao": "Nox_Land",
+      "fracao": 0,
+      "altura_malha": 1.7188144624233246,
+      "desvio_maximo": 2.2108924895292148e-05
+    },
+    {
+      "acao": "Nox_Land",
+      "fracao": 0.25,
+      "altura_malha": 1.7169098109006882,
+      "desvio_maximo": 2.212975414295215e-05
+    },
+    {
+      "acao": "Nox_Land",
+      "fracao": 0.5,
+      "altura_malha": 1.7111313473433256,
+      "desvio_maximo": 2.219474845333025e-05
+    },
+    {
+      "acao": "Nox_Land",
+      "fracao": 0.75,
+      "altura_malha": 1.7032299051061273,
+      "desvio_maximo": 2.2172493117977865e-05
+    },
+    {
+      "acao": "Nox_Land",
+      "fracao": 1,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Death",
+      "fracao": 0,
+      "altura_malha": 1.699960382800782,
+      "desvio_maximo": 2.215159656770993e-05
+    },
+    {
+      "acao": "Nox_Death",
+      "fracao": 0.25,
+      "altura_malha": 1.683518461883068,
+      "desvio_maximo": 2.2134625396574847e-05
+    },
+    {
+      "acao": "Nox_Death",
+      "fracao": 0.5,
+      "altura_malha": 1.1503726094961166,
+      "desvio_maximo": 2.2104346498963423e-05
+    },
+    {
+      "acao": "Nox_Death",
+      "fracao": 0.75,
+      "altura_malha": 0.8502440005540848,
+      "desvio_maximo": 2.223975934612099e-05
+    },
+    {
+      "acao": "Nox_Death",
+      "fracao": 1,
+      "altura_malha": 0.8057126402854919,
+      "desvio_maximo": 2.228532866865862e-05
+    }
+  ],
+  "referencia_comparada": true,
+  "resultado": "aprovado"
+}

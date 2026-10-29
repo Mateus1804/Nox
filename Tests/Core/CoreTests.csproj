@@ -17,6 +17,7 @@
     <Compile Include="../../Assets/Scripts/NoxAttackCycle.cs" Link="NoxAttackCycle.cs" />
     <Compile Include="../../Assets/Scripts/NoxEnemyCycle.cs" Link="NoxEnemyCycle.cs" />
     <Compile Include="../../Assets/Scripts/NoxMotionRules.cs" Link="NoxMotionRules.cs" />
+    <Compile Include="../../Assets/Scripts/NoxJumpEnvelope.cs" Link="NoxJumpEnvelope.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

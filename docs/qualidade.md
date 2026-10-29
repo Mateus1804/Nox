@@ -1,5 +1,18 @@
 # Qualidade e validação
 
+## Correção v7 — pose, percurso e cenário
+
+A revisão parte da v6 integrada em `471c444f7d0a48e3ce71dd106f79cde74beb4d09`, após relato de orientação incorreta, pose deitada, trechos difíceis de atravessar e cenário sem melhoria perceptível.
+
+- **149 verificações C# e 21 testes Python aprovados**, sem pulos. Dez verificações novas tratam o alcance balístico e suas entradas inválidas; um teste novo confere a conversão uniforme do rig e das malhas no FBX.
+- **56 scripts de execução e 12 de Editor compilados isoladamente**, C# 8, referências oficiais Unity 2021.1.28f1, avisos como erros: zero erros e avisos.
+- Exportação e reimportação reais no Blender 3.6.23: **35 poses comparadas**, com desvio máximo inferior a `0,00006` unidade em relação à malha antes da exportação; altura de repouso próxima de 1,70 m, esqueleto com 52 ossos e sete ações. Resultado em [Malha reimportada v7](evidencias/malha-reimportada-v7.json).
+- A preparação passa a verificar no próprio Unity a verticalidade e a altura de cinco estados antes de regravar as cenas. Essa verificação foi **compilada, mas não executada neste ambiente**.
+
+O levantamento dos vãos usou as transformações das cenas acadêmicas. Não substitui percorrer todas as fases: obstáculos, aceleração, plataformas móveis e colisões precisam de Play. A revisão não possui homologação visual no Unity, percurso completo ou build Windows testada. O resultado do CI é registrado no PR correspondente.
+
+Detalhes em [Correção v7](correcao-v7.md).
+
 ## Revisão v6 — acabamento
 
 A referência inicial é o PR #6, commit `e70c6c2ca59ef397ff1a1e07197d4f18477d5d36`, ainda não integrado na conferência inicial. A base passou por **96 verificações C# e 19 testes Python**, sem falhas.

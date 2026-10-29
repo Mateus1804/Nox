@@ -28,13 +28,13 @@ A retomada não salva posição, vida ou estado dos objetos. A existência desse
 
 O personagem original foi recuperado de `Nox.blend`, com malha de 1.994 vértices e esqueleto de 52 ossos. Os ciclos de repouso e caminhada possuem repetição explícita e cadência ligada à velocidade do jogador. A revisão v6 acrescenta estados próprios de queda, pouso e morte. O modelo inclui materiais, duas machadinhas visuais e poses de salto e ataque.
 
-A preparação v6 gera o prefab e o controlador de animação e vincula o Nox no lugar do cubo, preservando os componentes físicos e as referências das fases. A imagem e a procedência do asset estão em [Personagem Nox](docs/personagem-nox.md).
+A preparação v7 gera o prefab e o controlador de animação e vincula o Nox no lugar do cubo, preservando os componentes físicos e as referências das fases. A imagem e a procedência do asset estão em [Personagem Nox](docs/personagem-nox.md).
 
 ## Estado do projeto
 
 No primeiro teste no Play do Unity, confirmei áudio, movimentação, salto, vida, pausa e navegação entre fases. Também encontrei aprisionamento e deformação do cubo nas plataformas móveis, que motivaram a revisão da física.
 
-As revisões posteriores passaram pelas verificações registradas em [Qualidade](docs/qualidade.md). A substituição do cubo pelo personagem foi confirmada no Play após preparar as cenas. A revisão v6 de combate, animação, interface e ambientação ainda precisa de validação no Play e fora do editor; não há uma nova build Windows homologada disponível neste repositório.
+As revisões posteriores passaram pelas verificações registradas em [Qualidade](docs/qualidade.md). A substituição do cubo pelo personagem foi confirmada no Play após preparar as cenas. Após o teste da v6, foram relatados problemas de orientação e pose do personagem, travessia e apresentação das fases. A revisão v7 normaliza o FBX, calibra a direção pelo rosto, corrige um vão medido e amplia a aplicação do acabamento ao chão e ao fundo. Essas correções ainda precisam de validação no Play e fora do editor; não há uma nova build Windows homologada disponível neste repositório.
 
 ## Estrutura
 
@@ -60,6 +60,7 @@ O CI verifica regras C#, recuperação e atualização, contratos dos componente
 - [Desenvolvimento e recuperação](docs/desenvolvimento.md)
 - [Revisão geral](docs/revisao-geral.md)
 - [Física e personagem](docs/fisica-e-personagem.md)
+- [Correção de pose, travessia e cenário v7](docs/correcao-v7.md)
 - [Acabamento de jogabilidade e apresentação v6](docs/acabamento-v6.md)
 - [Animação e ambientação v5 — histórico](docs/animacao-e-cenarios.md)
 - [Personagem original e integração](docs/personagem-nox.md)

@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Linq;
+using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -8,8 +9,8 @@ using UnityEngine;
 public static class NoxCharacterAssets
 {
     public const string ModelPath = "Assets/Characters/Nox/Nox.fbx";
-    private const string ControllerPath = "Assets/Characters/Nox/Nox-v6.controller";
-    private const string PrefabPath = "Assets/Characters/Nox/NoxPlayable-v6.prefab";
+    private const string ControllerPath = "Assets/Characters/Nox/Nox-v7.controller";
+    private const string PrefabPath = "Assets/Characters/Nox/NoxPlayable-v7.prefab";
 
     public static GameObject Prepare()
     {
@@ -21,12 +22,19 @@ public static class NoxCharacterAssets
         GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
         GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath);
         if (model == null) throw new InvalidOperationException("Modelo original Nox não importado: " + ModelPath);
-        AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(ModelPath).OfType<AnimationClip>().ToArray();
+        AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(ModelPath).OfType<AnimationClip>()
+            .Where(c => !c.name.StartsWith("__preview__", StringComparison.Ordinal)).ToArray();
         string[] names = { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack", "Nox_Fall", "Nox_Land", "Nox_Death" };
         AnimationClip[] motions = names.Select(name => clips.FirstOrDefault(c => c.name.EndsWith(name, StringComparison.Ordinal))).ToArray();
         if (motions.Any(c => c == null)) throw new InvalidOperationException("Um dos sete clips do Nox não foi importado. Conferir a aba Animation do FBX.");
         if (!motions[0].isLooping || !motions[1].isLooping)
             throw new InvalidOperationException("Repouso e caminhada precisam de Loop Time. Reimportar o FBX antes de preparar as cenas.");
+        NoxVisualChecks.ValidateImportedPoses(clips);
+        // Clips próprios permitem excluir somente as curvas do objeto de importação.
+        // O esqueleto mantém todas as curvas; o motor continua dono do deslocamento.
+        Directory.CreateDirectory("Assets/Characters/Nox/Generated-v7");
+        AssetDatabase.Refresh();
+        motions = motions.Select(PrepareClip).ToArray();
         if (existing != null) return existing;
         AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
         if (controller == null)
@@ -85,6 +93,8 @@ public static class NoxCharacterAssets
             if (animator == null) animator = instance.AddComponent<Animator>();
             animator.runtimeAnimatorController = controller;
             animator.applyRootMotion = false;
+            // A pose inicial vem do repouso explícito, nunca do take padrão do FBX.
+            motions[0].SampleAnimation(instance, 0);
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(instance, PrefabPath);
             if (prefab == null) throw new InvalidOperationException("Falha ao salvar prefab do Nox.");
             AssetDatabase.SaveAssets();
@@ -92,6 +102,21 @@ public static class NoxCharacterAssets
         }
         finally { UnityEngine.Object.DestroyImmediate(instance); }
     }
+    private static AnimationClip PrepareClip(AnimationClip source)
+    {
+        string name = source.name.Substring(source.name.LastIndexOf('|') + 1);
+        string path = "Assets/Characters/Nox/Generated-v7/" + name + ".anim";
+        AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+        if (clip != null) return clip;
+        clip = UnityEngine.Object.Instantiate(source);
+        clip.name = name;
+        foreach (EditorCurveBinding binding in AnimationUtility.GetCurveBindings(clip))
+            if (binding.type == typeof(Transform) && string.IsNullOrEmpty(binding.path))
+                AnimationUtility.SetEditorCurve(clip, binding, null);
+        AssetDatabase.CreateAsset(clip, path);
+        return clip;
+    }
+
     private static AnimatorStateTransition Transition(AnimatorState from, AnimatorState to, AnimatorConditionMode mode, float value, string parameter)
     {
         AnimatorStateTransition transition = from.AddTransition(to);
@@ -115,6 +140,7 @@ public class NoxModelImporter : AssetPostprocessor
         ModelImporter importer = (ModelImporter)assetImporter;
         importer.animationType = ModelImporterAnimationType.Generic;
         importer.importAnimation = true;
+        importer.animationCompression = ModelImporterAnimationCompression.Off;
         importer.importCameras = false; importer.importLights = false;
         importer.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
     }
@@ -129,6 +155,7 @@ public class NoxModelImporter : AssetPostprocessor
     {
         importer.animationType = ModelImporterAnimationType.Generic;
         importer.importAnimation = true;
+        importer.animationCompression = ModelImporterAnimationCompression.Off;
         ModelImporterClipAnimation[] clips = importer.defaultClipAnimations;
         foreach (ModelImporterClipAnimation clip in clips)
         {
@@ -137,6 +164,8 @@ public class NoxModelImporter : AssetPostprocessor
             clip.loopTime = loop;
             clip.loopPose = loop;
             clip.wrapMode = loop ? WrapMode.Loop : WrapMode.ClampForever;
+            clip.keepOriginalOrientation = true;
+            clip.keepOriginalPositionY = true; clip.keepOriginalPositionXZ = true;
             clip.lockRootRotation = true; clip.lockRootHeightY = true; clip.lockRootPositionXZ = true;
         }
         importer.clipAnimations = clips;

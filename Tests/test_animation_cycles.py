@@ -45,6 +45,17 @@ class AnimationCycleTests(unittest.TestCase):
         self.assertTrue({'coxa.L', 'coxa.R', 'braço1.L', 'braço1.R'} <= moving_bones)
         self.assertTrue({'canela.L', 'canela.R'} <= knees)
 
+    def test_mesh_and_rig_share_one_fbx_axis_and_unit_conversion(self):
+        models = [obj for obj in self.objects.values() if obj[0] == 'Model' and obj[1][2] != 'LimbNode']
+        self.assertEqual(6, len(models))
+        for model in models:
+            props = {n[1][0]: n[1][4:] for group in model[2] if group[0] == 'Properties70' for n in group[2]}
+            for value in props['Lcl Scaling']:
+                self.assertAlmostEqual(100, value, places=4)  # conversão uniforme de metros para centímetros FBX.
+            for actual, expected in zip(props.get('Lcl Rotation', [0, 0, 0]), [-90, 0, 0]):
+                self.assertAlmostEqual(expected, actual, places=3)
+            self.assertTrue(all(abs(v) < 0.0001 for v in props.get('Lcl Translation', [0, 0, 0])))
+
     def test_walk_duration_is_eight_tenths_of_a_second(self):
         for curve in self.curves('Nox_Walk'):
             times = next(n[1][0] for n in curve[2] if n[0] == 'KeyTime')

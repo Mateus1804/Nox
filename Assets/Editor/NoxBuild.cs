@@ -20,14 +20,31 @@ public static class NoxBuild
     [MenuItem("Nox/Preparar cenas recuperadas")]
     public static void PrepareScenes() { TryPrepareScenes(); }
 
+    [MenuItem("Nox/Reaplicar preparação v7 (com backup)")]
+    public static void Reapply()
+    {
+        if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes de preparar as cenas.");
+        if (!Application.isBatchMode && !EditorUtility.DisplayDialog("Reaplicar preparação",
+            "As cenas habilitadas serão preparadas novamente. Uma cópia será salva em Backups/Preparacao-v7. Ajustes locais de apresentação podem ser substituídos.", "Reaplicar", "Cancelar")) return;
+        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v7.txt");
+        byte[] previous = File.Exists(marker) ? File.ReadAllBytes(marker) : null;
+        if (previous != null) File.Delete(marker);
+        try { if (!TryPrepareScenes() && previous != null) File.WriteAllBytes(marker, previous); }
+        catch { if (previous != null) File.WriteAllBytes(marker, previous); throw; }
+    }
+
     private static bool TryPrepareScenes()
     {
         if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes de preparar as cenas.");
-        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v6.txt");
-        if (File.Exists(marker)) return true;
+        string marker = Path.Combine("ProjectSettings", "NoxScenesPrepared-v7.txt");
+        if (File.Exists(marker))
+        {
+            Debug.Log("Cenas já preparadas na revisão v7. Para reaplicar, usar Nox > Reaplicar preparação v7 (com backup).");
+            return true;
+        }
         if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return false;
         GameObject nox = NoxCharacterAssets.Prepare();
-        using (var transaction = new NoxSceneTransaction("Preparacao-v6"))
+        using (var transaction = new NoxSceneTransaction("Preparacao-v7"))
         {
             foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes.Where(item => item.enabled))
             {
@@ -58,12 +75,13 @@ public static class NoxBuild
                         EditorUtility.SetDirty(tutorial);
                     }
                 }
+                NoxTraversalRepair.Apply(opened);
                 NoxSceneArt.Apply(opened);
                 NoxScenePolish.Apply(opened);
                 EditorSceneManager.MarkSceneDirty(opened);
                 if (!EditorSceneManager.SaveScene(opened)) throw new IOException("A cena não pôde ser salva: " + scene.path);
             }
-            File.WriteAllText(marker + ".tmp", "Preparação v6 aplicada com backup das cenas.\n");
+            File.WriteAllText(marker + ".tmp", "Preparação v7 aplicada com backup das cenas.\n");
             File.Move(marker + ".tmp", marker);
             transaction.Commit();
         }

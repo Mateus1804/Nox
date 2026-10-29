@@ -137,9 +137,94 @@ for sign in [-1,1]:
  verts=[tuple(p+Vector((0,y,0))) for y in [-.1,.1] for p in points]
  part('MachadinhaLamina'+str(sign),verts,faces,metal)
 
+# Optional validation snapshots are local evidence, not shipped reference assets.
+reference = {}
+for action in keep:
+ rig.animation_data.action = action
+ for fraction in [0, .25, .5, .75, 1]:
+  frame = int(action.frame_range[0] + (action.frame_range[1] - action.frame_range[0]) * fraction)
+  bpy.context.scene.frame_set(frame);bpy.context.view_layer.update()
+  evaluated_mesh = mesh.evaluated_get(bpy.context.evaluated_depsgraph_get())
+  data = evaluated_mesh.to_mesh()
+  reference[action.name + ':' + str(fraction)] = [list(evaluated_mesh.matrix_world @ vertex.co) for vertex in data.vertices]
+  evaluated_mesh.to_mesh_clear()
+os.makedirs(os.path.abspath(opts.output), exist_ok=True)
+with open(os.path.join(opts.output, 'poses-antes-da-exportacao.json'), 'w') as handle:json.dump(reference, handle)
+rig.animation_data.action = next(a for a in keep if a.name == 'Nox_Idle')
+bpy.context.scene.frame_set(1);bpy.context.view_layer.update()
+
+# Normalize the actual bind hierarchy, not only the enclosing preview object.
+# The exported armature and skinned meshes have identity object transforms.
+# Animation is baked explicitly per bone; object rotations cannot tip the rig.
+old_rig = rig
+bpy.context.scene.frame_set(1);bpy.context.view_layer.update()
+rest = {b.name: old_rig.matrix_world @ b.matrix_local for b in old_rig.data.bones}
+armature = bpy.data.armatures.new('NoxSkeleton')
+clean = bpy.data.objects.new('NoxRigNormalized', armature)
+bpy.context.collection.objects.link(clean)
+bpy.context.view_layer.objects.active = clean
+clean.select_set(True)
+bpy.ops.object.mode_set(mode='EDIT')
+for bone in old_rig.data.bones:
+ item = armature.edit_bones.new(bone.name)
+ item.head = old_rig.matrix_world @ bone.head_local
+ item.tail = old_rig.matrix_world @ bone.tail_local
+ item.align_roll(rest[bone.name].to_3x3().col[2])
+ item.use_deform = bone.use_deform
+ if bone.parent:item.parent = armature.edit_bones[bone.parent.name]
+bpy.ops.object.mode_set(mode='OBJECT')
+# Copy geometry in the same normalized world space, preserving weights/materials.
+clean_meshes = []
+for source in [mesh] + props:
+ obj = source.copy();obj.data = source.data.copy();bpy.context.collection.objects.link(obj)
+ obj.parent = clean;obj.matrix_parent_inverse = Matrix.Identity(4)
+ obj.data.transform(source.matrix_world);obj.matrix_world = Matrix.Identity(4)
+ for modifier in obj.modifiers:
+  if modifier.type == 'ARMATURE':modifier.object = clean
+ clean_meshes.append(obj)
+clean.animation_data_create()
+baked = []
+for action in keep:
+ old_rig.animation_data.action = action
+ new = bpy.data.actions.new(action.name + '_normalized');new.use_fake_user = True
+ clean.animation_data.action = new
+ for frame in range(int(action.frame_range[0]), int(action.frame_range[1]) + 1):
+  bpy.context.scene.frame_set(frame);bpy.context.view_layer.update()
+  evaluated = {}
+  for source_bone in old_rig.pose.bones:
+   world_pose = old_rig.matrix_world @ source_bone.matrix
+   location, rotation, scale = world_pose.decompose()
+   rest_scale = rest[source_bone.name].to_scale()
+   scale = Vector(tuple(scale[i] / rest_scale[i] for i in range(3)))
+   evaluated[source_bone.name] = Matrix.LocRotScale(location, rotation, scale)
+  for bone in clean.pose.bones:
+   target = evaluated[bone.name]
+   local_rest = bone.bone.matrix_local
+   if bone.parent:
+    target = evaluated[bone.parent.name].inverted() @ target
+    local_rest = bone.parent.bone.matrix_local.inverted() @ local_rest
+   bone.matrix_basis = local_rest.inverted() @ target
+   bone.rotation_mode = 'QUATERNION'
+   bone.keyframe_insert('location', frame=frame)
+   bone.keyframe_insert('rotation_quaternion', frame=frame)
+   bone.keyframe_insert('scale', frame=frame)
+ for curve in new.fcurves:
+  for key in curve.keyframe_points:key.interpolation = 'LINEAR'
+ baked.append(new)
+# Remove old datablocks only from this working copy, keeping source .blend intact.
+for action in keep:bpy.data.actions.remove(action)
+for action in baked:action.name = action.name.removesuffix('_normalized')
+for obj in [mesh]+props+[old_rig,wrapper]:bpy.data.objects.remove(obj,do_unlink=True)
+rig = clean;rig.name = 'NoxRig'
+mesh = clean_meshes[0];mesh.name = 'panda'
+props = clean_meshes[1:];wrapper = rig
+keep = baked
+rig.animation_data.action = next(a for a in keep if a.name == 'Nox_Idle')
+bpy.context.scene.frame_set(1);bpy.context.view_layer.update()
+
 # Only the playable model/rig are exported: no packed references or cameras.
 bpy.ops.object.select_all(action='DESELECT')
-for o in [wrapper,rig,mesh]+props:o.select_set(True)
+for o in [rig,mesh]+props:o.select_set(True)
 bpy.context.view_layer.objects.active=rig
 out=os.path.abspath(opts.output);os.makedirs(out,exist_ok=True)
 bpy.ops.export_scene.fbx(filepath=out+'/Nox.fbx',use_selection=True,object_types={'EMPTY','ARMATURE','MESH'},add_leaf_bones=False,bake_anim=True,bake_anim_use_all_actions=True,bake_anim_use_nla_strips=False,bake_anim_simplify_factor=0,axis_forward='-Z',axis_up='Y',path_mode='STRIP',use_custom_props=False)
