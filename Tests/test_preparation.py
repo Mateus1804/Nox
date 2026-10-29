@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -11,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL = "7da36c5a97651df26c9fd8197ab9e5203efd7082"
+POWERSHELL = os.environ.get("NOX_TEST_POWERSHELL", "pwsh")
 
 
 class PreparationTests(unittest.TestCase):
@@ -43,7 +45,7 @@ class PreparationTests(unittest.TestCase):
     def prepare(self):
         return subprocess.run(
             [
-                "pwsh",
+                POWERSHELL,
                 "-NoProfile",
                 "-File",
                 str(ROOT / "tools/Preparar-Nox.ps1"),
@@ -55,6 +57,104 @@ class PreparationTests(unittest.TestCase):
             text=True,
             capture_output=True,
         )
+
+    def modified_project(self):
+        self.write_zip()
+        result = self.prepare()
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        (self.destination / "Assets/Scripts/PlayerScript.cs").write_bytes(b"// previous player\n")
+        (self.destination / "Assets/Art/NoxSky.shader").write_bytes(b"// previous shader\n")
+        for name in ["NoxPlayerControllerSupport.cs", "NoxPlayerControllerSupport.cs.meta"]:
+            (self.destination / "Assets/Scripts" / name).unlink()
+        return self.project_snapshot()
+
+    def project_snapshot(self):
+        return {
+            path.relative_to(self.destination).as_posix(): hashlib.sha256(
+                path.read_bytes()
+            ).hexdigest()
+            for path in self.destination.rglob("*")
+            if path.is_file()
+        }
+
+    def faulty_update(self, mode):
+        wrapper = ROOT / "Tests/fixtures/Updater-Faults.ps1"
+        return subprocess.run(
+            [
+                POWERSHELL,
+                "-NoProfile",
+                "-File",
+                str(wrapper),
+                "-Updater",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-ProjectRoot",
+                str(self.destination),
+                "-Fault",
+                mode,
+            ],
+            text=True,
+            capture_output=True,
+        )
+
+    def recovery_report(self):
+        backup = next(self.base.glob("projeto com espaços-Backup-Scripts-*"))
+        return backup, json.loads((backup / "recuperacao.json").read_text(encoding="utf-8-sig"))
+
+    def test_updater_restores_partial_write_and_removes_new_files(self):
+        before = self.modified_project()
+        result = self.faulty_update("copy")
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(before, self.project_snapshot())
+        backup, report = self.recovery_report()
+        self.assertEqual("restaurado", report["status"])
+        self.assertEqual([], report["falhasDeRecuperacao"])
+        self.assertIn("Assets/Scripts/NoxPlayerControllerSupport.cs", report["arquivosTentados"])
+        self.assertEqual(
+            b"// previous player\n", (backup / "Assets/Scripts/PlayerScript.cs").read_bytes()
+        )
+
+    def test_updater_detects_corruption_and_restores_previous_bytes(self):
+        before = self.modified_project()
+        result = self.faulty_update("corrupt")
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(before, self.project_snapshot())
+        _, report = self.recovery_report()
+        self.assertEqual("restaurado", report["status"])
+        self.assertIn("esperado", report["erroOriginal"])
+
+    def test_updater_leaves_project_untouched_if_backup_fails(self):
+        before = self.modified_project()
+        result = self.faulty_update("backup")
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(before, self.project_snapshot())
+        _, report = self.recovery_report()
+        self.assertEqual("sem-alteracoes", report["status"])
+        self.assertEqual([], report["arquivosTentados"])
+
+    def test_updater_reports_partial_recovery_and_keeps_original_error(self):
+        before = self.modified_project()
+        result = self.faulty_update("restore")
+        self.assertNotEqual(0, result.returncode)
+        after = self.project_snapshot()
+        self.assertEqual(
+            {"Assets/Art/NoxSky.shader"}, {key for key in before if before[key] != after[key]}
+        )
+        self.assertEqual(set(before), set(after))
+        _, report = self.recovery_report()
+        self.assertEqual("recuperacao-parcial", report["status"])
+        self.assertEqual("simulated copy failure", report["erroOriginal"])
+        self.assertEqual(1, len(report["falhasDeRecuperacao"]))
+        self.assertIn("NoxSky.shader", report["falhasDeRecuperacao"][0])
+        self.assertIn("incompleta", result.stdout + result.stderr)
+
+    def test_updater_restores_if_completion_manifest_fails(self):
+        before = self.modified_project()
+        result = self.faulty_update("manifest")
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(before, self.project_snapshot())
+        _, report = self.recovery_report()
+        self.assertEqual("restaurado", report["status"])
+        self.assertEqual("simulated manifest failure", report["erroOriginal"])
 
     def test_updates_existing_project_preserving_scenes_and_backing_up_scripts(self):
         self.write_zip()
@@ -68,7 +168,7 @@ class PreparationTests(unittest.TestCase):
         before_scene = scene.read_bytes()
         result = subprocess.run(
             [
-                "pwsh",
+                POWERSHELL,
                 "-NoProfile",
                 "-File",
                 str(ROOT / "tools/Atualizar-Nox.ps1"),
@@ -113,7 +213,7 @@ class PreparationTests(unittest.TestCase):
             path.write_bytes(content)
         result = subprocess.run(
             [
-                "pwsh",
+                POWERSHELL,
                 "-NoProfile",
                 "-File",
                 str(ROOT / "tools/Atualizar-Nox.ps1"),
@@ -146,7 +246,7 @@ class PreparationTests(unittest.TestCase):
         player.write_bytes(b"// preservar antes da validacao\n")
         result = subprocess.run(
             [
-                "pwsh",
+                POWERSHELL,
                 "-NoProfile",
                 "-File",
                 str(ROOT / "tools/Atualizar-Nox.ps1"),
@@ -171,7 +271,7 @@ class PreparationTests(unittest.TestCase):
         player.write_bytes(b"// preservar antes da validacao\n")
         result = subprocess.run(
             [
-                "pwsh",
+                POWERSHELL,
                 "-NoProfile",
                 "-File",
                 str(ROOT / "tools/Atualizar-Nox.ps1"),
@@ -190,7 +290,7 @@ class PreparationTests(unittest.TestCase):
         self.destination.mkdir()
         result = subprocess.run(
             [
-                "pwsh",
+                POWERSHELL,
                 "-NoProfile",
                 "-File",
                 str(ROOT / "tools/Atualizar-Nox.ps1"),
@@ -259,8 +359,8 @@ class PreparationTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    if shutil.which("pwsh") is None:
+    if shutil.which(POWERSHELL) is None:
         raise SystemExit(
-            "PowerShell 7 (pwsh) é necessário para esta suíte; os testes não foram executados."
+            f"PowerShell não encontrado: {POWERSHELL}; os testes não foram executados."
         )
     unittest.main(verbosity=2)

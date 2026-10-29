@@ -1,5 +1,9 @@
 # Qualidade e validação
 
+## Complemento de revisão — atualizador
+
+O complemento após o PR #9 mantém as 170 verificações C# e amplia a suíte para **28 testes Python**, sem pulos. Há cinco cenários de falha de atualização, com verificação dos arquivos recuperados e diagnóstico de recuperação parcial. O parser PowerShell agora abrange quatro arquivos, incluindo a fixture. Código de execução Unity, recursos e cenas não foram alterados. Detalhes em [Revisão do atualizador](revisao-atualizador.md).
+
 ## Revisão de código e limpeza
 
 A manutenção após a v7 passou por **170 verificações C# e 23 testes Python**, sem pulos, além de lint e formatação. A compilação isolada de **57 scripts de execução e 12 de Editor** foi concluída sem erros ou avisos. O novo parser confere **71 arquivos C# em três perfis**, e o parser PowerShell local confere três scripts. Resultados, referência inicial, correções reproduzidas e limites em [Revisão de código e limpeza](revisao-clean-code.md). As convenções estão em [Boas práticas](boas-praticas.md).

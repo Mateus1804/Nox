@@ -1,5 +1,7 @@
 # Revisão de código, limpeza e análise estática
 
+> Complemento após a integração do PR #9: o atualizador passou a separar planejamento, backup, cópia e recuperação verificada. A limitação de cópias parcialmente concluídas foi tratada para exceções capturadas, com 28 testes Python aprovados no total. Resultados e limites atuais em [Revisão do atualizador](revisao-atualizador.md). Os números abaixo documentam a revisão anterior.
+
 ## Referência
 
 Base: `06d3335f311628436e4a61fbe29c62b8a61b44d7`, com a correção v7 integrada. A árvore local começou sem alterações. A revisão preserva motor, renderização, controles, dados de progresso, GUIDs, campos serializados e callbacks públicos da v7.
