@@ -41,6 +41,12 @@ jobs:
         run: dotnet run --project Tests/Core/CoreTests.csproj --configuration Release
       - name: Recuperação em pasta isolada
         run: python Tests/test_preparation.py
+      - name: Recuperação após falhas no Windows PowerShell 5.1
+        shell: powershell
+        env:
+          NOX_TEST_POWERSHELL: powershell
+        run: |
+          python Tests/test_preparation.py PreparationTests.test_updater_restores_partial_write_and_removes_new_files PreparationTests.test_updater_detects_corruption_and_restores_previous_bytes PreparationTests.test_updater_leaves_project_untouched_if_backup_fails PreparationTests.test_updater_reports_partial_recovery_and_keeps_original_error PreparationTests.test_updater_restores_if_completion_manifest_fails
       - name: Contratos dos componentes e metadados
         run: python Tests/test_source_contracts.py
       - name: Integridade do personagem e clips FBX
