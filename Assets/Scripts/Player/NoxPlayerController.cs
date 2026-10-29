@@ -15,7 +15,7 @@ public class NoxPlayerController : MonoBehaviour
     private bool bossEncounterStarted;
 
     [SerializeField, Min(1f)] private float maxHealth = 3f;
-    [SerializeField, Min(0.1f)] private float jumpHeight = 3.5f;
+    [SerializeField, Min(0.1f)] private float jumpHeight = DefaultJumpHeight;
     private Vector3 desiredMovement;
     private NoxPlayerMotor motor;
     private NoxPlayerCombat combat;
