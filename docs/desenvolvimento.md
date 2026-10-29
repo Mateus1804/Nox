@@ -89,7 +89,7 @@ Backups, logs, capturas e builds não devem ser confundidos com código do repos
 
 ## Análise estática e manutenção
 
-Executar os comandos abaixo na raiz **deste repositório de correções**, separado da cópia Unity recuperada e dos seus pacotes de terceiros. Usar SDK .NET 8, Python 3.10 ou superior e PowerShell 7 para os testes de preparação.
+Executar os comandos abaixo na raiz **deste repositório de correções**, separado da cópia Unity recuperada e dos seus pacotes de terceiros. O `global.json` mantém a seleção do SDK na família 8.0. Usar SDK .NET 8, Python 3.10 ou superior e PowerShell 7 para os testes de preparação.
 
 ```powershell
 python -m pip install -r requirements-dev.txt

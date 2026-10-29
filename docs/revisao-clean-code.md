@@ -33,7 +33,7 @@ Não houve modificação no FBX, shaders, cenas, prefabs, materiais ou configura
 ## Análise automatizada
 
 - `.editorconfig`, `.gitattributes` e `dotnet format whitespace`: formatação C# e checkout consistente em LF. A primeira rodada Windows expôs conversão automática para CRLF e foi interrompida na formatação; os atributos corrigem essa divergência sem desativar a regra.
-- `tools/CodeQuality`: parser Roslyn do SDK .NET 8, sem NuGet adicional. Confere 71 arquivos C# em três perfis: execução, `UNITY_EDITOR` e `DEVELOPMENT_BUILD`; cinco autoverificações conferem código válido, texto e erro dentro de diretivas.
+- `tools/CodeQuality`: parser Roslyn do SDK .NET 8, sem NuGet adicional. `global.json` mantém a seleção na família 8.0 mesmo quando há SDKs mais novos instalados. O CI identificou seleção automática do SDK 10 e incompatibilidade de assemblies; a seleção explícita corrige a causa. Confere 71 arquivos C# em três perfis: execução, `UNITY_EDITOR` e `DEVELOPMENT_BUILD`; cinco autoverificações conferem código válido, texto e erro dentro de diretivas.
 - `pyproject.toml` e `requirements-dev.txt`: Ruff fixado, com regras de imports, sintaxe, nomes indefinidos e variáveis locais sem uso, além de formatação Python.
 - `tools/Verificar-Sintaxe.ps1`: parser do PowerShell, sem executar os scripts analisados. O CI executa a verificação com PowerShell 7 e Windows PowerShell 5.1.
 - Regressões anteriores de regras, preparação, contratos, FBX e curvas mantidas no CI. Execuções anteriores da mesma revisão são canceladas por concorrência para evitar acumulação.

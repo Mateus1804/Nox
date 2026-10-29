@@ -19,6 +19,8 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.x'
+      - name: Conferir SDK das ferramentas
+        run: dotnet --version
       - name: Formatação C#
         run: dotnet format whitespace --folder --verify-no-changes --verbosity minimal
       - name: Sintaxe C# em jogador, Editor e desenvolvimento

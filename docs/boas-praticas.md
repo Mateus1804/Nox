@@ -4,7 +4,7 @@
 
 As convenções se aplicam ao código mantido neste repositório: scripts de execução, ferramentas do Editor, preparação em PowerShell, ferramentas Blender em Python e testes. Recursos de terceiros, cenas recuperadas, arquivos gerados e binários possuem tratamento próprio.
 
-O jogo permanece em Unity 2021.1.28f1 e C# 8. O SDK .NET 8 serve somente aos testes e à análise do repositório; não substitui o Unity nem altera a versão do projeto. Ruff é uma dependência de desenvolvimento fixada em `requirements-dev.txt`, sem inclusão na build do jogo.
+O jogo permanece em Unity 2021.1.28f1 e C# 8. O `global.json` seleciona a família de SDK 8.0 e aceita suas revisões de manutenção. O SDK .NET 8 serve somente aos testes e à análise do repositório; não substitui o Unity nem altera a versão do projeto. Ruff é uma dependência de desenvolvimento fixada em `requirements-dev.txt`, sem inclusão na build do jogo.
 
 ## Nomes, responsabilidades e compatibilidade
 
