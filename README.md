@@ -28,7 +28,7 @@ A retomada não salva posição, vida ou estado dos objetos. A existência desse
 
 O personagem original foi recuperado de `Nox.blend`, com malha de 1.994 vértices e esqueleto de 52 ossos. Os ciclos de repouso e caminhada possuem repetição explícita e cadência ligada à velocidade do jogador. A revisão v6 acrescenta estados próprios de queda, pouso e morte. O modelo inclui materiais, duas machadinhas visuais e poses de salto e ataque.
 
-A preparação v7 gera o prefab e o controlador de animação e vincula o Nox no lugar do cubo, preservando os componentes físicos e as referências das fases. A imagem e a procedência do asset estão em [Personagem Nox](docs/personagem-nox.md).
+O personagem e o Animator v7 continuam em uso. A preparação v8 aplica a nova estrutura de scripts e converte os componentes antigos nas cenas, preservando os componentes físicos. A imagem e a procedência do asset estão em [Personagem Nox](docs/personagem-nox.md).
 
 ## Estado do projeto
 
@@ -38,14 +38,20 @@ As revisões posteriores passaram pelas verificações registradas em [Qualidade
 
 ## Estrutura
 
-- `Assets/Scripts/`: controles, combate, física, interface, progresso e regras compartilhadas.
+- `Assets/Scripts/`: `Player`, `Combat`, `Enemies`, `World`, `UI`, `Core`, `Domain` e adaptadores em `Compatibility`.
 - `Assets/Art/`: shader do céu e recursos gerados pelo preparador.
 - `Assets/Characters/Nox/`: modelo FBX com rig, materiais e animações.
-- `Assets/Editor/`: preparação das cenas, integração do personagem, auditoria e geração da build.
+- `Assets/Editor/`: ferramentas separadas em `Build`, `Character`, `Scenes` e `Validation`.
 - `Packages/` e `ProjectSettings/`: configuração do projeto original.
 - `Tests/`: verificações de regras, preparação, contratos e integridade do FBX.
 - `tools/`: recuperação, atualização e reprodução da exportação do personagem.
 - `docs/`: decisões técnicas, histórico de revisão e evidências.
+
+## Organização do código
+
+O jogador utiliza `NoxPlayerController` e os chefes utilizam `NoxBossController`, com perfis próprios para as diferenças de cada encontro. As implementações repetidas foram consolidadas, e os arquivos de execução passaram de 57 para 52. Componentes como `NoxCrateInteraction`, `NoxMovingPlatform`, `NoxGameInterface` e `NoxLevelResultScreen` possuem nomes que indicam sua função.
+
+Os tipos antigos ficam em adaptadores pequenos para carregar o projeto original; a preparação converte as cenas habilitadas. Renomeações mantêm GUIDs e nomes de serialização. A migração possui backup e ainda exige conferência no Unity antes de homologar a revisão. O mapa e os detalhes estão em [Estrutura de scripts](docs/estrutura-scripts.md).
 
 ## Desenvolvimento e qualidade
 
@@ -57,6 +63,7 @@ O CI verifica formatação e sintaxe C#, lint e formatação Python, sintaxe Pow
 
 ## Documentação
 
+- [Estrutura de scripts e migração v8](docs/estrutura-scripts.md)
 - [Boas práticas de manutenção](docs/boas-praticas.md)
 - [Revisão de código e limpeza](docs/revisao-clean-code.md)
 - [Recuperação verificada do atualizador](docs/revisao-atualizador.md)

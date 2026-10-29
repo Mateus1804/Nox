@@ -1,5 +1,12 @@
 # Qualidade e validação
 
+## Estrutura de scripts v8
+
+A reorganização passou localmente por 170 verificações C#, 35 testes Python e compilação isolada de **52 scripts de execução e 13 de Editor**, com referências Unity 2021.1.28f1 e avisos como erros: zero erros/avisos. O parser verifica 67 arquivos C# em três perfis. Foram verificados os GUIDs dos componentes, callbacks herdados, propriedades de compatibilidade e nomes de migração dos campos.
+
+Os testes de arquivos cobrem o layout antigo, rejeição de GUID desconhecido, ausência de caminhos duplicados, retirada de meta órfão conhecido e recuperação após falha na exclusão. O novo verificador no menu Unity foi compilado, mas **não executado**. Importação, desserialização de cenas reais, migração de componentes, Play e build Windows continuam pendentes. Detalhes em [Estrutura e migração](estrutura-scripts.md).
+
+
 ## Complemento de revisão — atualizador
 
 O complemento após o PR #9 mantém as 170 verificações C# e amplia a suíte para **28 testes Python**, sem pulos. Há cinco cenários de falha de atualização, com verificação dos arquivos recuperados e diagnóstico de recuperação parcial. O parser PowerShell agora abrange quatro arquivos, incluindo a fixture. Código de execução Unity, recursos e cenas não foram alterados. Detalhes em [Revisão do atualizador](revisao-atualizador.md).
