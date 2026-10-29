@@ -8,7 +8,9 @@ public class NoxResumeButton : MonoBehaviour
     public TextMeshProUGUI label;
     private void OnEnable()
     {
-        if (button != null) button.interactable = NoxProgress.CanResume;
-        if (label != null) label.text = NoxProgress.CanResume ? "Continuar fase" : "Sem fase salva";
+        if (button != null)
+            button.interactable = NoxProgress.CanResume;
+        if (label != null)
+            label.text = NoxProgress.CanResume ? "Continuar fase" : "Sem fase salva";
     }
 }

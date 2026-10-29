@@ -24,7 +24,8 @@ public class Lever : MonoBehaviour
             indicatorMaterial = indicator.material;
             indicatorMaterial.color = Color.red;
         }
-        if (stateLabel != null) stateLabel.text = "Aguardando peso";
+        if (stateLabel != null)
+            stateLabel.text = "Aguardando peso";
         if (door == null || waypoints == null || waypoints.Length < 2 || waypoints[0] == null || waypoints[1] == null)
         {
             Debug.LogError("A alavanca exige uma porta e dois pontos válidos.", this);
@@ -33,12 +34,17 @@ public class Lever : MonoBehaviour
     }
     public void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") || other.CompareTag("Box")) occupants.Add(other);
+        if (other.CompareTag("Player") || other.CompareTag("Box"))
+            occupants.Add(other);
     }
-    public void OnTriggerExit(Collider other) { occupants.Remove(other); }
+    public void OnTriggerExit(Collider other)
+    {
+        occupants.Remove(other);
+    }
     private void Update()
     {
-        if (!NoxSession.CanPlay) return;
+        if (!NoxSession.CanPlay)
+            return;
         occupants.RemoveWhere(item => item == null || !item.enabled || !item.gameObject.activeInHierarchy);
         playerCheck = false;
         boxCheck = false;
@@ -50,7 +56,8 @@ public class Lever : MonoBehaviour
         bool occupied = playerCheck || boxCheck;
         if (indicatorMaterial != null && occupied != wasOccupied)
             indicatorMaterial.color = occupied ? Color.green : Color.red;
-        if (stateLabel != null && occupied != wasOccupied) stateLabel.text = occupied ? "Ativada" : "Aguardando peso";
+        if (stateLabel != null && occupied != wasOccupied)
+            stateLabel.text = occupied ? "Ativada" : "Aguardando peso";
         wasOccupied = occupied;
         currentWaypointIndex = occupied ? 1 : 0;
         door.transform.position = Vector3.MoveTowards(door.transform.position,
@@ -58,9 +65,18 @@ public class Lever : MonoBehaviour
     }
     private void OnDisable()
     {
-        occupants.Clear(); playerCheck = false; boxCheck = false; wasOccupied = false;
-        if (stateLabel != null) stateLabel.text = "Aguardando peso";
-        if (indicatorMaterial != null) indicatorMaterial.color = Color.red;
+        occupants.Clear();
+        playerCheck = false;
+        boxCheck = false;
+        wasOccupied = false;
+        if (stateLabel != null)
+            stateLabel.text = "Aguardando peso";
+        if (indicatorMaterial != null)
+            indicatorMaterial.color = Color.red;
     }
-    private void OnDestroy() { if (indicatorMaterial != null) Destroy(indicatorMaterial); }
+    private void OnDestroy()
+    {
+        if (indicatorMaterial != null)
+            Destroy(indicatorMaterial);
+    }
 }

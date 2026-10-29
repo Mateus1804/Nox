@@ -11,13 +11,15 @@ public static class NoxProgress
     public static bool CanResume => NoxProgressRules.CanResume(LastScene, SceneManager.sceneCountInBuildSettings, FireUnlocked);
     public static void Unlock(string element)
     {
-        if (element != "Fire" && element != "Water" && element != "Land") return;
+        if (element != "Fire" && element != "Water" && element != "Land")
+            return;
         PlayerPrefs.SetInt(Prefix + element, 1);
         PlayerPrefs.Save();
     }
     public static void RecordScene(int index)
     {
-        if (index <= 0 || index >= SceneManager.sceneCountInBuildSettings) return;
+        if (index <= 0 || index >= SceneManager.sceneCountInBuildSettings)
+            return;
         PlayerPrefs.SetInt(Prefix + "LastScene", index);
         PlayerPrefs.Save();
     }

@@ -30,18 +30,23 @@ public sealed class NoxCharacterVisual : MonoBehaviour
     private void Start()
     {
         visualRoot = transform.Find("NoxVisual");
-        if (visualRoot != null) visualRotation = UprightRotation(transform.forward);
-        if (visualRoot != null) modelRenderers = visualRoot.GetComponentsInChildren<Renderer>();
+        if (visualRoot != null)
+            visualRotation = UprightRotation(transform.forward);
+        if (visualRoot != null)
+            modelRenderers = visualRoot.GetComponentsInChildren<Renderer>();
         savedBlocks = new MaterialPropertyBlock[modelRenderers.Length];
-        for (int i = 0; i < savedBlocks.Length; i++) savedBlocks[i] = new MaterialPropertyBlock();
+        for (int i = 0; i < savedBlocks.Length; i++)
+            savedBlocks[i] = new MaterialPropertyBlock();
         body = GetComponent<Rigidbody>();
         player = GetComponent<PlayerScript>();
         alternate = GetComponent<PlayerTwo>();
         animator = GetComponentInChildren<Animator>();
-        if (animator == null) return;
+        if (animator == null)
+            return;
         animator.applyRootMotion = false;
         Collider collider = GetComponent<Collider>();
-        if (collider != null) referenceHeight = Mathf.Max(0.1f, collider.bounds.size.y);
+        if (collider != null)
+            referenceHeight = Mathf.Max(0.1f, collider.bounds.size.y);
         hasAlive = HasParameter("Alive", AnimatorControllerParameterType.Bool);
         hasVertical = HasParameter("VerticalSpeed", AnimatorControllerParameterType.Float);
         hasCadence = HasParameter("Cadence", AnimatorControllerParameterType.Float);
@@ -53,31 +58,39 @@ public sealed class NoxCharacterVisual : MonoBehaviour
     private bool HasParameter(string name, AnimatorControllerParameterType type)
     {
         foreach (AnimatorControllerParameter parameter in animator.parameters)
-            if (parameter.name == name && parameter.type == type) return true;
+            if (parameter.name == name && parameter.type == type)
+                return true;
         return false;
     }
 
     private void Update()
     {
         UpdateDamageFlash();
-        if (animator == null || body == null) return;
+        if (animator == null || body == null)
+            return;
         bool active = NoxSession.CanPlay;
         bool alive = player != null ? player.IsAlive : alternate == null || alternate.IsAlive;
         bool dying = !alive && NoxSession.State == NoxGameState.Lost;
         animator.updateMode = dying ? AnimatorUpdateMode.UnscaledTime : AnimatorUpdateMode.Normal;
         animator.speed = active || dying ? 1 : 0;
-        if (hasAlive) animator.SetBool("Alive", !dying);
-        if (hasVertical) animator.SetFloat("VerticalSpeed", body.velocity.y);
+        if (hasAlive)
+            animator.SetBool("Alive", !dying);
+        if (hasVertical)
+            animator.SetFloat("VerticalSpeed", body.velocity.y);
         float speed = player != null ? player.AnimationSpeed : alternate != null ? alternate.AnimationSpeed : 0;
-        if (hasSpeed) animator.SetFloat(speedParameter, speed, 0.08f, Time.deltaTime);
-        if (hasCadence) animator.SetFloat("Cadence", NoxMotionRules.Cadence(speed, referenceHeight));
-        if (hasGrounded) animator.SetBool(groundedParameter,
+        if (hasSpeed)
+            animator.SetFloat(speedParameter, speed, 0.08f, Time.deltaTime);
+        if (hasCadence)
+            animator.SetFloat("Cadence", NoxMotionRules.Cadence(speed, referenceHeight));
+        if (hasGrounded)
+            animator.SetBool(groundedParameter,
             player != null ? player.grounded : alternate != null && alternate.grounded);
     }
 
     private void LateUpdate()
     {
-        if (visualRoot == null || !NoxSession.CanPlay) return;
+        if (visualRoot == null || !NoxSession.CanPlay)
+            return;
         // Suaviza somente a apresentação; direção de movimento/mira e colisões são preservadas.
         visualRotation = Quaternion.RotateTowards(visualRotation, UprightRotation(transform.forward), (NoxPresentation.ReducedMotion ? 1800f : turnSpeed) * Time.deltaTime);
         visualRoot.rotation = visualRotation;
@@ -91,43 +104,54 @@ public sealed class NoxCharacterVisual : MonoBehaviour
 
     public void PulseDamage()
     {
-        if (!NoxPresentation.DamageFlash) return;
+        if (!NoxPresentation.DamageFlash)
+            return;
         if (!flashVisible)
             for (int i = 0; i < modelRenderers.Length; i++)
-                if (modelRenderers[i] != null) modelRenderers[i].GetPropertyBlock(savedBlocks[i]);
+                if (modelRenderers[i] != null)
+                    modelRenderers[i].GetPropertyBlock(savedBlocks[i]);
         flashUntil = Time.unscaledTime + 0.16f;
         flashVisible = true;
     }
 
     private void UpdateDamageFlash()
     {
-        if (!flashVisible) return;
+        if (!flashVisible)
+            return;
         bool visible = NoxPresentation.DamageFlash && Time.unscaledTime < flashUntil;
         for (int i = 0; i < modelRenderers.Length; i++)
         {
             Renderer renderer = modelRenderers[i];
-            if (renderer == null) continue;
+            if (renderer == null)
+                continue;
             // PropertyBlock conserva os materiais compartilhados e as texturas do modelo.
             renderer.GetPropertyBlock(flashBlock);
-            if (visible) flashBlock.SetColor("_Color", new Color(1f, 0.55f, 0.35f));
+            if (visible)
+                flashBlock.SetColor("_Color", new Color(1f, 0.55f, 0.35f));
             renderer.SetPropertyBlock(visible ? flashBlock : savedBlocks[i]);
         }
-        if (!visible) flashVisible = false;
+        if (!visible)
+            flashVisible = false;
     }
 
     public void CancelAttack()
     {
-        if (animator == null) return;
-        if (hasAttack) animator.ResetTrigger(attackParameter);
+        if (animator == null)
+            return;
+        if (hasAttack)
+            animator.ResetTrigger(attackParameter);
         string state = player != null && player.grounded || alternate != null && alternate.grounded ? "Repouso" : "Queda";
         int hash = Animator.StringToHash(state);
-        if (animator.HasState(0, hash)) animator.CrossFade(hash, 0.05f);
+        if (animator.HasState(0, hash))
+            animator.CrossFade(hash, 0.05f);
     }
 
     public void PlayAttack()
     {
-        if (animator == null) return;
-        if (hasAttack) animator.SetTrigger(attackParameter);
+        if (animator == null)
+            return;
+        if (hasAttack)
+            animator.SetTrigger(attackParameter);
         else if (!warnedMissingAttack)
         {
             warnedMissingAttack = true;

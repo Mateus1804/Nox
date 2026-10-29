@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.IO;
 using UnityEditor;
@@ -15,7 +14,8 @@ public static class NoxGameplayChecks
     [MenuItem("Nox/Verificar visão e ações de interface")]
     public static void Run()
     {
-        if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes da verificação isolada.");
+        if (Application.isPlaying)
+            throw new InvalidOperationException("Encerrar o Play antes da verificação isolada.");
         Scene scene = SceneManager.CreateScene("Nox-Gameplay-" + Guid.NewGuid(), new CreateSceneParameters(LocalPhysicsMode.Physics3D));
         NoxGameState previous = NoxSession.State;
         float previousTimeScale = Time.timeScale;
@@ -30,7 +30,8 @@ public static class NoxGameplayChecks
             GameObject wall = Box(scene, "Parede", Vector3.forward * 2.5f);
             Physics.SyncTransforms();
             Require(!NoxPerception.CanSee(observer.transform, target.transform), "A visão atravessou uma parede.");
-            wall.SetActive(false); Physics.SyncTransforms();
+            wall.SetActive(false);
+            Physics.SyncTransforms();
             Require(NoxPerception.CanSee(observer.transform, target.transform), "A remoção do obstáculo não liberou a visão.");
             GameObject control = new GameObject("Controle", typeof(RectTransform), typeof(Text), typeof(Button), typeof(EventTrigger));
             SceneManager.MoveGameObjectToScene(control, scene);
@@ -44,25 +45,32 @@ public static class NoxGameplayChecks
             Require(button.targetGraphic is Image && button.targetGraphic.gameObject != control,
                 "O botão com texto não recebeu uma área de clique independente.");
             Require(button.onClick.GetPersistentEventCount() == 1, "A ação do mouse não foi migrada para o botão.");
-            button.onClick.Invoke(); entry.callback.Invoke(null);
+            button.onClick.Invoke();
+            entry.callback.Invoke(null);
             Require(receiver.Calls == 1, "O mesmo clique executou duas ações.");
             NoxScenePolish.KeyboardAction(button);
             button.onClick.Invoke();
             Require(receiver.Calls == 2 && button.onClick.GetPersistentEventCount() == 1, "Reaplicar a preparação duplicou callbacks.");
             NoxSession.SetState(NoxGameState.Playing);
             GameObject playerObject = Box(scene, "Jogador", Vector3.right * 20);
-            PlayerScript player = playerObject.AddComponent<PlayerScript>(); player.hp = 3;
-            GameObject slash = Box(scene, "Golpe", Vector3.right * 25); slash.tag = "Slash";
-            NoxAttackHitbox hitbox = slash.AddComponent<NoxAttackHitbox>(); hitbox.Configure(playerObject.transform, 1);
-            EnemyAir enemy = target.AddComponent<EnemyAir>(); enemy.hpTurtle = 3;
+            PlayerScript player = playerObject.AddComponent<PlayerScript>();
+            player.hp = 3;
+            GameObject slash = Box(scene, "Golpe", Vector3.right * 25);
+            slash.tag = "Slash";
+            NoxAttackHitbox hitbox = slash.AddComponent<NoxAttackHitbox>();
+            hitbox.Configure(playerObject.transform, 1);
+            EnemyAir enemy = target.AddComponent<EnemyAir>();
+            enemy.hpTurtle = 3;
             Collider source = slash.GetComponent<Collider>();
             Require(NoxAttackHitbox.Accept(source, enemy), "Golpe ativo não atingiu o alvo.");
             Require(!NoxAttackHitbox.Accept(source, enemy), "Golpe repetiu dano no mesmo alvo.");
             hitbox.Configure(playerObject.transform, 0);
             Require(!NoxAttackHitbox.Accept(source, observer.transform), "Golpe expirado atingiu outro alvo.");
-            hitbox.Configure(playerObject.transform, 1); player.hp = 0;
+            hitbox.Configure(playerObject.transform, 1);
+            player.hp = 0;
             Require(!NoxAttackHitbox.Accept(source, observer.transform), "Jogador morto manteve o golpe ativo.");
-            player.hp = 3; NoxSession.SetState(NoxGameState.Paused);
+            player.hp = 3;
+            NoxSession.SetState(NoxGameState.Paused);
             Require(!NoxAttackHitbox.Accept(source, observer.transform), "Golpe causou dano durante pausa.");
             Debug.Log("Nox: 12 verificações de visão e ações de interface aprovadas. Não substituem o percurso no Play.");
         }
@@ -71,14 +79,16 @@ public static class NoxGameplayChecks
             UnityEngine.Object.DestroyImmediate(receiver);
             EditorSceneManager.CloseScene(scene, true);
             PlayerScript.PT = previousPlayer;
-            NoxSession.SetState(previous); Time.timeScale = previousTimeScale;
+            NoxSession.SetState(previous);
+            Time.timeScale = previousTimeScale;
         }
     }
 
     [MenuItem("Nox/Capturar Play atual")]
     public static void CapturePlay()
     {
-        if (!Application.isPlaying) throw new InvalidOperationException("Iniciar o Play para capturar o jogo real.");
+        if (!Application.isPlaying)
+            throw new InvalidOperationException("Iniciar o Play para capturar o jogo real.");
         string folder = Path.GetFullPath(Path.Combine("Logs", "Capturas-v6"));
         Directory.CreateDirectory(folder);
         string path = Path.Combine(folder, SceneManager.GetActiveScene().name + "-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + ".png");
@@ -89,16 +99,23 @@ public static class NoxGameplayChecks
     private static GameObject Box(Scene scene, string name, Vector3 position)
     {
         GameObject item = new GameObject(name);
-        SceneManager.MoveGameObjectToScene(item, scene); item.transform.position = position;
-        item.AddComponent<BoxCollider>(); return item;
+        SceneManager.MoveGameObjectToScene(item, scene);
+        item.transform.position = position;
+        item.AddComponent<BoxCollider>();
+        return item;
     }
     private static void Require(bool condition, string message)
-    { if (!condition) throw new InvalidOperationException(message); }
+    {
+        if (!condition)
+            throw new InvalidOperationException(message);
+    }
 }
 
 public sealed class NoxUiProbe : ScriptableObject
 {
     public int Calls;
-    public void Count() { Calls++; }
+    public void Count()
+    {
+        Calls++;
+    }
 }
-#endif

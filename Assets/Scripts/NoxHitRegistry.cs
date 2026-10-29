@@ -4,6 +4,12 @@ using System.Collections.Generic;
 public sealed class NoxHitRegistry
 {
     private readonly HashSet<int> targets = new HashSet<int>();
-    public void Clear() { targets.Clear(); }
-    public bool TryHit(int targetId) { return targets.Add(targetId); }
+    public void Clear()
+    {
+        targets.Clear();
+    }
+    public bool TryHit(int targetId)
+    {
+        return targets.Add(targetId);
+    }
 }

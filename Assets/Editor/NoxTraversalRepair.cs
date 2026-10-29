@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Linq;
@@ -10,11 +9,15 @@ public static class NoxTraversalRepair
 {
     public static void Apply(Scene scene)
     {
-        if (scene.name != "AirPhase1.4") return;
+        if (scene.name != "AirPhase1.4")
+            return;
         Transform[] nodes = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Transform>(true)).ToArray();
         Renderer left = Surface(nodes, "Platform19"), right = Surface(nodes, "Platform20");
         if (left == null || right == null)
-        { Debug.LogWarning("Travessia v7: plataformas 19/20 não encontradas; nenhuma geometria foi inventada."); return; }
+        {
+            Debug.LogWarning("Travessia v7: plataformas 19/20 não encontradas; nenhuma geometria foi inventada.");
+            return;
+        }
         Bounds a = left.bounds, b = right.bounds;
         float gap = b.min.x - a.max.x;
         Directory.CreateDirectory("Logs");
@@ -25,9 +28,13 @@ public static class NoxTraversalRepair
         // Só modifica a posição acadêmica conhecida; personalizações não são sobrescritas silenciosamente.
         if (Mathf.Abs(a.max.x - 205.91f) > 0.15f || Mathf.Abs(b.min.x - 216f) > 0.15f ||
             Mathf.Abs(a.max.y - 49f) > 0.15f || Mathf.Abs(b.max.y - 48f) > 0.15f)
-        { Debug.LogWarning("Travessia v7: trecho personalizado; conferir Logs/Nox-Travessia-v7.txt."); return; }
+        {
+            Debug.LogWarning("Travessia v7: trecho personalizado; conferir Logs/Nox-Travessia-v7.txt.");
+            return;
+        }
         Transform previous = nodes.FirstOrDefault(t => t.name == "NoxLanding-v7");
-        if (previous != null) return;
+        if (previous != null)
+            return;
         GameObject landing = GameObject.CreatePrimitive(PrimitiveType.Cube);
         landing.name = "NoxLanding-v7";
         SceneManager.MoveGameObjectToScene(landing, scene);
@@ -43,4 +50,3 @@ public static class NoxTraversalRepair
         return node != null ? node.GetComponent<Renderer>() : null;
     }
 }
-#endif

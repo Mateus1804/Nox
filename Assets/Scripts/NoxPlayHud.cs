@@ -15,8 +15,10 @@ public sealed class NoxPlayHud : MonoBehaviour
     private void Start()
     {
         canvas = GetComponent<Canvas>();
-        player = FindObjectOfType<PlayerScript>(); alternate = FindObjectOfType<PlayerTwo>();
-        if (player != null) boxes = player.GetComponent<MovableObjectsScript>();
+        player = FindObjectOfType<PlayerScript>();
+        alternate = FindObjectOfType<PlayerTwo>();
+        if (player != null)
+            boxes = player.GetComponent<MovableObjectsScript>();
         if (objective != null)
         {
             string name = SceneManager.GetActiveScene().name;
@@ -26,10 +28,12 @@ public sealed class NoxPlayHud : MonoBehaviour
     }
     private void Update()
     {
-        if (Time.unscaledTime < nextRefresh) return;
+        if (Time.unscaledTime < nextRefresh)
+            return;
         nextRefresh = Time.unscaledTime + 0.1f;
         bool show = NoxSession.CanPlay;
-        if (canvas != null) canvas.enabled = show;
+        if (canvas != null)
+            canvas.enabled = show;
         if (status != null)
         {
             status.enabled = show;
@@ -41,9 +45,11 @@ public sealed class NoxPlayHud : MonoBehaviour
                 string hint = hintType == 2 ? "E • Soltar caixa" : hintType == 1 ? "E • Segurar caixa" :
                     "Espaço • Saltar    Clique • Atacar    Esc • Pausar";
                 status.text = "Vida " + health + "   |   " + hint;
-                lastHp = health; lastHint = hintType;
+                lastHp = health;
+                lastHint = hintType;
             }
         }
-        if (objective != null) objective.enabled = show;
+        if (objective != null)
+            objective.enabled = show;
     }
 }
