@@ -9,7 +9,10 @@ public class WaypointsAirPhase : MonoBehaviour
     public float distance;
     private int currentWaypointIndex;
     private Rigidbody body;
-    public Vector3 SupportVelocity { get; private set; }
+    public Vector3 SupportVelocity
+    {
+        get; private set;
+    }
 
     private void Awake()
     {
@@ -22,16 +25,20 @@ public class WaypointsAirPhase : MonoBehaviour
     private void FixedUpdate()
     {
         SupportVelocity = Vector3.zero;
-        if (!NoxSession.CanPlay || waypoints == null || waypoints.Length == 0) return;
-        if (!NoxRules.IsValidIndex(currentWaypointIndex, waypoints.Length)) currentWaypointIndex = 0;
+        if (!NoxSession.CanPlay || waypoints == null || waypoints.Length == 0)
+            return;
+        if (!NoxRules.IsValidIndex(currentWaypointIndex, waypoints.Length))
+            currentWaypointIndex = 0;
         GameObject target = waypoints[currentWaypointIndex];
-        if (target == null) return;
+        if (target == null)
+            return;
         distance = Vector3.Distance(body.position, target.transform.position);
         if (distance <= 0.01f)
         {
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
             target = waypoints[currentWaypointIndex];
-            if (target == null) return;
+            if (target == null)
+                return;
         }
         Vector3 next = Vector3.MoveTowards(body.position, target.transform.position,
             Mathf.Max(0, speed) * Time.fixedDeltaTime);
@@ -39,5 +46,8 @@ public class WaypointsAirPhase : MonoBehaviour
         body.MovePosition(next);
     }
 
-    private void OnDisable() { SupportVelocity = Vector3.zero; }
+    private void OnDisable()
+    {
+        SupportVelocity = Vector3.zero;
+    }
 }

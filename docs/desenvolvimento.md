@@ -85,3 +85,26 @@ Procedência, créditos e histórico estão em [Personagem Nox](personagem-nox.m
 A restauração de código exige fechar o editor e recuperar os diretórios correspondentes do backup do atualizador. As cenas anteriores ficam no backup de preparação, separado dos scripts. Uma cópia completa do projeto cobre também alterações locais fora dessas ferramentas.
 
 Backups, logs, capturas e builds não devem ser confundidos com código do repositório. Os resultados e as limitações efetivamente verificados estão em [Qualidade](qualidade.md).
+
+
+## Análise estática e manutenção
+
+Executar os comandos abaixo na raiz **deste repositório de correções**, separado da cópia Unity recuperada e dos seus pacotes de terceiros. O `global.json` mantém a seleção do SDK na família 8.0. Usar SDK .NET 8, Python 3.10 ou superior e PowerShell 7 para os testes de preparação.
+
+```powershell
+python -m pip install -r requirements-dev.txt
+dotnet format whitespace --folder --verify-no-changes
+dotnet run --project tools/CodeQuality/CodeQuality.csproj --configuration Release
+python -m ruff check .
+python -m ruff format --check .
+python -m compileall -q tools Tests
+pwsh -NoProfile -File tools/Verificar-Sintaxe.ps1
+dotnet run --project Tests/Core/CoreTests.csproj --configuration Release
+python -m unittest discover -s Tests -p "test_*.py" -v
+```
+
+Para aplicar somente formatação, executar `dotnet format whitespace --folder` e `python -m ruff format .`. Revisar o diff antes do commit. Correções automáticas de lint exigem conferir se referências e comportamento foram preservados.
+
+No Windows, `powershell -NoProfile -File tools/Verificar-Sintaxe.ps1` confere também a gramática do Windows PowerShell 5.1. O CI usa os dois parsers. O teste de C# analisa sintaxe nos três perfis, mas não substitui compilar os scripts no Unity. O repositório não distribui DLLs do Editor nem stubs simulando suas APIs.
+
+As convenções estão em [Boas práticas](boas-praticas.md) e os achados em [Revisão de código e limpeza](revisao-clean-code.md). O SDK .NET 8 e o Ruff pertencem às ferramentas de manutenção; a versão do jogo continua Unity 2021.1.28f1/C# 8.

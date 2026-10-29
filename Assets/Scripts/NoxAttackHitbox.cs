@@ -15,8 +15,10 @@ public sealed class NoxAttackHitbox : MonoBehaviour
     {
         get
         {
-            if (Time.time >= expiresAt) return false;
-            if (owner == null) return float.IsPositiveInfinity(expiresAt);
+            if (Time.time >= expiresAt)
+                return false;
+            if (owner == null)
+                return float.IsPositiveInfinity(expiresAt);
             PlayerScript player = owner.GetComponent<PlayerScript>();
             PlayerTwo alternate = owner.GetComponent<PlayerTwo>();
             return player != null ? player.IsAlive : alternate != null && alternate.IsAlive;
@@ -25,7 +27,8 @@ public sealed class NoxAttackHitbox : MonoBehaviour
 
     public static bool Accept(Collider source, Component target)
     {
-        if (source == null || target == null || !source.CompareTag("Slash") || !NoxSession.CanPlay) return false;
+        if (source == null || target == null || !source.CompareTag("Slash") || !NoxSession.CanPlay)
+            return false;
         NoxAttackHitbox attack = source.GetComponentInParent<NoxAttackHitbox>();
         if (attack == null)
         {
@@ -34,7 +37,8 @@ public sealed class NoxAttackHitbox : MonoBehaviour
             ThirdSlash third = source.GetComponentInParent<ThirdSlash>();
             GameObject owner = slash != null ? slash.gameObject : third != null ? third.gameObject : source.gameObject;
             attack = owner.GetComponent<NoxAttackHitbox>();
-            if (attack == null) attack = owner.AddComponent<NoxAttackHitbox>();
+            if (attack == null)
+                attack = owner.AddComponent<NoxAttackHitbox>();
         }
         return attack.Active && attack.hits.TryHit(target.GetInstanceID());
     }

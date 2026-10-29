@@ -6,7 +6,8 @@ public class RotateSky : MonoBehaviour
 
     void Update()
     {
-        if (RenderSettings.skybox == null || !RenderSettings.skybox.HasProperty("_Rotation")) return;
+        if (RenderSettings.skybox == null || !RenderSettings.skybox.HasProperty("_Rotation"))
+            return;
         RenderSettings.skybox.SetFloat("_Rotation", Time.time * rotateSpeed);
     }
 }

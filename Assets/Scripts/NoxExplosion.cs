@@ -5,7 +5,8 @@ public static class NoxExplosion
 {
     public static void Apply(Vector3 position, float radius, float force)
     {
-        if (radius <= 0 || !NoxRules.IsFinite(radius) || !NoxRules.IsFinite(force)) return;
+        if (radius <= 0 || !NoxRules.IsFinite(radius) || !NoxRules.IsFinite(force))
+            return;
         var affected = new HashSet<Rigidbody>();
         foreach (Collider collider in Physics.OverlapSphere(position, radius))
         {

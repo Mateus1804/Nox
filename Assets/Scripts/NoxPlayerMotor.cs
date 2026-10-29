@@ -23,10 +23,16 @@ public sealed class NoxPlayerMotor
             return relative.magnitude;
         }
     }
-    public void ResetInput() { jumpAssist.Reset(); }
+    public void ResetInput()
+    {
+        jumpAssist.Reset();
+    }
     private Collider lastSupport;
     private float lastSupportVerticalSpeed;
-    public bool Grounded { get; private set; }
+    public bool Grounded
+    {
+        get; private set;
+    }
 
     public NoxPlayerMotor(Rigidbody body, Collider collider)
     {
@@ -36,12 +42,15 @@ public sealed class NoxPlayerMotor
         body.constraints |= RigidbodyConstraints.FreezeRotation;
         body.interpolation = RigidbodyInterpolation.Interpolate;
         body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        if (collider == null) return;
+        if (collider == null)
+            return;
         originalMaterial = collider.sharedMaterial;
         // Sem atrito lateral: pressionar uma parede não deve suspender o jogador.
         movementMaterial = new PhysicMaterial("Nox — movimento")
         {
-            staticFriction = 0, dynamicFriction = 0, bounciness = 0,
+            staticFriction = 0,
+            dynamicFriction = 0,
+            bounciness = 0,
             frictionCombine = PhysicMaterialCombine.Minimum,
             bounceCombine = PhysicMaterialCombine.Minimum
         };
@@ -52,7 +61,8 @@ public sealed class NoxPlayerMotor
     {
         Vector3 support = FindSupport(groundMask);
         supportVelocity = support;
-        if (jump) jumpAssist.Request(Time.time);
+        if (jump)
+            jumpAssist.Request(Time.time);
         Vector3 target = Vector3.ClampMagnitude(direction, 1f) * speed;
         Vector3 current = body.velocity - support;
         current.y = 0;
@@ -72,7 +82,8 @@ public sealed class NoxPlayerMotor
     {
         bool wasGrounded = Grounded;
         Grounded = false;
-        if (collider == null) return Vector3.zero;
+        if (collider == null)
+            return Vector3.zero;
         Bounds bounds = collider.bounds;
         float nearest = float.PositiveInfinity;
         Vector3 selectedVelocity = Vector3.zero;
@@ -91,13 +102,15 @@ public sealed class NoxPlayerMotor
             for (int i = 0; i < count; i++)
             {
                 RaycastHit hit = hits[i];
-                if (hit.rigidbody == body) continue;
+                if (hit.rigidbody == body)
+                    continue;
                 WaypointsAirPhase platform = hit.collider.GetComponentInParent<WaypointsAirPhase>();
                 Vector3 velocity = platform != null && platform.isActiveAndEnabled
                     ? platform.SupportVelocity : hit.rigidbody != null ? hit.rigidbody.GetPointVelocity(hit.point) : Vector3.zero;
                 float relativeY = body.velocity.y - (wasGrounded && hit.collider == lastSupport
                     ? lastSupportVerticalSpeed : velocity.y);
-                if (!NoxRules.IsSupport(hit.normal.y, relativeY) || hit.distance >= nearest) continue;
+                if (!NoxRules.IsSupport(hit.normal.y, relativeY) || hit.distance >= nearest)
+                    continue;
                 nearest = hit.distance;
                 selectedVelocity = velocity;
                 selectedCollider = hit.collider;
@@ -111,11 +124,14 @@ public sealed class NoxPlayerMotor
 
     public void Dispose()
     {
-        if (collider != null && collider.sharedMaterial == movementMaterial) collider.sharedMaterial = originalMaterial;
+        if (collider != null && collider.sharedMaterial == movementMaterial)
+            collider.sharedMaterial = originalMaterial;
         if (movementMaterial != null)
         {
-            if (Application.isPlaying) Object.Destroy(movementMaterial);
-            else Object.DestroyImmediate(movementMaterial);
+            if (Application.isPlaying)
+                Object.Destroy(movementMaterial);
+            else
+                Object.DestroyImmediate(movementMaterial);
         }
     }
 }

@@ -1,5 +1,11 @@
 # Qualidade e validação
 
+## Revisão de código e limpeza
+
+A manutenção após a v7 passou por **170 verificações C# e 23 testes Python**, sem pulos, além de lint e formatação. A compilação isolada de **57 scripts de execução e 12 de Editor** foi concluída sem erros ou avisos. O novo parser confere **71 arquivos C# em três perfis**, e o parser PowerShell local confere três scripts. Resultados, referência inicial, correções reproduzidas e limites em [Revisão de código e limpeza](revisao-clean-code.md). As convenções estão em [Boas práticas](boas-praticas.md).
+
+Esses resultados não substituem importar o projeto, testar cenas no Play ou validar uma build Windows.
+
 ## Correção v7 — pose, percurso e cenário
 
 A revisão parte da v6 integrada em `471c444f7d0a48e3ce71dd106f79cde74beb4d09`, após relato de orientação incorreta, pose deitada, trechos difíceis de atravessar e cenário sem melhoria perceptível.

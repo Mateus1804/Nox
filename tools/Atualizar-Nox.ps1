@@ -18,11 +18,38 @@ $repo = Split-Path $PSScriptRoot -Parent
 if ([IO.Path]::GetFullPath($repo).TrimEnd([char[]]"\/") -eq [IO.Path]::GetFullPath($Projeto).TrimEnd([char[]]"\/")) {
     throw 'O destino deve ser o projeto completo recuperado, separado desta pasta de correções.'
 }
+$managedFolders = @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox', 'Assets/Art')
+# Validar o plano inteiro antes de sobrescrever qualquer arquivo do projeto.
+$updates = foreach ($folder in $managedFolders) {
+    $source = Join-Path $repo $folder
+    if (-not (Test-Path -LiteralPath $source -PathType Container)) {
+        throw ('Pasta de origem ausente: ' + $folder)
+    }
+    foreach ($file in Get-ChildItem -LiteralPath $source -File -Recurse) {
+        $relative = $file.FullName.Substring($source.Length).TrimStart([char[]]"\/")
+        $destination = Join-Path (Join-Path $Projeto $folder) $relative
+        if (Test-Path -LiteralPath $destination -PathType Container) {
+            throw ('Existe uma pasta onde deveria haver um arquivo: ' + $destination)
+        }
+        $parent = Split-Path $destination -Parent
+        while ($parent.Length -gt $Projeto.Length) {
+            if (Test-Path -LiteralPath $parent -PathType Leaf) {
+                throw ('Existe um arquivo onde deveria haver uma pasta: ' + $parent)
+            }
+            $parent = Split-Path $parent -Parent
+        }
+        [PSCustomObject]@{
+            Source = $file.FullName
+            Destination = $destination
+            Relative = $folder + '/' + $relative
+        }
+    }
+}
 $backup = $Projeto + '-Backup-Scripts-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff')
 New-Item -ItemType Directory -Path $backup | Out-Null
 $written = @()
 try {
-    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox', 'Assets/Art')) {
+    foreach ($folder in $managedFolders) {
         $old = Join-Path $Projeto $folder
         if (Test-Path -LiteralPath $old) {
             $backupParent = Split-Path (Join-Path $backup $folder) -Parent
@@ -30,18 +57,11 @@ try {
             Copy-Item -LiteralPath $old -Destination $backupParent -Recurse
         }
     }
-    # Assets e configurações locais permanecem no projeto; o código, o personagem e os recursos visuais desta revisão são sobrepostos.
-    foreach ($folder in @('Assets/Scripts', 'Assets/Editor', 'Assets/Characters/Nox', 'Assets/Art')) {
-        $source = Join-Path $repo $folder
-        $target = Join-Path $Projeto $folder
-        New-Item -ItemType Directory -Path $target -Force | Out-Null
-        foreach ($file in Get-ChildItem -LiteralPath $source -File -Recurse) {
-            $relative = $file.FullName.Substring($source.Length).TrimStart([char[]]"\/")
-            $destination = Join-Path $target $relative
-            New-Item -ItemType Directory -Path (Split-Path $destination -Parent) -Force | Out-Null
-            Copy-Item -LiteralPath $file.FullName -Destination $destination -Force
-            $written += $folder + '/' + $relative
-        }
+    # O plano já validado evita copiar um arquivo para dentro de uma pasta de mesmo nome.
+    foreach ($update in $updates) {
+        New-Item -ItemType Directory -Path (Split-Path $update.Destination -Parent) -Force | Out-Null
+        Copy-Item -LiteralPath $update.Source -Destination $update.Destination -Force
+        $written += $update.Relative
     }
     $written | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $backup 'arquivos-atualizados.json') -Encoding UTF8
 }

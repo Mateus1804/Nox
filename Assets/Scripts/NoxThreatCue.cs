@@ -20,19 +20,24 @@ public sealed class NoxThreatCue : MonoBehaviour
     private void Awake()
     {
         line = gameObject.AddComponent<LineRenderer>();
-        line.useWorldSpace = true; line.loop = false;
+        line.useWorldSpace = true;
+        line.loop = false;
         line.positionCount = points.Length;
         line.sharedMaterial = material;
         line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        line.receiveShadows = false; line.enabled = false;
+        line.receiveShadows = false;
+        line.enabled = false;
     }
     public void Show(Vector3 center, float radius, NoxThreatPhase phase, float progress)
     {
-        if (line == null) return;
+        if (line == null)
+            return;
         bool show = NoxSession.CanPlay && (phase == NoxThreatPhase.Windup || phase == NoxThreatPhase.Active);
         line.enabled = show && material != null;
-        if (!line.enabled) return;
-        if (line.sharedMaterial != material) line.sharedMaterial = material;
+        if (!line.enabled)
+            return;
+        if (line.sharedMaterial != material)
+            line.sharedMaterial = material;
         float size = phase == NoxThreatPhase.Active || NoxPresentation.ReducedMotion ? radius : radius * Mathf.Lerp(0.4f, 1f, progress);
         for (int i = 0; i < points.Length; i++)
             points[i] = center + directions[i] * size;
@@ -40,5 +45,9 @@ public sealed class NoxThreatCue : MonoBehaviour
         line.startColor = line.endColor = phase == NoxThreatPhase.Active ? new Color(1f, 0.45f, 0.3f) : new Color(1f, 0.85f, 0.4f);
         line.SetPositions(points);
     }
-    private void OnDisable() { if (line != null) line.enabled = false; }
+    private void OnDisable()
+    {
+        if (line != null)
+            line.enabled = false;
+    }
 }

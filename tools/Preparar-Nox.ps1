@@ -71,7 +71,7 @@ if (-not $GerarBuild) { return }
 if (-not $UnityExe) {
     Add-Type -AssemblyName System.Windows.Forms
     $dialog = New-Object System.Windows.Forms.OpenFileDialog
-    $dialog.Title = 'Selecionar Unity.exe do editor instalado (2021.3 recomendado para recuperação)'
+    $dialog.Title = 'Selecionar Unity.exe do editor instalado (2021.1.28f1: referência do projeto)'
     $dialog.Filter = 'Editor Unity (Unity.exe)|Unity.exe'
     $dialog.InitialDirectory = 'C:\Program Files\Unity\Hub\Editor'
     if ($dialog.ShowDialog() -ne 'OK') { throw ('Seleção do editor cancelada. O projeto preparado está em ' + $Destino) }

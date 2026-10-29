@@ -9,10 +9,23 @@ public class ChangeTextColor : MonoBehaviour
     public TextMeshProUGUI theText;
     private void Awake()
     {
-        if (theText == null) theText = GetComponent<TextMeshProUGUI>();
-        if (theText != null) originalColor = theText.color;
+        if (theText == null)
+            theText = GetComponent<TextMeshProUGUI>();
+        if (theText != null)
+            originalColor = theText.color;
     }
-    public void ChangeTheColor() { if (theText != null) theText.color = secondColor; }
-    public void ResetTheColor() { if (theText != null) theText.color = originalColor; }
-    private void OnDisable() { ResetTheColor(); }
+    public void ChangeTheColor()
+    {
+        if (theText != null)
+            theText.color = secondColor;
+    }
+    public void ResetTheColor()
+    {
+        if (theText != null)
+            theText.color = originalColor;
+    }
+    private void OnDisable()
+    {
+        ResetTheColor();
+    }
 }

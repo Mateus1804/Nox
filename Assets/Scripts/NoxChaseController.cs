@@ -12,27 +12,44 @@ public sealed class NoxChaseController
     }
     public static void Stop(NavMeshAgent agent)
     {
-        if (Ready(agent) && !agent.isStopped) agent.isStopped = true;
+        if (Ready(agent) && !agent.isStopped)
+            agent.isStopped = true;
     }
     public bool Update(NavMeshAgent agent, Transform target, float attackRange,
         float followRange, float now, out float distance)
     {
         distance = target != null ? Vector3.Distance(agent != null ? agent.transform.position : target.position, target.position) : float.PositiveInfinity;
         if (!Ready(agent) || target == null || !NoxSession.CanPlay)
-        { Stop(agent); return false; }
-        if (!NoxPerception.CanSee(agent.transform, target)) { Stop(agent); return false; }
+        {
+            Stop(agent);
+            return false;
+        }
+        if (!NoxPerception.CanSee(agent.transform, target))
+        {
+            Stop(agent);
+            return false;
+        }
         NoxEnemyAction action = NoxRules.ChooseEnemyAction(distance, attackRange, followRange);
         if (action != NoxEnemyAction.Chase)
-        { Stop(agent); return action == NoxEnemyAction.Attack; }
+        {
+            Stop(agent);
+            return action == NoxEnemyAction.Attack;
+        }
         bool resuming = agent.isStopped;
-        if (resuming && now < nextRepath) return false;
+        if (resuming && now < nextRepath)
+            return false;
         agent.isStopped = false;
         if (resuming || now >= nextRepath)
         {
             nextRepath = now + RepathInterval;
-            if (!agent.SetDestination(target.position)) { Stop(agent); return false; }
+            if (!agent.SetDestination(target.position))
+            {
+                Stop(agent);
+                return false;
+            }
         }
-        if (!agent.pathPending && agent.hasPath && agent.pathStatus != NavMeshPathStatus.PathComplete) Stop(agent);
+        if (!agent.pathPending && agent.hasPath && agent.pathStatus != NavMeshPathStatus.PathComplete)
+            Stop(agent);
         return false;
     }
 }

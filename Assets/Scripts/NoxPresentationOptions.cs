@@ -19,7 +19,9 @@ public sealed class NoxPresentationOptions : MonoBehaviour
     }
     private void OnDisable()
     {
-        if (damageFlash != null) damageFlash.onValueChanged.RemoveListener(NoxPresentation.SetDamageFlash);
-        if (reducedMotion != null) reducedMotion.onValueChanged.RemoveListener(NoxPresentation.SetReducedMotion);
+        if (damageFlash != null)
+            damageFlash.onValueChanged.RemoveListener(NoxPresentation.SetDamageFlash);
+        if (reducedMotion != null)
+            reducedMotion.onValueChanged.RemoveListener(NoxPresentation.SetReducedMotion);
     }
 }

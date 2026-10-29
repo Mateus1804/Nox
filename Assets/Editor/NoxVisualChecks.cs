@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.Linq;
 using UnityEditor;
@@ -11,8 +10,10 @@ public static class NoxVisualChecks
     [MenuItem("Nox/Verificar animações e cenário")]
     public static void Run()
     {
-        if (Application.isPlaying) throw new InvalidOperationException("Encerrar o Play antes da verificação.");
-        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+        if (Application.isPlaying)
+            throw new InvalidOperationException("Encerrar o Play antes da verificação.");
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            return;
         AnimationClip[] clips = AssetDatabase.LoadAllAssetsAtPath(NoxCharacterAssets.ModelPath).OfType<AnimationClip>()
             .Where(c => !c.name.StartsWith("__preview__", StringComparison.Ordinal)).ToArray();
         foreach (string name in new[] { "Nox_Idle", "Nox_Walk", "Nox_Jump", "Nox_Attack", "Nox_Fall", "Nox_Land", "Nox_Death" })
@@ -35,7 +36,7 @@ public static class NoxVisualChecks
             {
                 Scene scene = EditorSceneManager.OpenScene(entry.path, OpenSceneMode.Single);
                 GameObject[] roots = scene.GetRootGameObjects();
-                GameObject art = roots.FirstOrDefault(r => r.name == "NoxArt-v7");
+                GameObject art = roots.FirstOrDefault(r => r.name == NoxSceneArt.RootName);
                 Require(art != null, "Cena sem ambientação v7: " + entry.path);
                 Require(art.GetComponentsInChildren<Collider>(true).Length == 0, "Cenografia com collider: " + entry.path);
                 Require(RenderSettings.sun != null && RenderSettings.sun.isActiveAndEnabled,
@@ -90,7 +91,7 @@ public static class NoxVisualChecks
 
     private static void Require(bool condition, string message)
     {
-        if (!condition) throw new InvalidOperationException(message);
+        if (!condition)
+            throw new InvalidOperationException(message);
     }
 }
-#endif

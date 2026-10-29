@@ -48,3 +48,7 @@ Thumbs.db
 # Cache local dos testes Python.
 **/__pycache__/
 *.pyc
+
+# Ferramentas de qualidade versionadas, separadas dos projetos gerados pelo Unity.
+!/tools/CodeQuality/CodeQuality.csproj
+.ruff_cache/

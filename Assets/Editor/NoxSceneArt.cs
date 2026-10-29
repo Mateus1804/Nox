@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +11,7 @@ using UnityEngine.SceneManagement;
 public static class NoxSceneArt
 {
     private const string Folder = "Assets/Art/Generated-v7";
-    private const string RootName = "NoxArt-v7";
+    internal const string RootName = "NoxArt-v7";
     private static Material stone, top, trim, wood, metal, crystal, distant, cloud;
     private static int meshNumber;
     private static int groundMask;
@@ -23,11 +22,14 @@ public static class NoxSceneArt
         foreach (GameObject previous in scene.GetRootGameObjects().Where(root => root.name == RootName))
             UnityEngine.Object.DestroyImmediate(previous);
         foreach (Transform previous in scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true))
-            .Where(item => item.name == "NoxSurface-v7").ToArray()) UnityEngine.Object.DestroyImmediate(previous.gameObject);
+            .Where(item => item.name == "NoxSurface-v7").ToArray())
+            UnityEngine.Object.DestroyImmediate(previous.gameObject);
         // V5 permanece como cópia visual desativada, inclusive possíveis ajustes locais.
-        foreach (GameObject previous in scene.GetRootGameObjects().Where(root => (root.name == "NoxArt-v5" || root.name == "NoxArt-v6"))) previous.SetActive(false);
+        foreach (GameObject previous in scene.GetRootGameObjects().Where(root => (root.name == "NoxArt-v5" || root.name == "NoxArt-v6")))
+            previous.SetActive(false);
         foreach (Transform previous in scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true))
-            .Where(item => (item.name == "NoxSurface-v5" || item.name == "NoxSurface-v6"))) previous.gameObject.SetActive(false);
+            .Where(item => (item.name == "NoxSurface-v5" || item.name == "NoxSurface-v6")))
+            previous.gameObject.SetActive(false);
         bool fire = scene.name.StartsWith("Fire", StringComparison.OrdinalIgnoreCase);
         bool menu = scene.name.StartsWith("Menu", StringComparison.OrdinalIgnoreCase);
         Directory.CreateDirectory(Folder);
@@ -50,8 +52,10 @@ public static class NoxSceneArt
         groundMask = 0;
         foreach (GameObject root in scene.GetRootGameObjects())
         {
-            foreach (PlayerScript player in root.GetComponentsInChildren<PlayerScript>(true)) groundMask |= player.WhatIsGround.value;
-            foreach (PlayerTwo player in root.GetComponentsInChildren<PlayerTwo>(true)) groundMask |= player.WhatIsGround.value;
+            foreach (PlayerScript player in root.GetComponentsInChildren<PlayerScript>(true))
+                groundMask |= player.WhatIsGround.value;
+            foreach (PlayerTwo player in root.GetComponentsInChildren<PlayerTwo>(true))
+                groundMask |= player.WhatIsGround.value;
         }
         Renderer[] renderers = scene.GetRootGameObjects()
             .SelectMany(root => root.GetComponentsInChildren<Renderer>(true)).ToArray();
@@ -60,15 +64,23 @@ public static class NoxSceneArt
         int decorated = 0;
         foreach (Renderer renderer in renderers)
         {
-            if (!IsPrimitiveSurface(renderer)) continue;
-            if (!hasExtent) { extent = renderer.bounds; hasExtent = true; }
-            else extent.Encapsulate(renderer.bounds);
+            if (!IsPrimitiveSurface(renderer))
+                continue;
+            if (!hasExtent)
+            {
+                extent = renderer.bounds;
+                hasExtent = true;
+            }
+            else
+                extent.Encapsulate(renderer.bounds);
             renderer.sharedMaterial = renderer.CompareTag("Box") ? wood : top;
             renderer.shadowCastingMode = ShadowCastingMode.On;
             renderer.receiveShadows = true;
-            decorated++; DressSurface(renderer, fire);
+            decorated++;
+            DressSurface(renderer, fire);
         }
-        if (!menu) AddBackdrop(art.transform, extent, fire, renderers.Where(IsPrimitiveSurface).Select(r => r.bounds.center).ToArray());
+        if (!menu)
+            AddBackdrop(art.transform, extent, fire, renderers.Where(IsPrimitiveSurface).Select(r => r.bounds.center).ToArray());
         SetAtmosphere(scene, art, fire);
         AssetDatabase.SaveAssets();
         Debug.Log("Direção visual aplicada: " + scene.name + "; superfícies: " + decorated + ". Colisões e trajetos preservados.");
@@ -77,20 +89,26 @@ public static class NoxSceneArt
     public static bool IsPrimitiveSurface(Renderer renderer)
     {
         if (renderer.tag == "Enemy" || renderer.tag == "Boss" || renderer.tag == "Fogo" ||
-            renderer.tag == "Heal" || renderer.tag == "Player") return false;
+            renderer.tag == "Heal" || renderer.tag == "Player")
+            return false;
         MeshFilter filter = renderer.GetComponent<MeshFilter>();
         Collider collider = renderer.GetComponent<Collider>();
-        if (filter == null || filter.sharedMesh == null || collider == null || collider.isTrigger) return false;
+        if (filter == null || filter.sharedMesh == null || collider == null || collider.isTrigger)
+            return false;
         string mesh = filter.sharedMesh.name;
-        if (mesh != "Cube" && mesh != "Plane") return false;
+        if (mesh != "Cube" && mesh != "Plane")
+            return false;
         // Personagens, inimigos, armas e VFX mantêm seus materiais e geometrias.
         if (renderer.GetComponentInParent<PlayerScript>() != null || renderer.GetComponentInParent<PlayerTwo>() != null ||
-            renderer.GetComponentInParent<Animator>() != null) return false;
-        if (renderer.CompareTag("Box")) return true;
+            renderer.GetComponentInParent<Animator>() != null)
+            return false;
+        if (renderer.CompareTag("Box"))
+            return true;
         for (Transform item = renderer.transform; item != null; item = item.parent)
         {
             string name = item.name.ToLowerInvariant();
-            if (name.Contains("platform") || name.Contains("plataform") || name.Contains("plataforma")) return true;
+            if (name.Contains("platform") || name.Contains("plataform") || name.Contains("plataforma"))
+                return true;
         }
         // O piso não depende do nome do objeto. A máscara de chão é a mesma dos jogadores.
         Bounds b = renderer.bounds;
@@ -116,7 +134,8 @@ public static class NoxSceneArt
             }
             return;
         }
-        if (Vector3.Dot(renderer.transform.up, Vector3.up) < 0.95f) return;
+        if (Vector3.Dot(renderer.transform.up, Vector3.up) < 0.95f)
+            return;
         Vector3 size = b.size;
         if (size.y > 0.01f)
         {
@@ -132,7 +151,8 @@ public static class NoxSceneArt
             b.center + Vector3.up * (b.extents.y - Mathf.Max(size.y * 0.10f, 0.005f)),
             new Vector3(size.x * 1.007f, Mathf.Max(size.y * 0.12f, 0.01f), size.z * 1.007f), trim);
         // Peças decorativas pequenas e sem collider deixam o caminho livre.
-        if (Mathf.Min(renderer.bounds.size.x, renderer.bounds.size.z) < 3f) return;
+        if (Mathf.Min(renderer.bounds.size.x, renderer.bounds.size.z) < 3f)
+            return;
         Vector3 world = new Vector3(renderer.bounds.min.x + 0.4f, renderer.bounds.max.y, renderer.bounds.max.z - 0.4f);
         GameObject shard = Part(PrimitiveType.Sphere, "Cristal", null, world + Vector3.up * 0.25f,
             new Vector3(0.18f, 0.5f, 0.18f), crystal);
@@ -152,7 +172,8 @@ public static class NoxSceneArt
         Camera camera = parent.gameObject.scene.GetRootGameObjects()
             .SelectMany(root => root.GetComponentsInChildren<Camera>(true)).FirstOrDefault(c => c.CompareTag("MainCamera"));
         Vector3 behind = camera != null ? Vector3.ProjectOnPlane(camera.transform.forward, Vector3.up).normalized : Vector3.forward;
-        if (behind.sqrMagnitude < 0.5f) behind = Vector3.forward;
+        if (behind.sqrMagnitude < 0.5f)
+            behind = Vector3.forward;
         Vector3 across = Vector3.Cross(Vector3.up, behind).normalized;
         float depth = Mathf.Abs(behind.x) * bounds.extents.x + Mathf.Abs(behind.z) * bounds.extents.z;
         for (int i = 0; i < 36; i++)
@@ -181,7 +202,8 @@ public static class NoxSceneArt
     private static void SetAtmosphere(Scene scene, GameObject art, bool fire)
     {
         Shader shader = Shader.Find("Nox/Ceu espiritual");
-        if (shader == null) throw new InvalidOperationException("Shader do céu ausente. Atualizar também Assets/Art.");
+        if (shader == null)
+            throw new InvalidOperationException("Shader do céu ausente. Atualizar também Assets/Art.");
         string path = Folder + (fire ? "/Ceu-Fogo.mat" : "/Ceu-Ar.mat");
         Material sky = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (sky == null)
@@ -208,11 +230,15 @@ public static class NoxSceneArt
         Light sun;
         if (lights.Length == 0)
         {
-            GameObject lamp = new GameObject("Luz do horizonte"); lamp.transform.SetParent(art.transform, false);
-            sun = lamp.AddComponent<Light>(); sun.type = LightType.Directional;
+            GameObject lamp = new GameObject("Luz do horizonte");
+            lamp.transform.SetParent(art.transform, false);
+            sun = lamp.AddComponent<Light>();
+            sun.type = LightType.Directional;
         }
-        else sun = lights[0];
-        for (int i = 1; i < lights.Length; i++) lights[i].intensity = 0.15f;
+        else
+            sun = lights[0];
+        for (int i = 1; i < lights.Length; i++)
+            lights[i].intensity = 0.15f;
         sun.transform.rotation = Quaternion.Euler(38, -32, 0);
         sun.color = fire ? Hex("FFD0AC") : Hex("FFF0D4");
         sun.intensity = 1.05f;
@@ -224,7 +250,8 @@ public static class NoxSceneArt
             camera.clearFlags = CameraClearFlags.Skybox;
             camera.farClipPlane = Mathf.Max(camera.farClipPlane, 500);
             Skybox overrideSky = camera.GetComponent<Skybox>();
-            if (overrideSky != null) overrideSky.material = sky;
+            if (overrideSky != null)
+                overrideSky.material = sky;
         }
     }
 
@@ -232,12 +259,18 @@ public static class NoxSceneArt
     {
         string path = Folder + "/" + name + ".mat";
         Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
-        if (material != null) return material;
+        if (material != null)
+            return material;
         Shader shader = Shader.Find("Nox/Superficie mineral");
-        if (shader == null) throw new InvalidOperationException("Render pipeline Standard não disponível.");
+        if (shader == null)
+            throw new InvalidOperationException("Render pipeline Standard não disponível.");
         material = new Material(shader) { color = color };
         material.SetFloat("_Glossiness", 0.12f);
-        if (emissive) { material.EnableKeyword("_EMISSION"); material.SetColor("_EmissionColor", color * 0.4f); }
+        if (emissive)
+        {
+            material.EnableKeyword("_EMISSION");
+            material.SetColor("_EmissionColor", color * 0.4f);
+        }
         AssetDatabase.CreateAsset(material, path);
         return material;
     }
@@ -273,7 +306,8 @@ public static class NoxSceneArt
     {
         string path = sceneFolder + "/Rocha-" + meshNumber++ + ".asset";
         Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-        if (existing != null) return existing;
+        if (existing != null)
+            return existing;
         var vertices = new List<Vector3>();
         var triangles = new List<int>();
         // Faces independentes conservam o aspecto facetado ao recalcular normais.
@@ -287,14 +321,25 @@ public static class NoxSceneArt
         for (int i = 0; i < ring.Length; i++)
         {
             int start = vertices.Count;
-            vertices.Add(ring[i]); vertices.Add(ring[(i + 1) % ring.Length]); vertices.Add(bottom);
-            triangles.Add(start); triangles.Add(start + 1); triangles.Add(start + 2);
+            vertices.Add(ring[i]);
+            vertices.Add(ring[(i + 1) % ring.Length]);
+            vertices.Add(bottom);
+            triangles.Add(start);
+            triangles.Add(start + 1);
+            triangles.Add(start + 2);
             start = vertices.Count;
-            vertices.Add(center + Vector3.up * size.y / 2); vertices.Add(ring[(i + 1) % ring.Length]); vertices.Add(ring[i]);
-            triangles.Add(start); triangles.Add(start + 1); triangles.Add(start + 2);
+            vertices.Add(center + Vector3.up * size.y / 2);
+            vertices.Add(ring[(i + 1) % ring.Length]);
+            vertices.Add(ring[i]);
+            triangles.Add(start);
+            triangles.Add(start + 1);
+            triangles.Add(start + 2);
         }
         Mesh mesh = new Mesh { name = "Ilha facetada" };
-        mesh.SetVertices(vertices); mesh.SetTriangles(triangles, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
         AssetDatabase.CreateAsset(mesh, path);
         return mesh;
     }
@@ -303,8 +348,10 @@ public static class NoxSceneArt
     {
         string path = sceneFolder + "/Talha-" + meshNumber++ + ".asset";
         Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-        if (existing != null) return existing;
-        var vertices = new List<Vector3>(); var triangles = new List<int>();
+        if (existing != null)
+            return existing;
+        var vertices = new List<Vector3>();
+        var triangles = new List<int>();
         Vector2[] ring = { new Vector2(-1,-1), new Vector2(-1,0), new Vector2(-1,1), new Vector2(0,1),
             new Vector2(1,1), new Vector2(1,0), new Vector2(1,-1), new Vector2(0,-1) };
         for (int i = 0; i < ring.Length; i++)
@@ -315,41 +362,58 @@ public static class NoxSceneArt
             Vector3 c = bounds.center + new Vector3(next.x * bounds.extents.x * inset, -bounds.extents.y, next.y * bounds.extents.z * inset);
             Vector3 d = bounds.center + new Vector3(current.x * bounds.extents.x * inset, -bounds.extents.y, current.y * bounds.extents.z * inset);
             Face(vertices, triangles, bounds.center + Vector3.up * bounds.extents.y, a, b);
-            Face(vertices, triangles, a, d, c); Face(vertices, triangles, a, c, b);
+            Face(vertices, triangles, a, d, c);
+            Face(vertices, triangles, a, c, b);
             Face(vertices, triangles, bounds.center - Vector3.up * bounds.extents.y, c, d);
         }
         Mesh mesh = new Mesh { name = "Superfície talhada" };
-        mesh.SetVertices(vertices); mesh.SetTriangles(triangles, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        AssetDatabase.CreateAsset(mesh, path); return mesh;
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        AssetDatabase.CreateAsset(mesh, path);
+        return mesh;
     }
     private static Mesh GrassMesh(Transform platform, Vector3 world)
     {
         string path = sceneFolder + "/Vegetacao-" + meshNumber++ + ".asset";
         Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-        if (existing != null) return existing;
-        var vertices = new List<Vector3>(); var triangles = new List<int>();
+        if (existing != null)
+            return existing;
+        var vertices = new List<Vector3>();
+        var triangles = new List<int>();
         for (int i = 0; i < 5; i++)
         {
             Vector3 center = world + new Vector3((i - 2) * 0.07f, 0, 0);
             Vector3 a = platform.InverseTransformPoint(center - Vector3.right * 0.04f);
             Vector3 b = platform.InverseTransformPoint(center + Vector3.right * 0.04f);
             Vector3 c = platform.InverseTransformPoint(center + Vector3.up * (0.18f + i % 3 * 0.06f) + Vector3.forward * 0.09f);
-            Face(vertices, triangles, a, b, c); Face(vertices, triangles, c, b, a);
+            Face(vertices, triangles, a, b, c);
+            Face(vertices, triangles, c, b, a);
         }
         Mesh mesh = new Mesh { name = "Tufo de borda" };
-        mesh.SetVertices(vertices); mesh.SetTriangles(triangles, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        AssetDatabase.CreateAsset(mesh, path); return mesh;
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        AssetDatabase.CreateAsset(mesh, path);
+        return mesh;
     }
     private static void Face(List<Vector3> vertices, List<int> triangles, Vector3 a, Vector3 b, Vector3 c)
     {
-        int index = vertices.Count; vertices.Add(a); vertices.Add(b); vertices.Add(c);
-        triangles.Add(index); triangles.Add(index + 1); triangles.Add(index + 2);
+        int index = vertices.Count;
+        vertices.Add(a);
+        vertices.Add(b);
+        vertices.Add(c);
+        triangles.Add(index);
+        triangles.Add(index + 1);
+        triangles.Add(index + 2);
     }
 
     private static Color Hex(string text)
     {
-        if (!ColorUtility.TryParseHtmlString("#" + text, out Color color)) throw new ArgumentException(text);
+        if (!ColorUtility.TryParseHtmlString("#" + text, out Color color))
+            throw new ArgumentException(text);
         return color;
     }
 }
-#endif

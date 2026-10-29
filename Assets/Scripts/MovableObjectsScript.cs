@@ -16,38 +16,56 @@ public class MovableObjectsScript : MonoBehaviour
         {
             foreach (Collider item in candidates)
                 if (item != null && item.enabled && item.gameObject.activeInHierarchy && item.attachedRigidbody != null &&
-                    item.attachedRigidbody.CompareTag("Box")) return true;
+                    item.attachedRigidbody.CompareTag("Box"))
+                    return true;
             return false;
         }
     }
 
     private void Awake()
     {
-        if (playerScript == null) playerScript = GetComponent<PlayerScript>();
+        if (playerScript == null)
+            playerScript = GetComponent<PlayerScript>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("InRange") && other.attachedRigidbody != null) candidates.Add(other);
+        if (other.CompareTag("InRange") && other.attachedRigidbody != null)
+            candidates.Add(other);
     }
-    private void OnTriggerExit(Collider other) { candidates.Remove(other); }
+    private void OnTriggerExit(Collider other)
+    {
+        candidates.Remove(other);
+    }
 
     public void Player_GrabDrop()
     {
-        if (playerScript == null || !playerScript.IsAlive || !NoxSession.CanPlay || !Input.GetKeyDown(KeyCode.E)) return;
-        if (heldBody != null) { Drop(); return; }
-        if (!playerScript.grounded) return;
+        if (playerScript == null || !playerScript.IsAlive || !NoxSession.CanPlay || !Input.GetKeyDown(KeyCode.E))
+            return;
+        if (heldBody != null)
+        {
+            Drop();
+            return;
+        }
+        if (!playerScript.grounded)
+            return;
         candidates.RemoveWhere(item => item == null || !item.enabled || !item.gameObject.activeInHierarchy);
         Rigidbody selected = null;
         float nearest = float.PositiveInfinity;
         foreach (Collider candidate in candidates)
         {
             Rigidbody body = candidate.attachedRigidbody;
-            if (body == null || body == playerScript.rigid || !body.CompareTag("Box")) continue;
+            if (body == null || body == playerScript.rigid || !body.CompareTag("Box"))
+                continue;
             float distance = (body.position - transform.position).sqrMagnitude;
-            if (distance < nearest) { nearest = distance; selected = body; }
+            if (distance < nearest)
+            {
+                nearest = distance;
+                selected = body;
+            }
         }
-        if (selected == null) return;
+        if (selected == null)
+            return;
         heldBody = selected;
         originalKinematic = heldBody.isKinematic;
         heldBody.isKinematic = false;
@@ -68,18 +86,27 @@ public class MovableObjectsScript : MonoBehaviour
             grip.connectedBody = null;
             Destroy(grip);
         }
-        if (heldBody != null) heldBody.isKinematic = originalKinematic;
+        if (heldBody != null)
+            heldBody.isKinematic = originalKinematic;
         heldBody = null;
         grip = null;
         countdown = 0;
-        if (playerScript != null) playerScript.SetPushing(false);
+        if (playerScript != null)
+            playerScript.SetPushing(false);
     }
 
     private void Update()
     {
         if (playerScript == null || !playerScript.IsAlive || (countdown != 0 && (heldBody == null || grip == null)))
-        { Drop(); return; }
+        {
+            Drop();
+            return;
+        }
         Player_GrabDrop();
     }
-    private void OnDisable() { Drop(); candidates.Clear(); }
+    private void OnDisable()
+    {
+        Drop();
+        candidates.Clear();
+    }
 }
