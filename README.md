@@ -53,9 +53,12 @@ A referência original utiliza Unity **2021.1.28f1**. O projeto mantém a config
 
 Cenas, músicas e demais recursos do projeto completo permanecem no ZIP original. O repositório reúne o código, as configurações e o personagem exportado. O preparador combina esses arquivos em uma cópia local e preserva o original.
 
-O CI verifica regras C#, recuperação e atualização, contratos dos componentes e integridade do FBX. Compilação isolada e testes automatizados não comprovam física, renderização, áudio ou jogabilidade no Unity.
+O CI verifica formatação e sintaxe C#, lint e formatação Python, sintaxe PowerShell, regras de jogo, recuperação e atualização, contratos dos componentes e integridade do FBX. As rotinas repetidas dos controladores possuem suporte compartilhado, mantendo os campos e callbacks das cenas. Compilação isolada e testes automatizados não comprovam física, renderização, áudio ou jogabilidade no Unity.
 
 ## Documentação
+
+- [Boas práticas de manutenção](docs/boas-praticas.md)
+- [Revisão de código e limpeza](docs/revisao-clean-code.md)
 
 - [Desenvolvimento e recuperação](docs/desenvolvimento.md)
 - [Revisão geral](docs/revisao-geral.md)

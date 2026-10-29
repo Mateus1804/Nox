@@ -1,0 +1,2 @@
+# Ferramenta de lint e formatação; não faz parte da distribuição do jogo.
+ruff==0.14.3
