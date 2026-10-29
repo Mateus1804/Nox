@@ -1,4 +1,5 @@
 """Integração do preparo: arquivos fictícios, sem executar o Unity."""
+
 import hashlib
 import json
 import shutil
@@ -9,98 +10,198 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ORIGINAL = '7da36c5a97651df26c9fd8197ab9e5203efd7082'
+ORIGINAL = "7da36c5a97651df26c9fd8197ab9e5203efd7082"
 
 
 class PreparationTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.base = Path(self.temp.name)
-        self.archive = self.base / 'original.zip'
-        self.destination = self.base / 'projeto com espaços'
-        self.manifest = json.loads((ROOT / 'docs/importacao.json').read_text(encoding='utf-8'))
+        self.archive = self.base / "original.zip"
+        self.destination = self.base / "projeto com espaços"
+        self.manifest = json.loads((ROOT / "docs/importacao.json").read_text(encoding="utf-8"))
         self.files = {}
-        for item in self.manifest['arquivos']:
-            content = subprocess.check_output(['git', 'show', ORIGINAL + ':' + item['caminho']], cwd=ROOT)
-            self.assertEqual(item['sha256'], hashlib.sha256(content).hexdigest())
-            self.files[item['caminho']] = content
-        for scene in ['Menu1.2', 'AirPhase1.4', 'AirPhase2.4', 'AirPhase3.5', 'FirePhase1.4']:
-            self.files['Assets/Scenes/' + scene + '.unity'] = b'fixture: nao e uma cena jogavel\n'
-        self.files['Assets/Images/fixture.bin'] = b'asset-preservado'
-        self.files['Library/cache.bin'] = b'cache-nao-importado'
+        for item in self.manifest["arquivos"]:
+            content = subprocess.check_output(
+                ["git", "show", ORIGINAL + ":" + item["caminho"]], cwd=ROOT
+            )
+            self.assertEqual(item["sha256"], hashlib.sha256(content).hexdigest())
+            self.files[item["caminho"]] = content
+        for scene in ["Menu1.2", "AirPhase1.4", "AirPhase2.4", "AirPhase3.5", "FirePhase1.4"]:
+            self.files["Assets/Scenes/" + scene + ".unity"] = b"fixture: nao e uma cena jogavel\n"
+        self.files["Assets/Images/fixture.bin"] = b"asset-preservado"
+        self.files["Library/cache.bin"] = b"cache-nao-importado"
 
     def tearDown(self):
         self.temp.cleanup()
 
     def write_zip(self):
-        with zipfile.ZipFile(self.archive, 'w') as archive:
+        with zipfile.ZipFile(self.archive, "w") as archive:
             for path, value in self.files.items():
-                archive.writestr('Nox_Project/' + path, value)
+                archive.writestr("Nox_Project/" + path, value)
 
     def prepare(self):
-        return subprocess.run([
-            'pwsh', '-NoProfile', '-File', str(ROOT / 'tools/Preparar-Nox.ps1'),
-            '-OriginalZip', str(self.archive), '-Destino', str(self.destination)
-        ], text=True, capture_output=True)
+        return subprocess.run(
+            [
+                "pwsh",
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Preparar-Nox.ps1"),
+                "-OriginalZip",
+                str(self.archive),
+                "-Destino",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
 
     def test_updates_existing_project_preserving_scenes_and_backing_up_scripts(self):
         self.write_zip()
         result = self.prepare()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        player = self.destination / 'Assets/Scripts/PlayerScript.cs'
-        player.write_bytes(b'// script local anterior\n')
-        sky = self.destination / 'Assets/Art/NoxSky.shader'
-        sky.write_bytes(b'// shader local anterior\n')
-        scene = self.destination / 'Assets/Scenes/Menu1.2.unity'
+        player = self.destination / "Assets/Scripts/PlayerScript.cs"
+        player.write_bytes(b"// script local anterior\n")
+        sky = self.destination / "Assets/Art/NoxSky.shader"
+        sky.write_bytes(b"// shader local anterior\n")
+        scene = self.destination / "Assets/Scenes/Menu1.2.unity"
         before_scene = scene.read_bytes()
-        result = subprocess.run([
-            'pwsh', '-NoProfile', '-File', str(ROOT / 'tools/Atualizar-Nox.ps1'),
-            '-Projeto', str(self.destination)
-        ], text=True, capture_output=True)
+        result = subprocess.run(
+            [
+                "pwsh",
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertEqual((ROOT / 'Assets/Scripts/PlayerScript.cs').read_bytes(), player.read_bytes())
+        self.assertEqual(
+            (ROOT / "Assets/Scripts/PlayerScript.cs").read_bytes(), player.read_bytes()
+        )
         self.assertEqual(before_scene, scene.read_bytes())
-        self.assertEqual((ROOT/'Assets/Characters/Nox/Nox.fbx').read_bytes(),
-                         (self.destination/'Assets/Characters/Nox/Nox.fbx').read_bytes())
-        backups = list(self.base.glob('projeto com espaços-Backup-Scripts-*'))
+        self.assertEqual(
+            (ROOT / "Assets/Characters/Nox/Nox.fbx").read_bytes(),
+            (self.destination / "Assets/Characters/Nox/Nox.fbx").read_bytes(),
+        )
+        backups = list(self.base.glob("projeto com espaços-Backup-Scripts-*"))
         self.assertEqual(1, len(backups))
-        self.assertEqual(b'// script local anterior\n', (backups[0] / 'Assets/Scripts/PlayerScript.cs').read_bytes())
-        self.assertEqual(b'// shader local anterior\n', (backups[0]/'Assets/Art/NoxSky.shader').read_bytes())
-        self.assertEqual((ROOT/'Assets/Art/NoxSky.shader').read_bytes(), sky.read_bytes())
-        self.assertTrue((backups[0] / 'arquivos-atualizados.json').exists())
+        self.assertEqual(
+            b"// script local anterior\n",
+            (backups[0] / "Assets/Scripts/PlayerScript.cs").read_bytes(),
+        )
+        self.assertEqual(
+            b"// shader local anterior\n", (backups[0] / "Assets/Art/NoxSky.shader").read_bytes()
+        )
+        self.assertEqual((ROOT / "Assets/Art/NoxSky.shader").read_bytes(), sky.read_bytes())
+        self.assertTrue((backups[0] / "arquivos-atualizados.json").exists())
 
     def test_updater_preserves_previous_version_and_custom_generated_assets(self):
         self.write_zip()
         self.assertEqual(0, self.prepare().returncode)
         files = {
-            'ProjectSettings/NoxScenesPrepared-v5.txt': b'preparacao anterior',
-            'Assets/Characters/Nox/Nox-v5.controller': b'animator personalizado',
-            'Assets/Art/Generated-v5/personalizado.mat': b'material personalizado',
+            "ProjectSettings/NoxScenesPrepared-v5.txt": b"preparacao anterior",
+            "Assets/Characters/Nox/Nox-v5.controller": b"animator personalizado",
+            "Assets/Art/Generated-v5/personalizado.mat": b"material personalizado",
         }
         for name, content in files.items():
-            path = self.destination/name
+            path = self.destination / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(content)
-        result = subprocess.run([
-            'pwsh', '-NoProfile', '-File', str(ROOT/'tools/Atualizar-Nox.ps1'),
-            '-Projeto', str(self.destination)
-        ], text=True, capture_output=True)
-        self.assertEqual(0, result.returncode, result.stdout+result.stderr)
+        result = subprocess.run(
+            [
+                "pwsh",
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         for name, content in files.items():
-            self.assertEqual(content, (self.destination/name).read_bytes())
-        backup = next(self.base.glob('projeto com espaços-Backup-Scripts-*'))
-        self.assertEqual(b'material personalizado', (backup/'Assets/Art/Generated-v5/personalizado.mat').read_bytes())
-        self.assertEqual((ROOT/'Assets/Editor/NoxScenePolish.cs').read_bytes(),
-                         (self.destination/'Assets/Editor/NoxScenePolish.cs').read_bytes())
+            self.assertEqual(content, (self.destination / name).read_bytes())
+        backup = next(self.base.glob("projeto com espaços-Backup-Scripts-*"))
+        self.assertEqual(
+            b"material personalizado",
+            (backup / "Assets/Art/Generated-v5/personalizado.mat").read_bytes(),
+        )
+        self.assertEqual(
+            (ROOT / "Assets/Editor/NoxScenePolish.cs").read_bytes(),
+            (self.destination / "Assets/Editor/NoxScenePolish.cs").read_bytes(),
+        )
+
+    def test_updater_rejects_directory_at_file_path_before_writing(self):
+        self.write_zip()
+        self.assertEqual(0, self.prepare().returncode)
+        shader = self.destination / "Assets/Art/NoxSky.shader"
+        shader.unlink()
+        shader.mkdir()
+        player = self.destination / "Assets/Scripts/PlayerScript.cs"
+        player.write_bytes(b"// preservar antes da validacao\n")
+        result = subprocess.run(
+            [
+                "pwsh",
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(b"// preservar antes da validacao\n", player.read_bytes())
+        self.assertEqual([], list(shader.iterdir()))
+        self.assertFalse(list(self.base.glob("*-Backup-Scripts-*")))
+
+    def test_updater_rejects_file_at_directory_path_before_writing(self):
+        self.write_zip()
+        self.assertEqual(0, self.prepare().returncode)
+        art = self.destination / "Assets/Art"
+        shutil.rmtree(art)
+        art.write_bytes(b"pasta bloqueada")
+        player = self.destination / "Assets/Scripts/PlayerScript.cs"
+        player.write_bytes(b"// preservar antes da validacao\n")
+        result = subprocess.run(
+            [
+                "pwsh",
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(b"// preservar antes da validacao\n", player.read_bytes())
+        self.assertEqual(b"pasta bloqueada", art.read_bytes())
+        self.assertFalse(list(self.base.glob("*-Backup-Scripts-*")))
 
     def test_updater_rejects_folder_without_unity_project(self):
         self.destination.mkdir()
-        result = subprocess.run([
-            'pwsh', '-NoProfile', '-File', str(ROOT / 'tools/Atualizar-Nox.ps1'),
-            '-Projeto', str(self.destination)
-        ], text=True, capture_output=True)
+        result = subprocess.run(
+            [
+                "pwsh",
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
         self.assertNotEqual(0, result.returncode)
-        self.assertFalse(list(self.base.glob('*-Backup-Scripts-*')))
+        self.assertFalse(list(self.base.glob("*-Backup-Scripts-*")))
 
     def test_prepares_separate_copy_preserves_assets_and_ignores_cache(self):
         self.write_zip()
@@ -108,14 +209,19 @@ class PreparationTests(unittest.TestCase):
         result = self.prepare()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(before, hashlib.sha256(self.archive.read_bytes()).hexdigest())
-        self.assertEqual(b'asset-preservado', (self.destination / 'Assets/Images/fixture.bin').read_bytes())
-        self.assertFalse((self.destination / 'Library').exists())
-        for item in self.manifest['arquivos']:
-            self.assertEqual((ROOT / item['caminho']).read_bytes(), (self.destination / item['caminho']).read_bytes())
-        self.assertTrue((self.destination / 'Assets/Editor/NoxBuild.cs').exists())
+        self.assertEqual(
+            b"asset-preservado", (self.destination / "Assets/Images/fixture.bin").read_bytes()
+        )
+        self.assertFalse((self.destination / "Library").exists())
+        for item in self.manifest["arquivos"]:
+            self.assertEqual(
+                (ROOT / item["caminho"]).read_bytes(),
+                (self.destination / item["caminho"]).read_bytes(),
+            )
+        self.assertTrue((self.destination / "Assets/Editor/NoxBuild.cs").exists())
 
     def test_rejects_modified_original(self):
-        self.files['Assets/Scripts/PlayerScript.cs'] += b'// outra versao'
+        self.files["Assets/Scripts/PlayerScript.cs"] += b"// outra versao"
         self.write_zip()
         self.assertNotEqual(0, self.prepare().returncode)
         self.assertFalse(self.destination.exists())
@@ -123,36 +229,38 @@ class PreparationTests(unittest.TestCase):
     def test_never_overwrites_existing_destination(self):
         self.write_zip()
         self.destination.mkdir()
-        sentinel = self.destination / 'sentinela.txt'
-        sentinel.write_text('preservar')
+        sentinel = self.destination / "sentinela.txt"
+        sentinel.write_text("preservar")
         self.assertNotEqual(0, self.prepare().returncode)
-        self.assertEqual('preservar', sentinel.read_text())
+        self.assertEqual("preservar", sentinel.read_text())
 
     def test_rejects_path_traversal(self):
-        self.files['Assets/../../escape.txt'] = b'nao gravar'
+        self.files["Assets/../../escape.txt"] = b"nao gravar"
         self.write_zip()
         self.assertNotEqual(0, self.prepare().returncode)
-        self.assertFalse((self.base / 'escape.txt').exists())
+        self.assertFalse((self.base / "escape.txt").exists())
         self.assertFalse(self.destination.exists())
 
     def test_requires_all_build_scenes(self):
-        del self.files['Assets/Scenes/FirePhase1.4.unity']
+        del self.files["Assets/Scenes/FirePhase1.4.unity"]
         self.write_zip()
         self.assertNotEqual(0, self.prepare().returncode)
         self.assertFalse(self.destination.exists())
 
     def test_rejects_symlink(self):
         self.write_zip()
-        with zipfile.ZipFile(self.archive, 'a') as archive:
-            link = zipfile.ZipInfo('Nox_Project/Assets/link')
+        with zipfile.ZipFile(self.archive, "a") as archive:
+            link = zipfile.ZipInfo("Nox_Project/Assets/link")
             link.create_system = 3
             link.external_attr = 0o120777 << 16
-            archive.writestr(link, '../../outside')
+            archive.writestr(link, "../../outside")
         self.assertNotEqual(0, self.prepare().returncode)
         self.assertFalse(self.destination.exists())
 
 
-if __name__ == '__main__':
-    if shutil.which('pwsh') is None:
-        raise SystemExit('PowerShell 7 (pwsh) é necessário para esta suíte; os testes não foram executados.')
+if __name__ == "__main__":
+    if shutil.which("pwsh") is None:
+        raise SystemExit(
+            "PowerShell 7 (pwsh) é necessário para esta suíte; os testes não foram executados."
+        )
     unittest.main(verbosity=2)

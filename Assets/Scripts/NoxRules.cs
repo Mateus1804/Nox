@@ -1,6 +1,9 @@
 using System;
 
-public enum NoxEnemyAction { Idle, Chase, Attack }
+public enum NoxEnemyAction
+{
+    Idle, Chase, Attack
+}
 
 // Regras independentes da cena, utilizadas também pelos testes de regressão.
 public static class NoxRules
@@ -30,7 +33,15 @@ public static class NoxRules
             distance <= followRange ? NoxEnemyAction.Chase : NoxEnemyAction.Idle;
     }
 
-    public static bool IsFinite(float value) { return !float.IsNaN(value) && !float.IsInfinity(value); }
+    public static bool IsFinite(float value)
+    {
+        return !float.IsNaN(value) && !float.IsInfinity(value);
+    }
+
+    public static bool IsFinite(double value)
+    {
+        return !double.IsNaN(value) && !double.IsInfinity(value);
+    }
 
     public static float EffectiveVolume(float value, bool muted)
     {

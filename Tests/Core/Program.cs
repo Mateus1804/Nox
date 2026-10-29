@@ -5,14 +5,35 @@ public static class Program
     private static int passed;
     private static void Equal(float expected, float actual)
     {
-        if (float.IsNaN(actual) || float.IsInfinity(actual) || Math.Abs(expected - actual) > 0.0001f) throw new Exception($"Esperado {expected}; encontrado {actual}");
+        if (float.IsNaN(actual) || float.IsInfinity(actual) || Math.Abs(expected - actual) > 0.0001f)
+            throw new Exception($"Esperado {expected}; encontrado {actual}");
         passed++;
     }
     private static void Throws(Action action)
     {
-        try { action(); } catch (ArgumentOutOfRangeException) { passed++; return; }
+        try
+        {
+            action();
+        }
+        catch (ArgumentOutOfRangeException) { passed++; return; }
         throw new Exception("Uma entrada inválida foi aceita.");
     }
+    private static void ThrowsParameter(string expected, Action action)
+    {
+        try
+        {
+            action();
+        }
+        catch (ArgumentOutOfRangeException exception)
+        {
+            if (exception.ParamName != expected)
+                throw new Exception("Parâmetro incorreto: " + exception.ParamName);
+            passed++;
+            return;
+        }
+        throw new Exception("Uma entrada inválida foi aceita.");
+    }
+
     public static void Main()
     {
         var jump = new NoxJumpAssist();
@@ -144,50 +165,88 @@ public static class Program
         var combo = new NoxAttackCycle();
         combo.Request(0);
         combo.Tick(0, true, out bool began, out bool strike);
-        Equal(1, began ? 1 : 0); Equal(0, strike ? 1 : 0);
+        Equal(1, began ? 1 : 0);
+        Equal(0, strike ? 1 : 0);
         Equal((int)NoxAttackPhase.Windup, (int)combo.Phase(0.05));
         combo.Tick(0.121, true, out began, out strike);
         Equal(1, strike ? 1 : 0);
-        combo.Tick(0.15, true, out began, out strike); Equal(0, strike ? 1 : 0);
+        combo.Tick(0.15, true, out began, out strike);
+        Equal(0, strike ? 1 : 0);
         Equal((int)NoxAttackPhase.Recovery, (int)combo.Phase(0.4));
-        combo.Request(0.5); combo.Tick(0.601, true, out began, out strike);
-        Equal(1, began ? 1 : 0); Equal(1, combo.Stage);
-        combo.Tick(0.73, true, out began, out strike); Equal(1, strike ? 1 : 0);
-        combo.Request(1.12); combo.Tick(1.202, true, out began, out strike);
-        Equal(1, began ? 1 : 0); Equal(2, combo.Stage);
+        combo.Request(0.5);
+        combo.Tick(0.601, true, out began, out strike);
+        Equal(1, began ? 1 : 0);
+        Equal(1, combo.Stage);
+        combo.Tick(0.73, true, out began, out strike);
+        Equal(1, strike ? 1 : 0);
+        combo.Request(1.12);
+        combo.Tick(1.202, true, out began, out strike);
+        Equal(1, began ? 1 : 0);
+        Equal(2, combo.Stage);
         combo.Tick(1.81, true, out began, out strike);
-        Equal(0, began ? 1 : 0); Equal(0, strike ? 1 : 0); Equal(0, combo.Running ? 1 : 0);
-        combo.Request(3); combo.Tick(3, true, out began, out strike); Equal(0, combo.Stage);
-        combo.Tick(3.13, false, out began, out strike); Equal(0, strike ? 1 : 0); Equal(0, combo.Running ? 1 : 0);
-        combo.Request(4); combo.Tick(4, true, out began, out strike);
-        combo.Request(4.1); combo.Tick(4.61, true, out began, out strike); Equal(0, began ? 1 : 0);
-        combo.Request(double.NaN); combo.Tick(5, true, out began, out strike); Equal(0, began ? 1 : 0);
-        combo.Request(6); combo.Tick(6, true, out began, out strike);
-        combo.Tick(6.5, true, out began, out strike); Equal(0, strike ? 1 : 0); // Quadro atrasado não cria impacto vencido.
-        combo.Cancel(); combo.Tick(7, true, out began, out strike); Equal(0, began ? 1 : 0);
+        Equal(0, began ? 1 : 0);
+        Equal(0, strike ? 1 : 0);
+        Equal(0, combo.Running ? 1 : 0);
+        combo.Request(3);
+        combo.Tick(3, true, out began, out strike);
+        Equal(0, combo.Stage);
+        combo.Tick(3.13, false, out began, out strike);
+        Equal(0, strike ? 1 : 0);
+        Equal(0, combo.Running ? 1 : 0);
+        combo.Request(4);
+        combo.Tick(4, true, out began, out strike);
+        combo.Request(4.1);
+        combo.Tick(4.61, true, out began, out strike);
+        Equal(0, began ? 1 : 0);
+        combo.Request(double.NaN);
+        combo.Tick(5, true, out began, out strike);
+        Equal(0, began ? 1 : 0);
+        combo.Request(6);
+        combo.Tick(6, true, out began, out strike);
+        combo.Tick(6.5, true, out began, out strike);
+        Equal(0, strike ? 1 : 0); // Quadro atrasado não cria impacto vencido.
+        combo.Cancel();
+        combo.Tick(7, true, out began, out strike);
+        Equal(0, began ? 1 : 0);
         // A antecipação não causa dano; fugir ou perder visão interrompe a preparação.
         var threat = new NoxEnemyCycle(0.6, 0.18, 1.1);
-        threat.Tick(0, true, false, true); Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
-        threat.Tick(0, true, true, true); Equal((int)NoxThreatPhase.Windup, (int)threat.Phase);
+        threat.Tick(0, true, false, true);
+        Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
+        threat.Tick(0, true, true, true);
+        Equal((int)NoxThreatPhase.Windup, (int)threat.Phase);
         Equal(0.5f, threat.Progress(0.3));
-        threat.Tick(0.61, true, true, true); Equal((int)NoxThreatPhase.Active, (int)threat.Phase);
-        threat.Tick(0.79, true, true, true); Equal((int)NoxThreatPhase.Recovery, (int)threat.Phase);
-        threat.Tick(1.9, true, true, true); Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
-        threat.Tick(2, true, true, true); threat.Tick(2.1, false, true, true);
+        threat.Tick(0.61, true, true, true);
+        Equal((int)NoxThreatPhase.Active, (int)threat.Phase);
+        threat.Tick(0.79, true, true, true);
         Equal((int)NoxThreatPhase.Recovery, (int)threat.Phase);
-        threat.Tick(2.3, true, true, true); Equal((int)NoxThreatPhase.Recovery, (int)threat.Phase);
-        threat.Tick(3.3, true, true, true); Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
-        threat.Tick(4, true, true, true); threat.Tick(4.1, true, false, true);
+        threat.Tick(1.9, true, true, true);
+        Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
+        threat.Tick(2, true, true, true);
+        threat.Tick(2.1, false, true, true);
         Equal((int)NoxThreatPhase.Recovery, (int)threat.Phase);
-        threat.Tick(4.2, true, true, false); Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
-        threat.Tick(5, true, true, true); threat.Tick(8, true, true, true);
+        threat.Tick(2.3, true, true, true);
+        Equal((int)NoxThreatPhase.Recovery, (int)threat.Phase);
+        threat.Tick(3.3, true, true, true);
+        Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
+        threat.Tick(4, true, true, true);
+        threat.Tick(4.1, true, false, true);
+        Equal((int)NoxThreatPhase.Recovery, (int)threat.Phase);
+        threat.Tick(4.2, true, true, false);
+        Equal((int)NoxThreatPhase.Ready, (int)threat.Phase);
+        threat.Tick(5, true, true, true);
+        threat.Tick(8, true, true, true);
         Equal((int)NoxThreatPhase.Ready, (int)threat.Phase); // Salto do relógio não causa golpe tardio.
-        Throws(() => new NoxEnemyCycle(0, 1, 1)); Throws(() => new NoxEnemyCycle(double.NaN, 1, 1));
+        Throws(() => new NoxEnemyCycle(0, 1, 1));
+        Throws(() => new NoxEnemyCycle(double.NaN, 1, 1));
         Equal(0.6f, NoxMotionRules.Cadence(0, 1));
-        Equal(2, NoxMotionRules.Cadence(3, 1)); Equal(3, NoxMotionRules.Cadence(100, 1));
-        Equal(1, NoxMotionRules.Cadence(3, 0)); Equal(1, NoxMotionRules.Cadence(float.NaN, 1));
+        Equal(2, NoxMotionRules.Cadence(3, 1));
+        Equal(3, NoxMotionRules.Cadence(100, 1));
+        Equal(1, NoxMotionRules.Cadence(3, 0));
+        Equal(1, NoxMotionRules.Cadence(float.NaN, 1));
         Equal(1, NoxMotionRules.Cadence(3, float.PositiveInfinity));
-        hits.Clear(); Equal(1, hits.TryHit(42) ? 1 : 0); Equal(0, hits.TryHit(42) ? 1 : 0);
+        hits.Clear();
+        Equal(1, hits.TryHit(42) ? 1 : 0);
+        Equal(0, hits.TryHit(42) ? 1 : 0);
         Equal(8.19756f, (float)NoxJumpEnvelope.Range(6, 3.5, 15, 0));
         Equal(0, (float)NoxJumpEnvelope.Range(6, 3.5, 15, 3.6));
         Equal(0, (float)NoxJumpEnvelope.Range(6, 3.5, 0, 0));
@@ -198,6 +257,46 @@ public static class Program
         Equal(1, NoxJumpEnvelope.Range(6, 3.5, 15, -1) < 10.09 ? 1 : 0);
         Equal(1, NoxJumpEnvelope.Range(6, 3.5, 15, -0.5) > 3.30 + 1 ? 1 : 0);
         Equal(1, NoxJumpEnvelope.Range(6, 3.5, 15, 1) < NoxJumpEnvelope.Range(6, 3.5, 15, 0) ? 1 : 0);
+        // Relógios inválidos não produzem saltos, dano ou janelas de ataque permanentes.
+        var invalidJump = new NoxJumpAssist();
+        invalidJump.Request(double.NaN);
+        Equal(0, invalidJump.TryConsume(1, true) ? 1 : 0);
+        invalidJump.Request(double.PositiveInfinity);
+        Equal(0, invalidJump.TryConsume(1, true) ? 1 : 0);
+        invalidJump.Request(1);
+        Equal(0, invalidJump.TryConsume(double.NaN, true) ? 1 : 0);
+        Equal(1, invalidJump.TryConsume(1, true) ? 1 : 0);
+        invalidJump.Reset();
+        Equal(0, invalidJump.TryConsume(double.PositiveInfinity, true) ? 1 : 0);
+        var invalidAttack = new NoxAttackCycle();
+        invalidAttack.Request(1);
+        invalidAttack.Tick(double.NaN, true, out began, out strike);
+        Equal(0, began ? 1 : 0);
+        Equal(0, strike ? 1 : 0);
+        Equal(0, invalidAttack.Running ? 1 : 0);
+        invalidAttack.Tick(1, true, out began, out strike);
+        Equal(0, began ? 1 : 0);
+        invalidAttack.Request(2);
+        invalidAttack.Tick(2, true, out began, out strike);
+        Equal((int)NoxAttackPhase.Ready, (int)invalidAttack.Phase(double.NaN));
+        invalidAttack.Tick(double.PositiveInfinity, true, out began, out strike);
+        Equal(0, invalidAttack.Running ? 1 : 0);
+        Equal(0, strike ? 1 : 0);
+        var invalidThreat = new NoxEnemyCycle(0.6, 0.18, 1.1);
+        invalidThreat.Tick(1, true, true, true);
+        Equal(0, invalidThreat.Progress(double.NaN));
+        invalidThreat.Tick(double.NaN, true, true, true);
+        Equal((int)NoxThreatPhase.Ready, (int)invalidThreat.Phase);
+        invalidThreat.Tick(2, true, true, true);
+        invalidThreat.Tick(double.NegativeInfinity, true, true, true);
+        Equal((int)NoxThreatPhase.Ready, (int)invalidThreat.Phase);
+        var diagnosticDamage = new NoxDamageWindow();
+        ThrowsParameter("amount", () => diagnosticDamage.TryApply(3, float.NaN, 3, 0, 1, out _));
+        ThrowsParameter("now", () => diagnosticDamage.TryApply(3, 1, 3, float.PositiveInfinity, 1, out _));
+        ThrowsParameter("protectionSeconds", () => diagnosticDamage.TryApply(3, 1, 3, 0, -1, out _));
+        Equal(1, NoxRules.IsFinite(double.MaxValue) ? 1 : 0);
+        Equal(0, NoxRules.IsFinite(double.NaN) ? 1 : 0);
+        Equal(0, NoxRules.IsFinite(double.PositiveInfinity) ? 1 : 0);
         Console.WriteLine($"{passed} verificações de regressão aprovadas.");
     }
 }

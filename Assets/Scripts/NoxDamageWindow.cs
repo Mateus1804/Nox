@@ -8,12 +8,16 @@ public sealed class NoxDamageWindow
         float protectionSeconds, out float next)
     {
         next = NoxRules.AdjustHealth(current, 0, maximum);
-        if (!Finite(amount) || !Finite(now) || !Finite(protectionSeconds) || protectionSeconds < 0)
+        if (!NoxRules.IsFinite(amount))
             throw new ArgumentOutOfRangeException(nameof(amount));
-        if (next <= 0 || amount <= 0 || now < nextDamageTime) return false;
+        if (!NoxRules.IsFinite(now))
+            throw new ArgumentOutOfRangeException(nameof(now));
+        if (!NoxRules.IsFinite(protectionSeconds) || protectionSeconds < 0)
+            throw new ArgumentOutOfRangeException(nameof(protectionSeconds));
+        if (next <= 0 || amount <= 0 || now < nextDamageTime)
+            return false;
         next = NoxRules.AdjustHealth(next, -amount, maximum);
         nextDamageTime = now + protectionSeconds;
         return true;
     }
-    private static bool Finite(float value) { return !float.IsNaN(value) && !float.IsInfinity(value); }
 }
