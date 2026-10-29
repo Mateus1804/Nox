@@ -46,7 +46,18 @@ jobs:
         env:
           NOX_TEST_POWERSHELL: powershell
         run: |
-          python Tests/test_preparation.py PreparationTests.test_updater_restores_partial_write_and_removes_new_files PreparationTests.test_updater_detects_corruption_and_restores_previous_bytes PreparationTests.test_updater_leaves_project_untouched_if_backup_fails PreparationTests.test_updater_reports_partial_recovery_and_keeps_original_error PreparationTests.test_updater_restores_if_completion_manifest_fails
+          $cases = @(
+            "PreparationTests.test_updater_restores_partial_write_and_removes_new_files",
+            "PreparationTests.test_updater_detects_corruption_and_restores_previous_bytes",
+            "PreparationTests.test_updater_leaves_project_untouched_if_backup_fails",
+            "PreparationTests.test_updater_reports_partial_recovery_and_keeps_original_error",
+            "PreparationTests.test_updater_restores_if_completion_manifest_fails",
+            "PreparationTests.test_updater_moves_old_layout_and_preserves_script_guid",
+            "PreparationTests.test_updater_rejects_old_path_owned_by_another_guid",
+            "PreparationTests.test_updater_restores_deleted_old_paths_when_retirement_fails",
+            "PreparationTests.test_updater_removes_known_orphaned_old_meta"
+          )
+          python Tests/test_preparation.py @cases
       - name: Contratos dos componentes e metadados
         run: python Tests/test_source_contracts.py
       - name: Integridade do personagem e clips FBX

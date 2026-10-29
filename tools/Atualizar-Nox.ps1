@@ -14,31 +14,93 @@ function Copy-NoxVerifiedFile {
 function Get-NoxUpdatePlan {
     param([string]$RepoRoot, [string]$ProjectRoot, [string[]]$Folders)
     foreach ($folder in $Folders) {
-        $source = Join-Path $RepoRoot $folder
-        if (-not (Test-Path -LiteralPath $source -PathType Container)) {
+        if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot $folder) -PathType Container)) {
             throw ('Pasta de origem ausente: ' + $folder)
         }
-        foreach ($file in Get-ChildItem -LiteralPath $source -File -Recurse) {
-            $relative = $folder + '/' + $file.FullName.Substring($source.Length).TrimStart([char[]]"\/")
-            $destination = Join-Path $ProjectRoot $relative
-            if (Test-Path -LiteralPath $destination -PathType Container) {
-                throw ('Existe uma pasta onde deveria haver um arquivo: ' + $destination)
+    }
+    # O inventário de Assets inclui metas de pastas, além dos arquivos internos.
+    $sourceFiles = Get-ChildItem -LiteralPath (Join-Path $RepoRoot 'Assets') -File -Recurse |
+        Sort-Object @{ Expression = {
+            for ($order = 0; $order -lt $Folders.Count; $order++) {
+                $prefix = (Join-Path $RepoRoot $Folders[$order]) + [IO.Path]::DirectorySeparatorChar
+                if ($_.FullName.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) { return $order }
             }
-            $parent = Split-Path $destination -Parent
-            while ($parent.Length -gt $ProjectRoot.Length) {
-                if (Test-Path -LiteralPath $parent -PathType Leaf) {
-                    throw ('Existe um arquivo onde deveria haver uma pasta: ' + $parent)
+            return $Folders.Count
+        } }, FullName
+    foreach ($file in $sourceFiles) {
+        $relative = $file.FullName.Substring($RepoRoot.Length).TrimStart([char[]]"\/")
+        $destination = Join-Path $ProjectRoot $relative
+        if ($file.Extension -eq '.meta' -and (Test-Path -LiteralPath $destination -PathType Leaf) -and
+            (Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8) -match '(?m)^folderAsset: yes$') {
+            continue # Pastas existentes conservam o próprio GUID, inclusive em projetos personalizados.
+        }
+        if (Test-Path -LiteralPath $destination -PathType Container) {
+            throw ('Existe uma pasta onde deveria haver um arquivo: ' + $destination)
+        }
+        $parent = Split-Path $destination -Parent
+        while ($parent.Length -gt $ProjectRoot.Length) {
+            if (Test-Path -LiteralPath $parent -PathType Leaf) {
+                throw ('Existe um arquivo onde deveria haver uma pasta: ' + $parent)
+            }
+            $parent = Split-Path $parent -Parent
+        }
+        $existed = Test-Path -LiteralPath $destination -PathType Leaf
+        [PSCustomObject]@{
+            Operation = 'copy'
+            Source = $file.FullName
+            Destination = $destination
+            Relative = $relative
+            Existed = $existed
+            OriginalHash = if ($existed) { (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash } else { $null }
+            SourceHash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash
+        }
+    }
+    $migration = Get-Content -LiteralPath (Join-Path $RepoRoot 'Assets/Editor/Build/script-migration.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    $original = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs/importacao.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    foreach ($script in $migration.scripts) {
+        if ($script.from -eq $script.to) { continue }
+        $retired = Join-Path $ProjectRoot $script.from
+        $meta = $retired + '.meta'
+        if (-not (Test-Path -LiteralPath $retired -PathType Leaf)) {
+            if (Test-Path -LiteralPath $meta -PathType Leaf) {
+                $text = Get-Content -LiteralPath $meta -Raw -Encoding UTF8
+                if ($text -notmatch ('(?m)^guid: ' + [regex]::Escape($script.guid) + '\s*$')) {
+                    throw ('Meta antigo possui outro GUID: ' + $meta)
                 }
-                $parent = Split-Path $parent -Parent
+                [PSCustomObject]@{
+                    Operation = 'remove'; Source = $null; Destination = $meta
+                    Relative = $script.from + '.meta'; Existed = $true
+                    OriginalHash = (Get-FileHash -LiteralPath $meta -Algorithm SHA256).Hash
+                    SourceHash = $null
+                }
             }
-            $existed = Test-Path -LiteralPath $destination -PathType Leaf
+            continue
+        }
+        $hash = (Get-FileHash -LiteralPath $retired -Algorithm SHA256).Hash
+        if (Test-Path -LiteralPath $meta -PathType Leaf) {
+            $text = Get-Content -LiteralPath $meta -Raw -Encoding UTF8
+            if ($text -notmatch ('(?m)^guid: ' + [regex]::Escape($script.guid) + '\s*$')) {
+                throw ('O caminho antigo contém outro GUID; a migração foi interrompida: ' + $retired)
+            }
+        }
+        else {
+            # Alguns arquivos originais do ZIP não possuem meta. Aceitar somente o conteúdo conhecido.
+            $known = @($original.arquivos | Where-Object { $_.caminho -eq $script.from -and $_.sha256 -eq $hash })
+            if ($hash -ne $script.sha256 -and $known.Count -eq 0) {
+                throw ('Script antigo sem meta ou assinatura conhecida: ' + $retired)
+            }
+        }
+        foreach ($relative in @($script.from, ($script.from + '.meta'))) {
+            $destination = Join-Path $ProjectRoot $relative
+            if (-not (Test-Path -LiteralPath $destination -PathType Leaf)) { continue }
             [PSCustomObject]@{
-                Source = $file.FullName
+                Operation = 'remove'
+                Source = $null
                 Destination = $destination
                 Relative = $relative
-                Existed = $existed
-                OriginalHash = if ($existed) { (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash } else { $null }
-                SourceHash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash
+                Existed = $true
+                OriginalHash = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash
+                SourceHash = $null
             }
         }
     }
@@ -57,6 +119,9 @@ function New-NoxUpdateBackup {
     foreach ($update in $Updates) {
         if (-not $update.Existed) { continue }
         $copy = Join-Path $BackupRoot $update.Relative
+        if (-not (Test-Path -LiteralPath $copy -PathType Leaf)) {
+            Copy-NoxVerifiedFile -Source $update.Destination -Destination $copy -ExpectedHash $update.OriginalHash
+        }
         if (-not (Test-Path -LiteralPath $copy -PathType Leaf) -or
             (Get-FileHash -LiteralPath $copy -Algorithm SHA256).Hash -ne $update.OriginalHash) {
             throw ('Backup não confirmado para: ' + $update.Relative)
@@ -117,7 +182,13 @@ try {
     foreach ($update in $updates) {
         # Registrar antes da cópia também cobre uma falha que deixe o arquivo parcialmente escrito.
         $attempted.Add($update)
-        Copy-NoxVerifiedFile -Source $update.Source -Destination $update.Destination -ExpectedHash $update.SourceHash
+        if ($update.Operation -eq 'remove') {
+            Remove-Item -LiteralPath $update.Destination -Force
+            if (Test-Path -LiteralPath $update.Destination) { throw ('Arquivo antigo não removido: ' + $update.Destination) }
+        }
+        else {
+            Copy-NoxVerifiedFile -Source $update.Source -Destination $update.Destination -ExpectedHash $update.SourceHash
+        }
     }
     @($updates | ForEach-Object { $_.Relative }) | ConvertTo-Json |
         Set-Content -LiteralPath (Join-Path $backup 'arquivos-atualizados.json') -Encoding UTF8
