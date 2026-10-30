@@ -13,7 +13,7 @@ O jogo permanece em Unity 2021.1.28f1 e C# 8. O `global.json` seleciona a famíl
 - Extrair uma rotina quando houver duplicação real e contratos compatíveis. Evitar uma classe utilitária geral ou uma hierarquia criada apenas para reduzir linhas.
 - Conservar nome e GUID dos componentes, nomes dos campos serializados, assinaturas de callbacks, caminhos dos recursos gerados e chaves de preferências. Métodos sem chamadas em C# podem estar em UnityEvents, animações ou cenas externas.
 - Remover código somente após conferir referências no repositório, acesso, serialização e uso pelo motor. Registrar quando essa conclusão depender das cenas completas.
-- Manter os dois controladores legados como adaptadores das cenas. Regras, motor e operações comuns devem ser compartilhados quando isso evitar divergências sem transferir dados serializados para outro componente.
+- Manter os adaptadores antigos restritos à leitura de cenas recuperadas. A lógica do jogador pertence a `NoxPlayerController` e a dos chefes a `NoxBossController`; a preparação v8 converte os componentes com cópia dos dados e redirecionamento das referências.
 - Preservar parâmetros antigos de callbacks enquanto a migração de todos os consumidores não estiver comprovada. Documentar os parâmetros mantidos por compatibilidade.
 
 ## Formatação e comentários
@@ -39,7 +39,7 @@ Nomes antigos preservados por compatibilidade são exceções explícitas à nom
 
 O atualizador monta e valida o plano antes de copiar arquivos. Uma pasta com nome de arquivo, ou um arquivo no caminho de uma pasta, deve interromper a atualização antes das sobrescritas. O backup permanece obrigatório. Em exceções tratadas durante as cópias, restaurar os arquivos anteriores, remover os novos da tentativa e conferir o conteúdo por hash. Se a recuperação ficar incompleta, informar arquivos pendentes e preservar o backup. Queda de energia e encerramento forçado não equivalem a uma exceção tratada; não há garantia de transação atômica entre todos os arquivos. O fluxo e as regressões estão em [Revisão do atualizador](revisao-atualizador.md).
 
-A preparação das cenas conserva o backup e o marcador v7. Alterações em scripts não exigem uma nova versão do marcador por si só. Mudanças na geração de geometria, prefab ou controller exigem planejar como projetos já preparados receberão a atualização.
+A preparação das cenas usa backup e marcador v8; a migração é descrita em [Estrutura de scripts](estrutura-scripts.md). Alterações em scripts não exigem uma nova versão do marcador por si só. Mudanças na geração de geometria, prefab ou controller exigem planejar como projetos já preparados receberão a atualização.
 
 As classes em `Assets/Editor` são excluídas da build pelo tratamento dessa pasta no Unity. Wrappers `#if UNITY_EDITOR` envolvendo o arquivo inteiro são redundantes nesse diretório. Diretivas continuam necessárias quando um arquivo de execução contém um trecho exclusivo de Editor ou desenvolvimento.
 

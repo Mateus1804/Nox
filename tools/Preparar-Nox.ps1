@@ -61,10 +61,12 @@ try {
     }
 }
 finally { $archive.Dispose() }
-foreach ($folder in @('Assets', 'Packages', 'ProjectSettings')) {
+foreach ($folder in @('Packages', 'ProjectSettings')) {
     $source = Join-Path $repo $folder
     Copy-Item -LiteralPath $source -Destination $Destino -Recurse -Force
 }
+# A mesma atualização verificada remove os caminhos antigos depois de copiar os novos.
+& (Join-Path $PSScriptRoot 'Atualizar-Nox.ps1') -Projeto $Destino
 Write-Host ('Projeto preparado em: ' + $Destino)
 Write-Host 'O ZIP original foi preservado. As cenas ainda precisam da preparação pelo Unity.'
 if (-not $GerarBuild) { return }

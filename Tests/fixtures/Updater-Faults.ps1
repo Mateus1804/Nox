@@ -17,7 +17,7 @@ function global:Copy-Item {
         throw 'simulated restore failure'
     }
     if (-not $global:Injected -and $projectWrite -and $path.EndsWith('/Assets/Art/NoxSky.shader') -and
-        $global:FaultMode -ne 'manifest') {
+        $global:FaultMode -in @('copy', 'restore', 'corrupt')) {
         $global:Injected = $true
         [IO.File]::WriteAllText($Destination, 'partial write')
         if ($global:FaultMode -ne 'corrupt') { throw 'simulated copy failure' }
@@ -34,5 +34,15 @@ function global:Set-Content {
         }
         Microsoft.PowerShell.Management\Set-Content @PSBoundParameters
     }
+}
+function global:Remove-Item {
+    [CmdletBinding()]
+    param([string]$LiteralPath, [switch]$Force)
+    if ($global:FaultMode -eq 'retire' -and -not $global:Injected -and
+        $LiteralPath.Replace('\', '/').EndsWith('/Assets/Scripts/PlayerScript.cs.meta')) {
+        $global:Injected = $true
+        throw 'simulated retirement failure'
+    }
+    Microsoft.PowerShell.Management\Remove-Item @PSBoundParameters
 }
 & $Updater -Projeto $ProjectRoot

@@ -1,0 +1,627 @@
+{
+  "sourceCommit": "cbfbf7a101273fe3b035ad94ad9e975acc3e9e3c",
+  "version": 1,
+  "scripts": [
+    {
+      "from": "Assets/Editor/NoxBuild.cs",
+      "to": "Assets/Editor/Build/NoxBuild.cs",
+      "oldType": "NoxBuild",
+      "newType": "NoxBuild",
+      "guid": "8144abcf33c440cb93fb0f91f2465f98",
+      "component": false,
+      "sha256": "4c8d80745fd2607d90e71ca99b2c18668c3d0b457a9d1fe90f9a3be0e07ac8c3"
+    },
+    {
+      "from": "Assets/Editor/NoxCharacterAssets.cs",
+      "to": "Assets/Editor/Character/NoxCharacterAssets.cs",
+      "oldType": "NoxCharacterAssets",
+      "newType": "NoxCharacterAssets",
+      "guid": "9ce69118e39441c5af7add60c7243801",
+      "component": false,
+      "sha256": "8984ab9a78776eb13bf33675cafb07fcfa176dc2f8436b69271993eac9e9539c"
+    },
+    {
+      "from": "Assets/Editor/NoxCharacterSetup.cs",
+      "to": "Assets/Editor/Character/NoxCharacterSetup.cs",
+      "oldType": "NoxCharacterSetup",
+      "newType": "NoxCharacterSetup",
+      "guid": "bc5c9e22ab544cb98d05fda5f0a7e258",
+      "component": false,
+      "sha256": "d30fe6d3a92e24e24755e07559ac05130c2b13931650dc1efeba5c1a593355dc"
+    },
+    {
+      "from": "Assets/Editor/NoxGameplayChecks.cs",
+      "to": "Assets/Editor/Validation/NoxGameplayChecks.cs",
+      "oldType": "NoxGameplayChecks",
+      "newType": "NoxGameplayChecks",
+      "guid": "d806d7547dc746a9950bb57f64c281d5",
+      "component": false,
+      "sha256": "991b8ca284207e6cdd601ee5fbb7e6a76a9dd155e9beb7be8b88e7556eac01f6"
+    },
+    {
+      "from": "Assets/Editor/NoxPhysicsChecks.cs",
+      "to": "Assets/Editor/Validation/NoxPhysicsChecks.cs",
+      "oldType": "NoxPhysicsChecks",
+      "newType": "NoxPhysicsChecks",
+      "guid": "a148bcb4aa4e43eda6d7cd14233efd06",
+      "component": false,
+      "sha256": "86f3155e7a10722fffb22c3f40c8104ea79b4178e9d8af728644f416ed4f36bc"
+    },
+    {
+      "from": "Assets/Editor/NoxPreparationNotice.cs",
+      "to": "Assets/Editor/Build/NoxPreparationNotice.cs",
+      "oldType": "NoxPreparationNotice",
+      "newType": "NoxPreparationNotice",
+      "guid": "d7ab8c4a88a94be686aa72cfdd94245e",
+      "component": false,
+      "sha256": "b9879ad71f7c7dff7c44ef4fafc5cfad494b56c7d867f623ef5c704e2860269a"
+    },
+    {
+      "from": "Assets/Editor/NoxProjectAudit.cs",
+      "to": "Assets/Editor/Validation/NoxProjectAudit.cs",
+      "oldType": "NoxProjectAudit",
+      "newType": "NoxProjectAudit",
+      "guid": "edaac88db5154cb1abebd1be0729bcc9",
+      "component": false,
+      "sha256": "43e7571bf323b1edae4d619a36cddec641438133ea6b34b56d86583d55b16554"
+    },
+    {
+      "from": "Assets/Editor/NoxSceneArt.cs",
+      "to": "Assets/Editor/Scenes/NoxSceneArt.cs",
+      "oldType": "NoxSceneArt",
+      "newType": "NoxSceneArt",
+      "guid": "44db4caa7d834ffd9c15800e4909eda8",
+      "component": false,
+      "sha256": "17deb92c7098cc04dc2366754ae66a915fc698a28179ffc7d9ed1b766bdfe051"
+    },
+    {
+      "from": "Assets/Editor/NoxScenePolish.cs",
+      "to": "Assets/Editor/Scenes/NoxScenePolish.cs",
+      "oldType": "NoxScenePolish",
+      "newType": "NoxScenePolish",
+      "guid": "fed47db2c7ab40a9a1b4daef5d01703d",
+      "component": false,
+      "sha256": "568c64cd3d98edda0c7902c1d7c5556a3a19942eb79fcda0f3006314d052e316"
+    },
+    {
+      "from": "Assets/Editor/NoxSceneTransaction.cs",
+      "to": "Assets/Editor/Build/NoxSceneTransaction.cs",
+      "oldType": "NoxSceneTransaction",
+      "newType": "NoxSceneTransaction",
+      "guid": "78d3c7f6e1164d7fb3806ecfe17cd761",
+      "component": false,
+      "sha256": "69d69a21493b29f3c221b980a58b3eccf5a6719d3517c452053e882100717466"
+    },
+    {
+      "from": "Assets/Editor/NoxTraversalRepair.cs",
+      "to": "Assets/Editor/Scenes/NoxTraversalRepair.cs",
+      "oldType": "NoxTraversalRepair",
+      "newType": "NoxTraversalRepair",
+      "guid": "7393ec3dce6e4206a13accfbc3948b19",
+      "component": false,
+      "sha256": "b39807b6c50e5dc8b59be112a34bce0172bf33bda97a24e9ccfdb86822c45b85"
+    },
+    {
+      "from": "Assets/Editor/NoxVisualChecks.cs",
+      "to": "Assets/Editor/Validation/NoxVisualChecks.cs",
+      "oldType": "NoxVisualChecks",
+      "newType": "NoxVisualChecks",
+      "guid": "5e768e1f316845adbfe9930b9b573f7f",
+      "component": false,
+      "sha256": "3d24c2b2d349ea00dc119e6ebb67efed4f27b9c8c252cc6b7bfe96592ffba700"
+    },
+    {
+      "from": "Assets/Scripts/AimEnemy.cs",
+      "to": "Assets/Scripts/Enemies/NoxRangedAttack.cs",
+      "oldType": "AimEnemy",
+      "newType": "NoxRangedAttack",
+      "guid": "768d530a02901b54b8867c0363eefed9",
+      "component": true,
+      "sha256": "bf17f198f3446c15af740c0e750c001fda043456ed6ef05cd56f0e6608b0578f"
+    },
+    {
+      "from": "Assets/Scripts/Billboard.cs",
+      "to": "Assets/Scripts/World/NoxBillboard.cs",
+      "oldType": "Billboard",
+      "newType": "NoxBillboard",
+      "guid": "4630f8215fd919748b88ad116db2079d",
+      "component": true,
+      "sha256": "4454c27a57cec8542ad79089cd4ff8c9c45b61ce271be6907ab4dbf511ddb0c2"
+    },
+    {
+      "from": "Assets/Scripts/Boss.cs",
+      "to": "Assets/Scripts/Compatibility/Boss.cs",
+      "oldType": "Boss",
+      "newType": "Boss",
+      "guid": "e97bf69050e7b7c4394f47fd7d20a74a",
+      "component": true,
+      "sha256": "0514f287427c0e46af771d3156191a37efdbd987ec41e65f02d584c0e1d5d352"
+    },
+    {
+      "from": "Assets/Scripts/BossScript.cs",
+      "to": "Assets/Scripts/Compatibility/BossScript.cs",
+      "oldType": "BossScript",
+      "newType": "BossScript",
+      "guid": "b9687644d33021e4d8263f94977dc77f",
+      "component": true,
+      "sha256": "fcc26dd9eba4b2e02bfdf362bd1f2a72db0fde899bb110c4013564e38a28421b"
+    },
+    {
+      "from": "Assets/Scripts/Bullet.cs",
+      "to": "Assets/Scripts/Combat/NoxPlayerProjectile.cs",
+      "oldType": "Bullet",
+      "newType": "NoxPlayerProjectile",
+      "guid": "37cccb5569b21b04693decb00e110531",
+      "component": true,
+      "sha256": "2402db420bcfd2166aff21ea94ef7b4a22b7bf596ba7e1ab54a01c15c639da40"
+    },
+    {
+      "from": "Assets/Scripts/BulletEnemy.cs",
+      "to": "Assets/Scripts/Combat/NoxEnemyProjectile.cs",
+      "oldType": "BulletEnemy",
+      "newType": "NoxEnemyProjectile",
+      "guid": "3f9e5b29249afcf44a8dfaca38979ce9",
+      "component": true,
+      "sha256": "3bb9c6add04e2e9756e535002f2618fe6a4403d431bc476abdf219d61d68f2e9"
+    },
+    {
+      "from": "Assets/Scripts/CameraFollow.cs",
+      "to": "Assets/Scripts/UI/NoxFollowCamera.cs",
+      "oldType": "CameraFollow",
+      "newType": "NoxFollowCamera",
+      "guid": "b5ffddddfd35e1d41874f113c8001608",
+      "component": true,
+      "sha256": "aa20a672f7f2cf1544f2fbb14dcffe622cbc388c06e1db4b0306eef295e8ba0f"
+    },
+    {
+      "from": "Assets/Scripts/ChangeTextColor.cs",
+      "to": "Assets/Scripts/UI/NoxButtonHighlight.cs",
+      "oldType": "ChangeTextColor",
+      "newType": "NoxButtonHighlight",
+      "guid": "40e322dc1c4889740a9c918ab28ce946",
+      "component": true,
+      "sha256": "844f0f5bdb279f941aa7dc89663e1fe4533973bb63682e59961d975ffea749d7"
+    },
+    {
+      "from": "Assets/Scripts/Cristais.cs",
+      "to": "Assets/Scripts/World/NoxCrystalPickup.cs",
+      "oldType": "Cristais",
+      "newType": "NoxCrystalPickup",
+      "guid": "3f60a607b2ea6064bb7c1a5e62387deb",
+      "component": true,
+      "sha256": "d211adaf4c9a82ebc98c120e9d7c6abab87f17e05bdcd08dfd95a5d136345886"
+    },
+    {
+      "from": "Assets/Scripts/EnemiesWaypoint.cs",
+      "to": "Assets/Scripts/Enemies/NoxWaypointPatrol.cs",
+      "oldType": "EnemiesWaypoint",
+      "newType": "NoxWaypointPatrol",
+      "guid": "95833d18e2f32b84783491dbb694f4e6",
+      "component": true,
+      "sha256": "05c19878f98817e1cb9b955b1a32a34e5fdb194b8bd739a3da303a7423465ffd"
+    },
+    {
+      "from": "Assets/Scripts/EnemyAir.cs",
+      "to": "Assets/Scripts/Enemies/NoxEnemyHealth.cs",
+      "oldType": "EnemyAir",
+      "newType": "NoxEnemyHealth",
+      "guid": "9dea8edca6885d24d9354e79f9528019",
+      "component": true,
+      "sha256": "3490b5fdfac49d1ae6c62ce1f7dd8c602418df0b51383368a3b9d2cd1e8bf154"
+    },
+    {
+      "from": "Assets/Scripts/EnemyPatrol.cs",
+      "to": "Assets/Scripts/Enemies/NoxEnemyNavigation.cs",
+      "oldType": "EnemyPatrol",
+      "newType": "NoxEnemyNavigation",
+      "guid": "95f713993ca898144953eefc7949a440",
+      "component": true,
+      "sha256": "d5cc0907e8049469a9c9d57e570eaae5bb312110c178a8abe40f6dc58bbe5079"
+    },
+    {
+      "from": "Assets/Scripts/HUDAndSounds.cs",
+      "to": "Assets/Scripts/UI/NoxGameInterface.cs",
+      "oldType": "HUDAndSounds",
+      "newType": "NoxGameInterface",
+      "guid": "18a2000c78aa5ca4c8f1ebc645ddcbce",
+      "component": true,
+      "sha256": "60f413a5d7c323a38cacb4342a5cbc4e81ba4a617b1dc7da5caaa462b24d3dea"
+    },
+    {
+      "from": "Assets/Scripts/Lever.cs",
+      "to": "Assets/Scripts/World/NoxPressureSwitch.cs",
+      "oldType": "Lever",
+      "newType": "NoxPressureSwitch",
+      "guid": "312583b911f70bf4882a280446fc792c",
+      "component": true,
+      "sha256": "98878ea6fd62f2dd89e0592e9399891779869d06f3a909112f598d73d91867b7"
+    },
+    {
+      "from": "Assets/Scripts/LoadLevels.cs",
+      "to": "Assets/Scripts/UI/NoxLevelSelection.cs",
+      "oldType": "LoadLevels",
+      "newType": "NoxLevelSelection",
+      "guid": "5eb874c30525a36498a69ee16227ead5",
+      "component": true,
+      "sha256": "6678749d86766fff404db6003663267c9d966b6accfda88e08019c830d3b958e"
+    },
+    {
+      "from": "Assets/Scripts/MovableObjectsScript.cs",
+      "to": "Assets/Scripts/Player/NoxCrateInteraction.cs",
+      "oldType": "MovableObjectsScript",
+      "newType": "NoxCrateInteraction",
+      "guid": "c5fdf332bf99d7941b22f981ccb57a82",
+      "component": true,
+      "sha256": "228ca4bc939f2b30ccfcb4b860a22d672b68273dcdadbf7cedae2a431eec12bf"
+    },
+    {
+      "from": "Assets/Scripts/NoxAttackCycle.cs",
+      "to": "Assets/Scripts/Domain/NoxCombatRules.cs",
+      "oldType": "NoxAttackCycle",
+      "newType": "NoxAttackCycle",
+      "guid": "87e426349e9e4cc3abca755a61d62486",
+      "component": false,
+      "sha256": "c3a188d0ce7fe0adec4d1134a59071c150ea32ca126b6113ab7c81ff4429c72a"
+    },
+    {
+      "from": "Assets/Scripts/NoxAttackHitbox.cs",
+      "to": "Assets/Scripts/Combat/NoxAttackHitbox.cs",
+      "oldType": "NoxAttackHitbox",
+      "newType": "NoxAttackHitbox",
+      "guid": "83452f140157493d807bba32db1b0221",
+      "component": true,
+      "sha256": "c29016fc62181e38b6a8ad5f5c93c8ae451a30e74d41975b717b46b5a08e6098"
+    },
+    {
+      "from": "Assets/Scripts/NoxBootstrap.cs",
+      "to": "Assets/Scripts/Core/NoxBootstrap.cs",
+      "oldType": "NoxBootstrap",
+      "newType": "NoxBootstrap",
+      "guid": "91abf5d3b8ef4117992965952d7db8ea",
+      "component": false,
+      "sha256": "1967b282f5728c351e6ee98996b715dd6811ce2541c34d580fe24a7900a95fa9"
+    },
+    {
+      "from": "Assets/Scripts/NoxCharacterVisual.cs",
+      "to": "Assets/Scripts/Player/NoxCharacterVisual.cs",
+      "oldType": "NoxCharacterVisual",
+      "newType": "NoxCharacterVisual",
+      "guid": "ddfc861268eb40be80c0d18155375108",
+      "component": true,
+      "sha256": "44d07054ed474bc1680eb24c0b896f2b293fd7b7a5f00041e5e2e04d7c6179fa"
+    },
+    {
+      "from": "Assets/Scripts/NoxChaseController.cs",
+      "to": "Assets/Scripts/Enemies/NoxChaseController.cs",
+      "oldType": "NoxChaseController",
+      "newType": "NoxChaseController",
+      "guid": "1c056286024d41359d967aafae0a2fae",
+      "component": false,
+      "sha256": "ea4694add499693fb9d3baadeb07cd850614e8dd848791ed5ce7540c320804c3"
+    },
+    {
+      "from": "Assets/Scripts/NoxDamageWindow.cs",
+      "to": "Assets/Scripts/Domain/NoxCombatRules.cs",
+      "oldType": "NoxDamageWindow",
+      "newType": "NoxDamageWindow",
+      "guid": "a7ac3e3786ac4d19bd457ec6340113e2",
+      "component": false,
+      "sha256": "b564b65de88a3265ec00a39093d09212271e909d74c996e9e755dc0ab377d8cf"
+    },
+    {
+      "from": "Assets/Scripts/NoxEnemyCycle.cs",
+      "to": "Assets/Scripts/Domain/NoxCombatRules.cs",
+      "oldType": "NoxEnemyCycle",
+      "newType": "NoxEnemyCycle",
+      "guid": "ea5b3883d9724b639ad5dc5976daa8df",
+      "component": false,
+      "sha256": "3d825e3194aa3b8c067815057348513dbcaa45310102363338b512bf1c9fd5d5"
+    },
+    {
+      "from": "Assets/Scripts/NoxEnemyStrike.cs",
+      "to": "Assets/Scripts/Enemies/NoxEnemyStrike.cs",
+      "oldType": "NoxEnemyStrike",
+      "newType": "NoxEnemyStrike",
+      "guid": "2326391563c24853b17b8f310ab26046",
+      "component": true,
+      "sha256": "488d27f0a3a2344d70519d36fe74ad53185cc9c9241e49201298252a2c47d733"
+    },
+    {
+      "from": "Assets/Scripts/NoxExplosion.cs",
+      "to": "Assets/Scripts/Combat/NoxExplosion.cs",
+      "oldType": "NoxExplosion",
+      "newType": "NoxExplosion",
+      "guid": "cdf8e81682894a289368237998130c0d",
+      "component": false,
+      "sha256": "2958f9570458ee71c28091c0449113906598b5d2eeec6a086b055a4bec2d26f4"
+    },
+    {
+      "from": "Assets/Scripts/NoxHitRegistry.cs",
+      "to": "Assets/Scripts/Domain/NoxCombatRules.cs",
+      "oldType": "NoxHitRegistry",
+      "newType": "NoxHitRegistry",
+      "guid": "2106b0d0a4a94e2c8f04a66a42f4b179",
+      "component": false,
+      "sha256": "9b20cda9ba6c95e7e660a5ab87a2e12e40ed1d612fd21e875444bc14a7744562"
+    },
+    {
+      "from": "Assets/Scripts/NoxJumpAssist.cs",
+      "to": "Assets/Scripts/Domain/NoxMovementRules.cs",
+      "oldType": "NoxJumpAssist",
+      "newType": "NoxJumpAssist",
+      "guid": "fbb1c88f82134055a5e42d65f37d6ae9",
+      "component": false,
+      "sha256": "e38a7ab0a30171e96a63f227fe22ee4adce64af35d05e26ee619867ce97eb3d9"
+    },
+    {
+      "from": "Assets/Scripts/NoxJumpEnvelope.cs",
+      "to": "Assets/Scripts/Domain/NoxMovementRules.cs",
+      "oldType": "NoxJumpEnvelope",
+      "newType": "NoxJumpEnvelope",
+      "guid": "b9d5416affba4203a1eafb48ac964045",
+      "component": false,
+      "sha256": "c2bb27152816a255615847239fa5ec992eadac09b49482b054e60e447cea0cd2"
+    },
+    {
+      "from": "Assets/Scripts/NoxMenuFocus.cs",
+      "to": "Assets/Scripts/UI/NoxMenuFocus.cs",
+      "oldType": "NoxMenuFocus",
+      "newType": "NoxMenuFocus",
+      "guid": "d0c8b568dfe64f7da62dcd0a1e1c6db6",
+      "component": true,
+      "sha256": "d64e394260a696beb956a31ff5fd66e25ca4a0b97fe46c7cc50e6a70247dd1d9"
+    },
+    {
+      "from": "Assets/Scripts/NoxMotionRules.cs",
+      "to": "Assets/Scripts/Domain/NoxMovementRules.cs",
+      "oldType": "NoxMotionRules",
+      "newType": "NoxMotionRules",
+      "guid": "e560c4b30cf747a7a5ab233548bb186a",
+      "component": false,
+      "sha256": "6d28c9e1fe57a95b20e0e54f7602af68ebd42ac3a7bc4f68b4e99a8adeff4b47"
+    },
+    {
+      "from": "Assets/Scripts/NoxPerception.cs",
+      "to": "Assets/Scripts/Enemies/NoxPerception.cs",
+      "oldType": "NoxPerception",
+      "newType": "NoxPerception",
+      "guid": "b68461f2c2e54de596e73e63c00f4e8d",
+      "component": false,
+      "sha256": "c6fd829dd13fe21ee40c0f7ba6662c1c5da03e3c88c1997c29826572594e4810"
+    },
+    {
+      "from": "Assets/Scripts/NoxPlayHud.cs",
+      "to": "Assets/Scripts/UI/NoxPlayHud.cs",
+      "oldType": "NoxPlayHud",
+      "newType": "NoxPlayHud",
+      "guid": "acc0fe6987b44b97b8941d12c5ef11f1",
+      "component": true,
+      "sha256": "f55f14582a5bfad481a3490963ac9d1937018d41163cb3b844d2a42f92fc506b"
+    },
+    {
+      "from": "Assets/Scripts/NoxPlayerCombat.cs",
+      "to": "Assets/Scripts/Combat/NoxPlayerCombat.cs",
+      "oldType": "NoxPlayerCombat",
+      "newType": "NoxPlayerCombat",
+      "guid": "a446716bd7b840789509f4741e3627c7",
+      "component": false,
+      "sha256": "a20dcb2e3fd4914b1573861d556e45a10a3a47541f9ba2ca8510643d7e538b48"
+    },
+    {
+      "from": "Assets/Scripts/NoxPlayerControllerSupport.cs",
+      "to": "Assets/Scripts/Player/NoxPlayerController.cs",
+      "oldType": "NoxPlayerControllerSupport",
+      "newType": "NoxPlayerControllerSupport",
+      "guid": "9180b5569bcf4c229333654eccb2542e",
+      "component": false,
+      "sha256": "0bd95eb008c7dfa50efa3ae9404b00fdc5d31a6a72d14e6ddeb099362d3daf43"
+    },
+    {
+      "from": "Assets/Scripts/NoxPlayerMotor.cs",
+      "to": "Assets/Scripts/Player/NoxPlayerMotor.cs",
+      "oldType": "NoxPlayerMotor",
+      "newType": "NoxPlayerMotor",
+      "guid": "477e2848a129455c80219b8886d08690",
+      "component": false,
+      "sha256": "48978a6188b0639c0ef8e505f12f06ad63e067db248abcca81414057136249d9"
+    },
+    {
+      "from": "Assets/Scripts/NoxPresentation.cs",
+      "to": "Assets/Scripts/Core/NoxPresentation.cs",
+      "oldType": "NoxPresentation",
+      "newType": "NoxPresentation",
+      "guid": "185b697bae354294865bb0ba05d98664",
+      "component": false,
+      "sha256": "b2e3fbb06d7c864f5864c40a0ff255b725ceb2c01446dbbc744f3d641f340f9e"
+    },
+    {
+      "from": "Assets/Scripts/NoxPresentationOptions.cs",
+      "to": "Assets/Scripts/UI/NoxPresentationOptions.cs",
+      "oldType": "NoxPresentationOptions",
+      "newType": "NoxPresentationOptions",
+      "guid": "d89c3670842347ec9f989ad694b1c4e0",
+      "component": true,
+      "sha256": "5ad1dec56f304cfb6135844b3c30a2d9b18c78f6139a0d9739fb72ecda10b35c"
+    },
+    {
+      "from": "Assets/Scripts/NoxProgress.cs",
+      "to": "Assets/Scripts/Core/NoxProgress.cs",
+      "oldType": "NoxProgress",
+      "newType": "NoxProgress",
+      "guid": "0359a3f2b30b45eeb7be7ac17d446fea",
+      "component": false,
+      "sha256": "a31643f276da64525f89ee5106722fcc80ac504721cee61409b901f99568fabf"
+    },
+    {
+      "from": "Assets/Scripts/NoxProgressRules.cs",
+      "to": "Assets/Scripts/Domain/NoxProgressRules.cs",
+      "oldType": "NoxProgressRules",
+      "newType": "NoxProgressRules",
+      "guid": "59ecf983fde14d1eb7e70fee041b4bab",
+      "component": false,
+      "sha256": "3479b7cd739211dc4c62eb497202e5c3eaa3ba67cd3c9f9a8af8037959e8f942"
+    },
+    {
+      "from": "Assets/Scripts/NoxResumeButton.cs",
+      "to": "Assets/Scripts/UI/NoxResumeButton.cs",
+      "oldType": "NoxResumeButton",
+      "newType": "NoxResumeButton",
+      "guid": "681d34116dc045cca13fa0b89d9c211c",
+      "component": true,
+      "sha256": "288d6782a94faa1c45db382b0e4216627a2d19dddceaf70508b327b841094e26"
+    },
+    {
+      "from": "Assets/Scripts/NoxRules.cs",
+      "to": "Assets/Scripts/Domain/NoxRules.cs",
+      "oldType": "NoxRules",
+      "newType": "NoxRules",
+      "guid": "c23d125d718b44c289ea7198b0df89a2",
+      "component": false,
+      "sha256": "5eab5d7965fe3ba9aa19d52858557d8f225e802631eda1a6cf94ba9795f7e196"
+    },
+    {
+      "from": "Assets/Scripts/NoxSceneActions.cs",
+      "to": "Assets/Scripts/Core/NoxSceneActions.cs",
+      "oldType": "NoxSceneActions",
+      "newType": "NoxSceneActions",
+      "guid": "8081aac9a2b24f26b7b1e011a1acdd43",
+      "component": true,
+      "sha256": "4796134708e8d2ffc5c6fc027b24885abde67ea88ba91e13782dccc67c8f6af7"
+    },
+    {
+      "from": "Assets/Scripts/NoxSceneLoadGate.cs",
+      "to": "Assets/Scripts/Domain/NoxProgressRules.cs",
+      "oldType": "NoxSceneLoadGate",
+      "newType": "NoxSceneLoadGate",
+      "guid": "3e9f01e7bbb04e8ab9196005dc66fc84",
+      "component": false,
+      "sha256": "bf919f4082c6a2c32ef65940d2999771263b687dde9a16c77ddc78de681847ab"
+    },
+    {
+      "from": "Assets/Scripts/NoxSession.cs",
+      "to": "Assets/Scripts/Core/NoxSession.cs",
+      "oldType": "NoxSession",
+      "newType": "NoxSession",
+      "guid": "bb003950a6664ac2ae496f9e8d93dac9",
+      "component": false,
+      "sha256": "69ef5f2f2960d509798ef9eb82f07dbdc8a4a317ceed155b6d6f33df2ffb8526"
+    },
+    {
+      "from": "Assets/Scripts/NoxThreatCue.cs",
+      "to": "Assets/Scripts/Enemies/NoxThreatCue.cs",
+      "oldType": "NoxThreatCue",
+      "newType": "NoxThreatCue",
+      "guid": "08b92dd7c042462a90cca0b1db357283",
+      "component": true,
+      "sha256": "f169b88225e1fc371bb4f734a71207bde94450c2a92149712521857f9acdba75"
+    },
+    {
+      "from": "Assets/Scripts/PlaceHolderPanel.cs",
+      "to": "Assets/Scripts/UI/NoxLevelResultScreen.cs",
+      "oldType": "PlaceHolderPanel",
+      "newType": "NoxLevelResultScreen",
+      "guid": "afb75c1007761094991c109aa31f1985",
+      "component": true,
+      "sha256": "c36f0397e7301e34d326f292fe56fdf01ecac49fd0d1116811b51b16feb3ef60"
+    },
+    {
+      "from": "Assets/Scripts/PlayerScript.cs",
+      "to": "Assets/Scripts/Compatibility/PlayerScript.cs",
+      "oldType": "PlayerScript",
+      "newType": "PlayerScript",
+      "guid": "55f91ba873b4a4442a88e2977471b415",
+      "component": true,
+      "sha256": "157204ec634b22709d5ce48128a649b16ae75d918f8cfc5a5bba9884bd23886e"
+    },
+    {
+      "from": "Assets/Scripts/PlayerTwo.cs",
+      "to": "Assets/Scripts/Compatibility/PlayerTwo.cs",
+      "oldType": "PlayerTwo",
+      "newType": "PlayerTwo",
+      "guid": "b38215b7abaf94e4abf5f84c52956c70",
+      "component": true,
+      "sha256": "bf859bb96971806ceb045986d00d29e6ae3d7c360ea552da5981e973864def8b"
+    },
+    {
+      "from": "Assets/Scripts/RotateSky.cs",
+      "to": "Assets/Scripts/World/NoxSkyRotation.cs",
+      "oldType": "RotateSky",
+      "newType": "NoxSkyRotation",
+      "guid": "a75e11c4433c9a141ba1d8558c7e9e67",
+      "component": true,
+      "sha256": "9ec42b4ca5f781bff68cc9bd39f0de8000841f243b27a60f79962d27beb47533"
+    },
+    {
+      "from": "Assets/Scripts/SlashScript.cs",
+      "to": "Assets/Scripts/Combat/NoxMeleeEffect.cs",
+      "oldType": "SlashScript",
+      "newType": "NoxMeleeEffect",
+      "guid": "29901f94897e8ce43a472afb92eaf1af",
+      "component": true,
+      "sha256": "b1d58b75a113e3b0a57173058abee3636d6b5bc54d639ff9bbb9716caca77f40"
+    },
+    {
+      "from": "Assets/Scripts/ThirdSlash.cs",
+      "to": "Assets/Scripts/Combat/NoxTravelingEffect.cs",
+      "oldType": "ThirdSlash",
+      "newType": "NoxTravelingEffect",
+      "guid": "f80dc37e7055762409c697f48f725fd8",
+      "component": true,
+      "sha256": "9ebf57523656c23821cd847c235222a08fcf1fbdb3daaf629ea85aebf3a6c07a"
+    },
+    {
+      "from": "Assets/Scripts/TutorialList.cs",
+      "to": "Assets/Scripts/UI/NoxTutorialSequence.cs",
+      "oldType": "TutorialList",
+      "newType": "NoxTutorialSequence",
+      "guid": "8311ff0fd1dc4734392245a72261d36f",
+      "component": true,
+      "sha256": "c00bb01bcf7c1610e16f3cec1454521aceb71ef649cd125ff07f080a1baa0b8f"
+    },
+    {
+      "from": "Assets/Scripts/TutorialMethod.cs",
+      "to": "Assets/Scripts/UI/NoxTutorialTrigger.cs",
+      "oldType": "TutorialMethod",
+      "newType": "NoxTutorialTrigger",
+      "guid": "8da18415b38632144bebabbd25d38df6",
+      "component": true,
+      "sha256": "b5a22e8289ab8f57a40e828090bf22c08afab05fde4c8f087be4f49672c7cfd8"
+    },
+    {
+      "from": "Assets/Scripts/WaypointsAirPhase.cs",
+      "to": "Assets/Scripts/World/NoxMovingPlatform.cs",
+      "oldType": "WaypointsAirPhase",
+      "newType": "NoxMovingPlatform",
+      "guid": "35144ac4964961c4fad6b5a8a623c345",
+      "component": true,
+      "sha256": "a03b8160547bdf42d8b78ef6e968ce66b6cd3c627abfd2d94f4f449a7d25ef9e"
+    },
+    {
+      "from": "Assets/Scripts/plataforma.cs",
+      "to": "Assets/Scripts/Compatibility/plataforma.cs",
+      "oldType": "plataforma",
+      "newType": "plataforma",
+      "guid": "e8207e94bc4382f4b9b4826f0d9cd881",
+      "component": true,
+      "sha256": "8a843f9196c6afb08f1d0e05ef97057cdbf1da5c232c6c82f0740a30ac688b1a"
+    },
+    {
+      "from": "Assets/Scripts/portalR.cs",
+      "to": "Assets/Scripts/World/NoxPortalRotation.cs",
+      "oldType": "portalR",
+      "newType": "NoxPortalRotation",
+      "guid": "2d1d0ba45233cd34381e395ddbcb46e6",
+      "component": true,
+      "sha256": "155cae6a6f5a73d4d14348bf28cd02878ba0a5da7720b20703f9f91cd480916a"
+    },
+    {
+      "from": "Assets/Scripts/portaldentro.cs",
+      "to": "Assets/Scripts/Compatibility/portaldentro.cs",
+      "oldType": "portaldentro",
+      "newType": "portaldentro",
+      "guid": "cf69ce43636a22d49a5f1115410a800f",
+      "component": true,
+      "sha256": "88d7e33f28d2bc6e884f057157adbdda6738720065d1384631cbc4f9fc157813"
+    }
+  ]
+}

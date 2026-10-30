@@ -13,6 +13,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL = "7da36c5a97651df26c9fd8197ab9e5203efd7082"
 POWERSHELL = os.environ.get("NOX_TEST_POWERSHELL", "pwsh")
+MIGRATION = json.loads(
+    (ROOT / "Assets/Editor/Build/script-migration.json").read_text(encoding="utf-8")
+)
+CURRENT_PATHS = {entry["from"]: entry["to"] for entry in MIGRATION["scripts"]}
+
+
+def current_path(path):
+    if path.endswith(".cs.meta"):
+        return CURRENT_PATHS.get(path[:-5], path[:-5]) + ".meta"
+    return CURRENT_PATHS.get(path, path)
 
 
 class PreparationTests(unittest.TestCase):
@@ -22,6 +32,7 @@ class PreparationTests(unittest.TestCase):
         self.archive = self.base / "original.zip"
         self.destination = self.base / "projeto com espaços"
         self.manifest = json.loads((ROOT / "docs/importacao.json").read_text(encoding="utf-8"))
+        self.preparation_backups = set()
         self.files = {}
         for item in self.manifest["arquivos"]:
             content = subprocess.check_output(
@@ -43,7 +54,7 @@ class PreparationTests(unittest.TestCase):
                 archive.writestr("Nox_Project/" + path, value)
 
     def prepare(self):
-        return subprocess.run(
+        result = subprocess.run(
             [
                 POWERSHELL,
                 "-NoProfile",
@@ -58,13 +69,22 @@ class PreparationTests(unittest.TestCase):
             capture_output=True,
         )
 
+        if result.returncode == 0:
+            self.preparation_backups = set(self.base.glob("*-Backup-Scripts-*"))
+        return result
+
+    def update_backups(self):
+        return sorted(set(self.base.glob("*-Backup-Scripts-*")) - self.preparation_backups)
+
     def modified_project(self):
         self.write_zip()
         result = self.prepare()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        (self.destination / "Assets/Scripts/PlayerScript.cs").write_bytes(b"// previous player\n")
+        (self.destination / "Assets/Scripts/Compatibility/PlayerScript.cs").write_bytes(
+            b"// previous player\n"
+        )
         (self.destination / "Assets/Art/NoxSky.shader").write_bytes(b"// previous shader\n")
-        for name in ["NoxPlayerControllerSupport.cs", "NoxPlayerControllerSupport.cs.meta"]:
+        for name in ["Player/NoxPlayerController.cs", "Player/NoxPlayerController.cs.meta"]:
             (self.destination / "Assets/Scripts" / name).unlink()
         return self.project_snapshot()
 
@@ -97,7 +117,7 @@ class PreparationTests(unittest.TestCase):
         )
 
     def recovery_report(self):
-        backup = next(self.base.glob("projeto com espaços-Backup-Scripts-*"))
+        backup = next(iter(self.update_backups()))
         return backup, json.loads((backup / "recuperacao.json").read_text(encoding="utf-8-sig"))
 
     def test_updater_restores_partial_write_and_removes_new_files(self):
@@ -108,9 +128,13 @@ class PreparationTests(unittest.TestCase):
         backup, report = self.recovery_report()
         self.assertEqual("restaurado", report["status"])
         self.assertEqual([], report["falhasDeRecuperacao"])
-        self.assertIn("Assets/Scripts/NoxPlayerControllerSupport.cs", report["arquivosTentados"])
+        self.assertIn(
+            "Assets/Scripts/Player/NoxPlayerController.cs",
+            {path.replace("\\", "/") for path in report["arquivosTentados"]},
+        )
         self.assertEqual(
-            b"// previous player\n", (backup / "Assets/Scripts/PlayerScript.cs").read_bytes()
+            b"// previous player\n",
+            (backup / "Assets/Scripts/Compatibility/PlayerScript.cs").read_bytes(),
         )
 
     def test_updater_detects_corruption_and_restores_previous_bytes(self):
@@ -160,7 +184,7 @@ class PreparationTests(unittest.TestCase):
         self.write_zip()
         result = self.prepare()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        player = self.destination / "Assets/Scripts/PlayerScript.cs"
+        player = self.destination / "Assets/Scripts/Compatibility/PlayerScript.cs"
         player.write_bytes(b"// script local anterior\n")
         sky = self.destination / "Assets/Art/NoxSky.shader"
         sky.write_bytes(b"// shader local anterior\n")
@@ -180,18 +204,19 @@ class PreparationTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(
-            (ROOT / "Assets/Scripts/PlayerScript.cs").read_bytes(), player.read_bytes()
+            (ROOT / "Assets/Scripts/Compatibility/PlayerScript.cs").read_bytes(),
+            player.read_bytes(),
         )
         self.assertEqual(before_scene, scene.read_bytes())
         self.assertEqual(
             (ROOT / "Assets/Characters/Nox/Nox.fbx").read_bytes(),
             (self.destination / "Assets/Characters/Nox/Nox.fbx").read_bytes(),
         )
-        backups = list(self.base.glob("projeto com espaços-Backup-Scripts-*"))
+        backups = self.update_backups()
         self.assertEqual(1, len(backups))
         self.assertEqual(
             b"// script local anterior\n",
-            (backups[0] / "Assets/Scripts/PlayerScript.cs").read_bytes(),
+            (backups[0] / "Assets/Scripts/Compatibility/PlayerScript.cs").read_bytes(),
         )
         self.assertEqual(
             b"// shader local anterior\n", (backups[0] / "Assets/Art/NoxSky.shader").read_bytes()
@@ -226,14 +251,14 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         for name, content in files.items():
             self.assertEqual(content, (self.destination / name).read_bytes())
-        backup = next(self.base.glob("projeto com espaços-Backup-Scripts-*"))
+        backup = next(iter(self.update_backups()))
         self.assertEqual(
             b"material personalizado",
             (backup / "Assets/Art/Generated-v5/personalizado.mat").read_bytes(),
         )
         self.assertEqual(
-            (ROOT / "Assets/Editor/NoxScenePolish.cs").read_bytes(),
-            (self.destination / "Assets/Editor/NoxScenePolish.cs").read_bytes(),
+            (ROOT / "Assets/Editor/Scenes/NoxScenePolish.cs").read_bytes(),
+            (self.destination / "Assets/Editor/Scenes/NoxScenePolish.cs").read_bytes(),
         )
 
     def test_updater_rejects_directory_at_file_path_before_writing(self):
@@ -242,7 +267,7 @@ class PreparationTests(unittest.TestCase):
         shader = self.destination / "Assets/Art/NoxSky.shader"
         shader.unlink()
         shader.mkdir()
-        player = self.destination / "Assets/Scripts/PlayerScript.cs"
+        player = self.destination / "Assets/Scripts/Compatibility/PlayerScript.cs"
         player.write_bytes(b"// preservar antes da validacao\n")
         result = subprocess.run(
             [
@@ -259,7 +284,7 @@ class PreparationTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertEqual(b"// preservar antes da validacao\n", player.read_bytes())
         self.assertEqual([], list(shader.iterdir()))
-        self.assertFalse(list(self.base.glob("*-Backup-Scripts-*")))
+        self.assertFalse(self.update_backups())
 
     def test_updater_rejects_file_at_directory_path_before_writing(self):
         self.write_zip()
@@ -267,7 +292,7 @@ class PreparationTests(unittest.TestCase):
         art = self.destination / "Assets/Art"
         shutil.rmtree(art)
         art.write_bytes(b"pasta bloqueada")
-        player = self.destination / "Assets/Scripts/PlayerScript.cs"
+        player = self.destination / "Assets/Scripts/Compatibility/PlayerScript.cs"
         player.write_bytes(b"// preservar antes da validacao\n")
         result = subprocess.run(
             [
@@ -284,7 +309,109 @@ class PreparationTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertEqual(b"// preservar antes da validacao\n", player.read_bytes())
         self.assertEqual(b"pasta bloqueada", art.read_bytes())
-        self.assertFalse(list(self.base.glob("*-Backup-Scripts-*")))
+        self.assertFalse(self.update_backups())
+
+    def install_old_player_path(self, different_guid=False):
+        entry = next(item for item in MIGRATION["scripts"] if item["oldType"] == "PlayerScript")
+        target = self.destination / entry["from"]
+        target.write_bytes(
+            subprocess.check_output(
+                ["git", "show", MIGRATION["sourceCommit"] + ":" + entry["from"]], cwd=ROOT
+            )
+        )
+        guid = "00000000000000000000000000000001" if different_guid else entry["guid"]
+        target.with_name(target.name + ".meta").write_text(
+            "fileFormatVersion: 2\nguid: " + guid + "\n"
+        )
+        for name in [entry["to"], entry["to"] + ".meta"]:
+            (self.destination / name).unlink()
+        return entry
+
+    def test_updater_moves_old_layout_and_preserves_script_guid(self):
+        self.modified_project()
+        entry = self.install_old_player_path()
+        scene = self.destination / "Assets/Scenes/Menu1.2.unity"
+        before = scene.read_bytes()
+        result = subprocess.run(
+            [
+                POWERSHELL,
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertFalse((self.destination / entry["from"]).exists())
+        self.assertFalse((self.destination / (entry["from"] + ".meta")).exists())
+        self.assertEqual(
+            (ROOT / entry["to"]).read_bytes(), (self.destination / entry["to"]).read_bytes()
+        )
+        self.assertIn(entry["guid"], (self.destination / (entry["to"] + ".meta")).read_text())
+        self.assertEqual(before, scene.read_bytes())
+
+    def test_updater_rejects_old_path_owned_by_another_guid(self):
+        self.modified_project()
+        self.install_old_player_path(different_guid=True)
+        before = self.project_snapshot()
+        result = subprocess.run(
+            [
+                POWERSHELL,
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(before, self.project_snapshot())
+        self.assertFalse(self.update_backups())
+
+    def test_updater_restores_deleted_old_paths_when_retirement_fails(self):
+        self.modified_project()
+        self.install_old_player_path()
+        before = self.project_snapshot()
+        result = self.faulty_update("retire")
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(before, self.project_snapshot())
+        _, report = self.recovery_report()
+        self.assertEqual("restaurado", report["status"])
+        self.assertEqual("simulated retirement failure", report["erroOriginal"])
+
+    def test_updater_removes_known_orphaned_old_meta(self):
+        self.modified_project()
+        entry = self.install_old_player_path()
+        (self.destination / entry["from"]).unlink()
+        result = subprocess.run(
+            [
+                POWERSHELL,
+                "-NoProfile",
+                "-File",
+                str(ROOT / "tools/Atualizar-Nox.ps1"),
+                "-Projeto",
+                str(self.destination),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertFalse((self.destination / (entry["from"] + ".meta")).exists())
+        self.assertTrue((self.destination / entry["to"]).exists())
+
+    def test_preparation_does_not_leave_flat_duplicate_scripts(self):
+        self.write_zip()
+        result = self.prepare()
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        for entry in MIGRATION["scripts"]:
+            if entry["from"] != entry["to"]:
+                self.assertFalse((self.destination / entry["from"]).exists())
+                self.assertFalse((self.destination / (entry["from"] + ".meta")).exists())
 
     def test_updater_rejects_folder_without_unity_project(self):
         self.destination.mkdir()
@@ -301,7 +428,7 @@ class PreparationTests(unittest.TestCase):
             capture_output=True,
         )
         self.assertNotEqual(0, result.returncode)
-        self.assertFalse(list(self.base.glob("*-Backup-Scripts-*")))
+        self.assertFalse(self.update_backups())
 
     def test_prepares_separate_copy_preserves_assets_and_ignores_cache(self):
         self.write_zip()
@@ -315,10 +442,15 @@ class PreparationTests(unittest.TestCase):
         self.assertFalse((self.destination / "Library").exists())
         for item in self.manifest["arquivos"]:
             self.assertEqual(
-                (ROOT / item["caminho"]).read_bytes(),
-                (self.destination / item["caminho"]).read_bytes(),
+                (ROOT / current_path(item["caminho"])).read_bytes(),
+                (self.destination / current_path(item["caminho"])).read_bytes(),
             )
-        self.assertTrue((self.destination / "Assets/Editor/NoxBuild.cs").exists())
+        self.assertTrue((self.destination / "Assets/Editor/Build/NoxBuild.cs").exists())
+        backup = next(iter(self.preparation_backups))
+        self.assertEqual(
+            self.files["Assets/Scripts/PlayerScript.cs"],
+            (backup / "Assets/Scripts/PlayerScript.cs").read_bytes(),
+        )
 
     def test_rejects_modified_original(self):
         self.files["Assets/Scripts/PlayerScript.cs"] += b"// outra versao"

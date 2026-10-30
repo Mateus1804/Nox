@@ -8,16 +8,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../Assets/Scripts/NoxRules.cs" Link="NoxRules.cs" />
-    <Compile Include="../../Assets/Scripts/NoxDamageWindow.cs" Link="NoxDamageWindow.cs" />
-    <Compile Include="../../Assets/Scripts/NoxHitRegistry.cs" Link="NoxHitRegistry.cs" />
-    <Compile Include="../../Assets/Scripts/NoxProgressRules.cs" Link="NoxProgressRules.cs" />
-    <Compile Include="../../Assets/Scripts/NoxSceneLoadGate.cs" Link="NoxSceneLoadGate.cs" />
-    <Compile Include="../../Assets/Scripts/NoxJumpAssist.cs" Link="NoxJumpAssist.cs" />
-    <Compile Include="../../Assets/Scripts/NoxAttackCycle.cs" Link="NoxAttackCycle.cs" />
-    <Compile Include="../../Assets/Scripts/NoxEnemyCycle.cs" Link="NoxEnemyCycle.cs" />
-    <Compile Include="../../Assets/Scripts/NoxMotionRules.cs" Link="NoxMotionRules.cs" />
-    <Compile Include="../../Assets/Scripts/NoxJumpEnvelope.cs" Link="NoxJumpEnvelope.cs" />
+    <Compile Include="../../Assets/Scripts/Domain/NoxRules.cs" Link="NoxRules.cs" />
+    <Compile Include="../../Assets/Scripts/Domain/NoxCombatRules.cs" Link="NoxCombatRules.cs" />
+    <Compile Include="../../Assets/Scripts/Domain/NoxProgressRules.cs" Link="NoxProgressRules.cs" />
+    <Compile Include="../../Assets/Scripts/Domain/NoxMovementRules.cs" Link="NoxMovementRules.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>
